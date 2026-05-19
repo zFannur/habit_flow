@@ -1,0 +1,70 @@
+# Builds the Flutter web bundle and publishes it to GitHub Pages.
+#
+# This file must live at .github/workflows/deploy-pages.yml in the repo that
+# holds the Flutter project at its ROOT (the repo where you uploaded the
+# contents of app/). In this monorepo it sits under app/ so the path maps 1:1.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL       e.g. https://eyurepotxhcipfrgsvsu.supabase.co
+#   SUPABASE_ANON_KEY  the project's anon/public key
+#
+# Pages: Settings → Pages → Source = "GitHub Actions".
+# The site is served at https://<owner>.github.io/<repo>/ — base-href is set
+# to "/<repo>/" automatically below. For a user/org root site or a custom
+# domain, change BASE_HREF to "/".
+
+name: Deploy Mini App to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Generate code (freezed / json / riverpod)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build web (production)
+        run: |
+          flutter build web --release \
+            --base-href "/${{ github.event.repository.name }}/" \
+            --dart-define=SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
+            --dart-define=SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}" \
+            --dart-define=ENV=production
+
+      - name: SPA fallback for deep links
+        run: cp build/web/index.html build/web/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
