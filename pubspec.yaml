@@ -63,9 +63,9 @@ dependencies:
 
   # Secure storage (OpenRouter API key — на Web реализован поверх WebCrypto)
   flutter_secure_storage: ^9.2.2
+  lucide_icons_flutter: ^3.1.14+1
 
   # Icons (Lucide — используется в дизайн-системе HabitFlow)
-  lucide_icons: ^0.257.0
 
 dev_dependencies:
   flutter_test:
