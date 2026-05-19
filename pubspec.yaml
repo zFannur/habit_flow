@@ -1,0 +1,90 @@
+name: habit_flow
+description: "HabitFlow - Telegram Mini App для отслеживания привычек, дневника и ИИ-анализа"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.27.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State management
+  flutter_riverpod: ^2.5.0
+  riverpod_annotation: ^2.3.0
+
+  # Routing
+  go_router: ^14.0.0
+
+  # Telegram Mini App (для Web — JS interop через dart:js_interop / package:web)
+  # Конкретный пакет выберем когда дойдём до Auth-этапа: telegram_web_app не публикуется
+  # стабильно. Альтернативы: tg_mini_app (если выйдет), либо собственная обёртка над JS API.
+  web: ^1.0.0
+
+  # Supabase
+  supabase_flutter: ^2.5.0
+
+  # HTTP / OpenRouter
+  dio: ^5.4.0
+
+  # Charts and visualizations
+  fl_chart: ^0.68.0
+
+  # Calendar / heatmap
+  flutter_heatmap_calendar: ^1.0.5
+  table_calendar: ^3.1.0
+
+  # Forms / inputs
+  reactive_forms: ^17.0.0
+  flutter_colorpicker: ^1.0.3
+  emoji_picker_flutter: ^3.0.0
+
+  # Chat UI
+  flutter_chat_ui: ^1.6.0
+
+  # Utility
+  intl: ^0.20.2
+  collection: ^1.18.0
+  freezed_annotation: ^2.4.0
+  json_annotation: ^4.8.0
+  uuid: ^4.4.0
+
+  # Logging / debug
+  logger: ^2.0.0
+
+  # Persistent local key-value (locale, theme, onboarding flag)
+  shared_preferences: ^2.2.0
+
+  # Secure storage (OpenRouter API key — на Web реализован поверх WebCrypto)
+  flutter_secure_storage: ^9.2.2
+
+  # Icons (Lucide — используется в дизайн-системе HabitFlow)
+  lucide_icons: ^0.257.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  build_runner: ^2.4.0
+  freezed: ^2.4.0
+  json_serializable: ^6.7.0
+  riverpod_generator: ^2.3.0
+
+  # Mocking для unit-тестов (OpenRouter client / secure storage)
+  mocktail: ^1.0.4
+
+  # http.MockClient — для тестов repository без реального Supabase
+  http: ^1.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
