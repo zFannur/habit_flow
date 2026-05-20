@@ -23,6 +23,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:fpdart/fpdart.dart';
+import 'package:habit_flow/core/errors/result.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -196,20 +199,22 @@ class _FakeKeyRepo extends OpenRouterKeyRepository {
   bool valid;
 
   @override
-  Future<void> save(String value) async {
+  AppTask<void> save(String value) {
     key = value;
+    return TaskEither.of(null);
   }
 
   @override
-  Future<String?> load() async => key;
+  AppTask<String?> load() => TaskEither.of(key);
 
   @override
-  Future<void> clear() async {
+  AppTask<void> clear() {
     key = null;
+    return TaskEither.of(null);
   }
 
   @override
-  Future<bool> isValid({String? key}) async => valid;
+  AppTask<bool> isValid({String? key}) => TaskEither.of(valid);
 }
 
 /// Scripted OpenRouter client — replays canned chunks (or an error) and

@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:habit_flow/core/errors/result.dart';
 import 'package:habit_flow/features/ai/data/ai_messages_repository.dart';
 import 'package:habit_flow/features/ai/data/chat_providers.dart';
 import 'package:habit_flow/features/ai/data/openrouter_client.dart';
@@ -93,14 +95,13 @@ class _FakeRepo extends AiMessagesRepository {
     return Stream.value(createdChats);
   }
 }
-
 class _FakeKeyRepo extends OpenRouterKeyRepository {
   _FakeKeyRepo({this.key = 'sk-test'});
 
   String? key;
 
   @override
-  Future<String?> load() async => key;
+  AppTask<String?> load() => TaskEither.of(key);
 }
 
 class _ScriptedClient extends OpenRouterClient {
