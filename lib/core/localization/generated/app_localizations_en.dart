@@ -1634,4 +1634,73 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deviceLinkReasonUnknown =>
       'An unknown error occurred. Please try again.';
+
+  @override
+  String get habitCatHealth => 'Health';
+
+  @override
+  String get habitCatSport => 'Sport';
+
+  @override
+  String get habitCatStudy => 'Study';
+
+  @override
+  String get habitCatWork => 'Work';
+
+  @override
+  String get habitCatRelationships => 'Relationships';
+
+  @override
+  String get habitCatFinance => 'Finance';
+
+  @override
+  String get habitCatHobby => 'Hobby';
+
+  @override
+  String get habitCatMental => 'Mental';
+
+  @override
+  String get habitCatNew => '+ New';
+
+  @override
+  String get habitRepeatDaily => 'Every day';
+
+  @override
+  String get habitRepeatWeekdays => 'By weekdays';
+
+  @override
+  String get habitRepeatNPerWeek => 'X times a week';
+
+  @override
+  String get habitRepeatEveryN => 'Every N days';
+
+  @override
+  String get habitRepeatMonthly => 'By dates of month';
+
+  @override
+  String get habitWeekMon => 'Mon';
+
+  @override
+  String get habitWeekTue => 'Tue';
+
+  @override
+  String get habitWeekWed => 'Wed';
+
+  @override
+  String get habitWeekThu => 'Thu';
+
+  @override
+  String get habitWeekFri => 'Fri';
+
+  @override
+  String get habitWeekSat => 'Sat';
+
+  @override
+  String get habitWeekSun => 'Sun';
+
+  @override
+  String get habitGoalUnitTimes => 'times';
+
+  @override
+  String get habitStackingNoHabits => '— Create another habit first —';
 }

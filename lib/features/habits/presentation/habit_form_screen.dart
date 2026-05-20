@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../shared/widgets/hf_button.dart';
@@ -14,30 +16,6 @@ import '../../../shared/widgets/hf_slider.dart';
 import '../data/habit_draft.dart';
 import '../data/habits_providers.dart';
 import '../domain/habit_type.dart';
-
-// см. issue #2
-const _categories = <String>[
-  'Здоровье',
-  'Спорт',
-  'Учёба',
-  'Работа',
-  'Отношения',
-  'Финансы',
-  'Хобби',
-  'Ментальное',
-  '+ Новая',
-];
-
-const _emojiSets = <String, List<String>>{
-  'Здоровье': ['🥗', '🥦', '💊', '🩺', '🫀', '🩹', '🧬', '💉', '🫁', '🧠', '🦷', '🏥', '🧪', '🍎', '🥑', '🫖'],
-  'Спорт': ['🏃', '💪', '🧘', '🚴', '🏊', '⚽', '🎾', '🏋️', '🤸', '🥊', '🏅', '🎯', '🧗', '🛹', '⛷️', '🏄'],
-  'Учёба': ['📚', '✏️', '🎓', '📖', '🔬', '🔭', '💻', '📝', '🗂️', '📐', '📓', '🧮', '📊', '🖊️', '🗃️', '📜'],
-  'Работа': ['💼', '📧', '🖥️', '📱', '📅', '⏰', '💡', '📈', '🗓️', '🖨️', '☕', '🧑‍💼', '📞', '🔧', '📌', '🗝️'],
-  'Отношения': ['❤️', '👨‍👩‍👧', '🤝', '💌', '🎁', '🥂', '💑', '👨‍👩‍👦', '🫂', '💬', '📸', '🌹', '💍', '🏡', '🫶', '✨'],
-  'Финансы': ['💰', '📉', '💳', '🏦', '💵', '📊', '🪙', '💹', '🏧', '💎', '🤑', '📑', '💸', '🔐', '📒', '🎰'],
-  'Хобби': ['🎨', '🎸', '📷', '✂️', '🧩', '🎮', '📻', '🎭', '🖌️', '🎼', '🧵', '🪴', '♟️', '🎲', '🪁', '🎻'],
-  'Ментальное': ['🧘', '😌', '🌿', '🕯️', '📔', '🫧', '🌊', '☁️', '🌙', '⭐', '🦋', '🌸', '🔮', '🫁', '🌱', '💆'],
-};
 
 const _defaultEmoji = ['💪', '🌟', '⚡', '🎯', '🌱', '✨', '🔥', '💡', '🎨', '📚', '🧘', '🌊', '❤️', '🏃', '💎', '🌿'];
 
@@ -58,21 +36,29 @@ class _AccentColor {
   final Color color;
 }
 
-const _weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+List<String> _getCategories(AppLocalizations l) => [
+      l.habitCatHealth,
+      l.habitCatSport,
+      l.habitCatStudy,
+      l.habitCatWork,
+      l.habitCatRelationships,
+      l.habitCatFinance,
+      l.habitCatHobby,
+      l.habitCatMental,
+      l.habitCatNew,
+    ];
 
-// см. issue #3
-const _repeatTypes = [
-  'Каждый день',
-  'По дням недели',
-  'X раз в неделю',
-  'Каждые N дней',
-  'По датам месяца',
-];
-
-/// Placeholder option shown in the stacking dropdown when the user has no
-/// habits yet. Renders as the only entry so the field is never empty but
-/// still communicates that stacking needs an anchor habit.
-const _stackingNoHabitsHint = '— Сначала создай другую привычку —';
+List<String> _getEmojiSetForCategory(AppLocalizations l, String category) {
+  if (category == l.habitCatHealth) return ['🥗', '🥦', '💊', '🩺', '🫀', '🩹', '🧬', '💉', '🫁', '🧠', '🦷', '🏥', '🧪', '🍎', '🥑', '🫖'];
+  if (category == l.habitCatSport) return ['🏃', '💪', '🧘', '🚴', '🏊', '⚽', '🎾', '🏋️', '🤸', '🥊', '🏅', '🎯', '🧗', '🛹', '⛷️', '🏄'];
+  if (category == l.habitCatStudy) return ['📚', '✏️', '🎓', '📖', '🔬', '🔭', '💻', '📝', '🗂️', '📐', '📓', '🧮', '📊', '🖊️', '🗃️', '📜'];
+  if (category == l.habitCatWork) return ['💼', '📧', '🖥️', '📱', '📅', '⏰', '💡', '📈', '🗓️', '🖨️', '☕', '🧑‍💼', '📞', '🔧', '📌', '🗝️'];
+  if (category == l.habitCatRelationships) return ['❤️', '👨‍👩‍👧', '🤝', '💌', '🎁', '🥂', '💑', '👨‍👩‍👦', '🫂', '💬', '📸', '🌹', '💍', '🏡', '🫶', '✨'];
+  if (category == l.habitCatFinance) return ['💰', '📉', '💳', '🏦', '💵', '📊', '🪙', '💹', '🏧', '💎', '🤑', '📑', '💸', '🔐', '📒', '🎰'];
+  if (category == l.habitCatHobby) return ['🎨', '🎸', '📷', '✂️', '🧩', '🎮', '📻', '🎭', '🖌️', '🎼', '🧵', '🪴', '♟️', '🎲', '🪁', '🎻'];
+  if (category == l.habitCatMental) return ['🧘', '😌', '🌿', '🕯️', '📔', '🫧', '🌊', '☁️', '🌙', '⭐', '🦋', '🌸', '🔮', '🫁', '🌱', '💆'];
+  return _defaultEmoji;
+}
 
 class HabitFormScreen extends ConsumerStatefulWidget {
   const HabitFormScreen({super.key, this.habitId});
@@ -114,9 +100,6 @@ class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
           _identityCtrl.text = habit.identityStatement ?? '';
           _twoMinCtrl.text = habit.twoMinuteVersion ?? '';
           _rewardCtrl.text = habit.reward ?? '';
-          setState(() {
-            _step = 2; // skip type selection when editing
-          });
         }
       } else {
         ref.read(habitDraftProvider.notifier).reset();
@@ -149,7 +132,7 @@ class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
   }
 
   void _back() {
-    if (_step > (widget.habitId != null ? 2 : 1)) {
+    if (_step > 1) {
       setState(() => _step -= 1);
     } else {
       ref.read(habitDraftProvider.notifier).reset();
@@ -220,14 +203,21 @@ class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
   }
 
   String _buildRepeatLabel(AppLocalizations l, HabitDraft draft) {
-    if (draft.repeatType == 'По дням недели' &&
+    if (draft.repeatType == RepeatTypeKey.weekdays &&
         draft.selectedWeekdays.isNotEmpty) {
-      return _weekdays.where(draft.selectedWeekdays.contains).join(', ');
+      final days = [l.habitWeekMon, l.habitWeekTue, l.habitWeekWed, l.habitWeekThu, l.habitWeekFri, l.habitWeekSat, l.habitWeekSun];
+      return draft.selectedWeekdays.map((d) => days[d - 1]).join(', ');
     }
-    if (draft.repeatType == 'X раз в неделю') {
+    if (draft.repeatType == RepeatTypeKey.nPerWeek) {
       return l.habitCreateStep3FrequencyValue(draft.timesPerWeek);
     }
-    return draft.repeatType;
+    switch (draft.repeatType) {
+      case RepeatTypeKey.daily: return l.habitRepeatDaily;
+      case RepeatTypeKey.weekdays: return l.habitRepeatWeekdays;
+      case RepeatTypeKey.nPerWeek: return l.habitRepeatNPerWeek;
+      case RepeatTypeKey.everyNDays: return l.habitRepeatEveryN;
+      case RepeatTypeKey.monthlyDates: return l.habitRepeatMonthly;
+    }
   }
 
   @override
@@ -258,7 +248,9 @@ class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
                       category: draft.category,
                       onCategory: notifier.setCategory,
                       icon: draft.emoji,
+                      iconTelegramFileId: draft.iconTelegramFileId,
                       onIcon: notifier.setEmoji,
+                      onIconTelegramFileId: notifier.setIconTelegramFileId,
                       accent: draft.accentColor ?? _accentColors.first.color,
                       onAccent: notifier.setAccentColor,
                     ),
@@ -293,6 +285,7 @@ class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
                       rewardCtrl: _rewardCtrl,
                       habitName: _nameCtrl.text,
                       habitIcon: draft.emoji,
+                      habitIconTelegramFileId: draft.iconTelegramFileId,
                       habitType: draft.type,
                       accent: draft.accentColor ?? _accentColors.first.color,
                       category: draft.category,
@@ -656,7 +649,9 @@ class _Step2 extends StatefulWidget {
     required this.category,
     required this.onCategory,
     required this.icon,
+    this.iconTelegramFileId,
     required this.onIcon,
+    required this.onIconTelegramFileId,
     required this.accent,
     required this.onAccent,
   });
@@ -666,7 +661,9 @@ class _Step2 extends StatefulWidget {
   final String category;
   final ValueChanged<String> onCategory;
   final String icon;
+  final String? iconTelegramFileId;
   final ValueChanged<String> onIcon;
+  final ValueChanged<String?> onIconTelegramFileId;
   final Color accent;
   final ValueChanged<Color> onAccent;
 
@@ -679,10 +676,73 @@ class _Step2State extends State<_Step2> {
   bool _accentOpen = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty) {
+      _iconTab = 'photo';
+    }
+  }
+
+  Future<void> _showPhotoDialog() async {
+    final l = AppLocalizations.of(context);
+    final c = HFColors.of(context);
+    final controller = TextEditingController(text: widget.iconTelegramFileId);
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: c.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l.habitCreateStep2PhotoUpload,
+          style: dialogContext.tt.titleLarge!.copyWith(color: c.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Отправьте фото нашему Telegram-боту, скопируйте полученный ID файла (file_id) и вставьте его ниже:',
+              style: dialogContext.tt.bodyMedium!.copyWith(color: c.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            HFInput(
+              controller: controller,
+              hint: 'Вставьте file_id...',
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text('Отмена', style: TextStyle(color: c.textTertiary)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: c.accent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text('Сохранить'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      widget.onIconTelegramFileId(result.isEmpty ? null : result);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
-    final emojis = _emojiSets[widget.category] ?? _defaultEmoji;
+    final categories = _getCategories(l);
+    final currentCategory = widget.category.isEmpty ? categories.first : widget.category;
+    final emojis = _getEmojiSetForCategory(l, currentCategory);
     final selectedColor = _accentColors.firstWhere(
       (a) => a.color.toARGB32() == widget.accent.toARGB32(),
       orElse: () => _accentColors.first,
@@ -714,10 +774,10 @@ class _Step2State extends State<_Step2> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (final cat in _categories)
+              for (final cat in categories)
                 HFChip(
                   label: cat,
-                  selected: widget.category == cat,
+                  selected: currentCategory == cat,
                   onTap: () => widget.onCategory(cat),
                 ),
             ],
@@ -738,10 +798,26 @@ class _Step2State extends State<_Step2> {
                 border: Border.all(color: widget.accent, width: 2.5),
               ),
               alignment: Alignment.center,
-              child: Text(
-                widget.icon,
-                style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
-              ),
+              child: widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=${widget.iconTelegramFileId}',
+                        headers: {
+                          'Authorization': 'Bearer ${Supabase.instance.client.auth.currentSession?.accessToken}',
+                        },
+                        width: 96,
+                        height: 96,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Text(
+                          widget.icon,
+                          style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      widget.icon,
+                      style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
+                    ),
             ),
           ),
           const SizedBox(height: 16),
@@ -798,28 +874,90 @@ class _Step2State extends State<_Step2> {
                   ),
               ],
             )
-          else
+          else if (widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: c.bgSecondary,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: c.border, width: 2, style: BorderStyle.solid),
+                border: Border.all(color: c.border, width: 1),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  Icon(LucideIcons.upload, size: 24, color: c.textTertiary),
-                  const SizedBox(height: 10),
-                  Text(
-                    l.habitCreateStep2PhotoUpload,
-                    style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=${widget.iconTelegramFileId}',
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 60,
+                        height: 60,
+                        color: c.bgTertiary,
+                        child: Icon(LucideIcons.image, color: c.textTertiary),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l.habitCreateStep2PhotoHint,
-                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Фото загружено',
+                          style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'ID: ${widget.iconTelegramFileId!.length > 15 ? "${widget.iconTelegramFileId!.substring(0, 15)}..." : widget.iconTelegramFileId}',
+                          style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(LucideIcons.edit2, size: 20, color: c.accent),
+                    onPressed: _showPhotoDialog,
+                  ),
+                  IconButton(
+                    icon: const Icon(LucideIcons.trash2, size: 20, color: Colors.redAccent),
+                    onPressed: () => widget.onIconTelegramFileId(null),
                   ),
                 ],
+              ),
+            )
+          else
+            InkWell(
+              onTap: _showPhotoDialog,
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+                decoration: BoxDecoration(
+                  color: c.bgSecondary,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: c.border, width: 2, style: BorderStyle.solid),
+                ),
+                child: Column(
+                  children: [
+                    Center(child: Icon(LucideIcons.upload, size: 24, color: c.textTertiary)),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        l.habitCreateStep2PhotoUpload,
+                        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: Text(
+                        l.habitCreateStep2PhotoHint,
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -956,10 +1094,10 @@ class _Step3 extends StatefulWidget {
   });
 
   final HabitType? habitType;
-  final String repeatType;
-  final ValueChanged<String> onRepeatType;
-  final Set<String> weekdays;
-  final ValueChanged<String> onToggleWeekday;
+  final RepeatTypeKey repeatType;
+  final ValueChanged<RepeatTypeKey> onRepeatType;
+  final Set<int> weekdays;
+  final ValueChanged<int> onToggleWeekday;
   final Set<int> monthDays;
   final ValueChanged<int> onToggleMonthDay;
   final int timesPerWeek;
@@ -1007,37 +1145,46 @@ class _Step3State extends State<_Step3> {
 
           _UpperLabel(l.habitCreateStep3RepeatTypeLabel),
           const SizedBox(height: 8),
-          _SelectField(
+          _SelectField<RepeatTypeKey>(
             value: widget.repeatType,
-            options: _repeatTypes,
+            options: RepeatTypeKey.values,
             onChanged: widget.onRepeatType,
+            labelBuilder: (k) {
+              switch (k) {
+                case RepeatTypeKey.daily: return l.habitRepeatDaily;
+                case RepeatTypeKey.weekdays: return l.habitRepeatWeekdays;
+                case RepeatTypeKey.nPerWeek: return l.habitRepeatNPerWeek;
+                case RepeatTypeKey.everyNDays: return l.habitRepeatEveryN;
+                case RepeatTypeKey.monthlyDates: return l.habitRepeatMonthly;
+              }
+            },
           ),
           const SizedBox(height: 20),
 
-          if (widget.repeatType == 'По дням недели') ...[
+          if (widget.repeatType == RepeatTypeKey.weekdays) ...[
             Row(
               children: [
-                for (var i = 0; i < _weekdays.length; i++) ...[
+                for (var i = 0; i < 7; i++) ...[
                   if (i > 0) const SizedBox(width: 6),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => widget.onToggleWeekday(_weekdays[i]),
+                      onTap: () => widget.onToggleWeekday(i + 1),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
                         decoration: BoxDecoration(
-                          color: widget.weekdays.contains(_weekdays[i])
+                          color: widget.weekdays.contains(i + 1)
                               ? c.accent
                               : c.bgSecondary,
                           borderRadius: BorderRadius.circular(10),
-                          border: widget.weekdays.contains(_weekdays[i])
+                          border: widget.weekdays.contains(i + 1)
                               ? null
                               : Border.all(color: c.border, width: 1.5),
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          _weekdays[i],
+                          [l.habitWeekMon, l.habitWeekTue, l.habitWeekWed, l.habitWeekThu, l.habitWeekFri, l.habitWeekSat, l.habitWeekSun][i],
                           style: context.tt.labelMedium!.copyWith(
-                            color: widget.weekdays.contains(_weekdays[i])
+                            color: widget.weekdays.contains(i + 1)
                                 ? Colors.white
                                 : c.textSecondary,
                           ),
@@ -1051,7 +1198,7 @@ class _Step3State extends State<_Step3> {
             const SizedBox(height: 20),
           ],
 
-          if (widget.repeatType == 'X раз в неделю') ...[
+          if (widget.repeatType == RepeatTypeKey.nPerWeek) ...[
             Container(
               decoration: BoxDecoration(
                 color: c.bgSecondary,
@@ -1094,7 +1241,7 @@ class _Step3State extends State<_Step3> {
             const SizedBox(height: 20),
           ],
 
-          if (widget.repeatType == 'Каждые N дней') ...[
+          if (widget.repeatType == RepeatTypeKey.everyNDays) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
@@ -1139,7 +1286,7 @@ class _Step3State extends State<_Step3> {
             const SizedBox(height: 20),
           ],
 
-          if (widget.repeatType == 'По датам месяца') ...[
+          if (widget.repeatType == RepeatTypeKey.monthlyDates) ...[
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -1387,6 +1534,7 @@ class _StackingPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
     if (existingHabits.isEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -1396,7 +1544,7 @@ class _StackingPicker extends StatelessWidget {
           border: Border.all(color: c.border, width: 1.5),
         ),
         child: Text(
-          _stackingNoHabitsHint,
+          l.habitStackingNoHabits,
           style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontStyle: FontStyle.italic),
         ),
       );
@@ -1412,17 +1560,20 @@ class _StackingPicker extends StatelessWidget {
   }
 }
 
-class _SelectField extends StatelessWidget {
+class _SelectField<T> extends StatelessWidget {
   const _SelectField({
+    super.key,
     required this.value,
     required this.options,
     required this.onChanged,
+    this.labelBuilder,
     this.compact = false,
   });
 
-  final String value;
-  final List<String> options;
-  final ValueChanged<String> onChanged;
+  final T value;
+  final List<T> options;
+  final ValueChanged<T> onChanged;
+  final String Function(T)? labelBuilder;
   final bool compact;
 
   @override
@@ -1439,7 +1590,7 @@ class _SelectField extends StatelessWidget {
         border: Border.all(color: c.border, width: 1.5),
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
+        child: DropdownButton<T>(
           value: value,
           isDense: true,
           icon: Icon(LucideIcons.chevronDown, size: 14, color: c.textTertiary),
@@ -1447,7 +1598,7 @@ class _SelectField extends StatelessWidget {
           dropdownColor: c.card,
           items: [
             for (final o in options)
-              DropdownMenuItem(value: o, child: Text(o)),
+              DropdownMenuItem(value: o, child: Text(labelBuilder != null ? labelBuilder!(o) : o.toString())),
           ],
           onChanged: (v) {
             if (v != null) onChanged(v);
@@ -1536,6 +1687,7 @@ class _Step4 extends StatelessWidget {
     required this.rewardCtrl,
     required this.habitName,
     required this.habitIcon,
+    this.habitIconTelegramFileId,
     required this.habitType,
     required this.accent,
     required this.category,
@@ -1552,6 +1704,7 @@ class _Step4 extends StatelessWidget {
   final TextEditingController rewardCtrl;
   final String habitName;
   final String habitIcon;
+  final String? habitIconTelegramFileId;
   final HabitType? habitType;
   final Color accent;
   final String category;
@@ -1706,7 +1859,7 @@ class _Step4 extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Container(
+                     Container(
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
@@ -1715,10 +1868,24 @@ class _Step4 extends StatelessWidget {
                         border: Border.all(color: accent, width: 2),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
-                        habitIcon.isEmpty ? '🌟' : habitIcon,
-                        style: context.tt.headlineLarge!.copyWith(height: 1),
-                      ),
+                      child: habitIconTelegramFileId != null && habitIconTelegramFileId!.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: Image.network(
+                                '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=$habitIconTelegramFileId',
+                                width: 52,
+                                height: 52,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Text(
+                                  habitIcon.isEmpty ? '🌟' : habitIcon,
+                                  style: context.tt.headlineLarge!.copyWith(height: 1),
+                                ),
+                              ),
+                            )
+                          : Text(
+                              habitIcon.isEmpty ? '🌟' : habitIcon,
+                              style: context.tt.headlineLarge!.copyWith(height: 1),
+                            ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

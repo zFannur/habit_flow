@@ -30,6 +30,7 @@ class BinaryHabitCard extends StatefulWidget {
   const BinaryHabitCard({
     super.key,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.name,
     required this.subtitle,
     this.streak,
@@ -44,6 +45,7 @@ class BinaryHabitCard extends StatefulWidget {
   });
 
   final String emoji;
+  final String? iconTelegramFileId;
   final String name;
   final String subtitle;
   final int? streak;
@@ -161,6 +163,7 @@ class _BinaryHabitCardState extends State<BinaryHabitCard> {
           children: [
             HabitEmojiIcon(
               emoji: widget.emoji,
+              iconTelegramFileId: widget.iconTelegramFileId,
               tint: _done ? c.accent.withValues(alpha: 0.08) : null,
             ),
             const SizedBox(width: HFTokens.s12),

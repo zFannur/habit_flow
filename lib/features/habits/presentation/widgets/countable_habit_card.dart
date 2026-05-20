@@ -13,6 +13,7 @@ class CountableHabitCard extends StatefulWidget {
   const CountableHabitCard({
     super.key,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.name,
     required this.initial,
     required this.total,
@@ -21,6 +22,7 @@ class CountableHabitCard extends StatefulWidget {
   });
 
   final String emoji;
+  final String? iconTelegramFileId;
   final String name;
   final int initial;
   final int total;
@@ -67,6 +69,7 @@ class _CountableHabitCardState extends State<CountableHabitCard> {
               children: [
                 HabitEmojiIcon(
                   emoji: widget.emoji,
+                  iconTelegramFileId: widget.iconTelegramFileId,
                   tint: c.accent.withValues(alpha: 0.08),
                 ),
                 const SizedBox(width: HFTokens.s12),

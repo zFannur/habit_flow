@@ -76,6 +76,38 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
   String _activeSortLabel(AppLocalizations l) =>
       _sortLabel(l, _filter.sortOrder);
 
+  Future<bool> _confirmDelete(BuildContext context, AppLocalizations l, HabitModel habit) async {
+    final c = HFColors.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: c.bgPrimary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l.habitDetailDeleteConfirmTitle, style: context.tt.titleLarge!.copyWith(color: c.textPrimary)),
+        content: Text(
+          l.habitDetailDeleteConfirmBody,
+          style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.commonCancel, style: TextStyle(color: c.textTertiary)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: c.danger,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text(l.commonDelete),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
@@ -227,10 +259,60 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
                 sliver: SliverList.separated(
                   itemCount: filtered.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) => _HabitsListCard(
-                    habit: filtered[i],
-                    onTap: () => context.push('/habits/${filtered[i].id}'),
-                  ),
+                  itemBuilder: (_, i) {
+                    final habit = filtered[i];
+                    return Dismissible(
+                      key: Key(habit.id),
+                      direction: DismissDirection.horizontal,
+                      background: Container(
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.only(left: 24),
+                        decoration: BoxDecoration(
+                          color: c.warning,
+                          borderRadius: BorderRadius.circular(HFTokens.rLg),
+                        ),
+                        child: const Icon(LucideIcons.archive, color: Colors.white),
+                      ),
+                      secondaryBackground: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 24),
+                        decoration: BoxDecoration(
+                          color: c.danger,
+                          borderRadius: BorderRadius.circular(HFTokens.rLg),
+                        ),
+                        child: const Icon(LucideIcons.trash2, color: Colors.white),
+                      ),
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.startToEnd) {
+                          return true;
+                        } else {
+                          return await _confirmDelete(context, l, habit);
+                        }
+                      },
+                      onDismissed: (direction) async {
+                        final repo = ref.read(habitsRepositoryProvider);
+                        if (direction == DismissDirection.startToEnd) {
+                          await repo.archive(habit.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l.habitDetailArchivedToast)),
+                            );
+                          }
+                        } else {
+                          await repo.delete(habit.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l.habitDetailDeletedToast)),
+                            );
+                          }
+                        }
+                      },
+                      child: _HabitsListCard(
+                        habit: habit,
+                        onTap: () => context.push('/habits/${habit.id}'),
+                      ),
+                    );
+                  },
                 ),
               ),
             const SliverToBoxAdapter(child: SizedBox(height: 80)),

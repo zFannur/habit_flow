@@ -32,7 +32,10 @@ final habitLogsRepositoryProvider = Provider<HabitLogsRepository>((ref) {
 /// Realtime list of habits for the current user.
 final habitsStreamProvider = StreamProvider<List<HabitModel>>((ref) {
   final userId = ref.watch(currentUserIdProvider);
-  return ref.watch(habitsRepositoryProvider).watchAll(userId);
+  return ref.watch(habitsRepositoryProvider).watchAll(userId).map((habits) {
+    final seen = <String>{};
+    return habits.where((h) => seen.add(h.id)).toList();
+  });
 });
 
 /// Logs for a single habit (newest first).

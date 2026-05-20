@@ -16,6 +16,7 @@ class HFInput extends StatefulWidget {
     this.onChanged,
     this.keyboardType,
     this.textInputAction,
+    this.autofocus = false,
   });
 
   final TextEditingController? controller;
@@ -26,6 +27,7 @@ class HFInput extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final bool autofocus;
 
   @override
   State<HFInput> createState() => _HFInputState();
@@ -83,6 +85,7 @@ class _HFInputState extends State<HFInput> {
           child: TextField(
             controller: _controller,
             focusNode: _focus,
+            autofocus: widget.autofocus,
             minLines: widget.minLines,
             maxLines: widget.maxLines,
             onChanged: widget.onChanged,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
@@ -497,6 +498,9 @@ class _Hero extends StatelessWidget {
       imageContent = ClipOval(
         child: Image.network(
           imageUrl,
+          headers: {
+            'Authorization': 'Bearer ${Supabase.instance.client.auth.currentSession?.accessToken}',
+          },
           width: 80,
           height: 80,
           fit: BoxFit.cover,

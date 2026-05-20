@@ -161,6 +161,7 @@ class _HabitCardRouter extends StatelessWidget {
         final anchor = _findAnchor(habit.stackAfterHabitId, ref);
         return BinaryHabitCard(
           emoji: habit.emoji ?? '✅',
+          iconTelegramFileId: habit.iconTelegramFileId,
           name: habit.name,
           subtitle: _reminderSubtitle(habit.reminderTimes),
           streak: streak > 0 ? streak : null,
@@ -181,6 +182,7 @@ class _HabitCardRouter extends StatelessWidget {
         final current = (item.log?.value ?? 0).toInt();
         return CountableHabitCard(
           emoji: habit.emoji ?? '🔢',
+          iconTelegramFileId: habit.iconTelegramFileId,
           name: habit.name,
           initial: current,
           total: target,
@@ -194,6 +196,7 @@ class _HabitCardRouter extends StatelessWidget {
       case HabitType.timed:
         return TimedHabitCard(
           emoji: habit.emoji ?? '⏱',
+          iconTelegramFileId: habit.iconTelegramFileId,
           name: habit.name,
           subtitle: _reminderSubtitle(habit.reminderTimes),
           streak: streak > 0 ? streak : null,

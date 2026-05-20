@@ -1640,4 +1640,73 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get deviceLinkReasonUnknown =>
       'Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get habitCatHealth => 'Здоровье';
+
+  @override
+  String get habitCatSport => 'Спорт';
+
+  @override
+  String get habitCatStudy => 'Учёба';
+
+  @override
+  String get habitCatWork => 'Работа';
+
+  @override
+  String get habitCatRelationships => 'Отношения';
+
+  @override
+  String get habitCatFinance => 'Финансы';
+
+  @override
+  String get habitCatHobby => 'Хобби';
+
+  @override
+  String get habitCatMental => 'Ментальное';
+
+  @override
+  String get habitCatNew => '+ Новая';
+
+  @override
+  String get habitRepeatDaily => 'Каждый день';
+
+  @override
+  String get habitRepeatWeekdays => 'По дням недели';
+
+  @override
+  String get habitRepeatNPerWeek => 'X раз в неделю';
+
+  @override
+  String get habitRepeatEveryN => 'Каждые N дней';
+
+  @override
+  String get habitRepeatMonthly => 'По датам месяца';
+
+  @override
+  String get habitWeekMon => 'Пн';
+
+  @override
+  String get habitWeekTue => 'Вт';
+
+  @override
+  String get habitWeekWed => 'Ср';
+
+  @override
+  String get habitWeekThu => 'Чт';
+
+  @override
+  String get habitWeekFri => 'Пт';
+
+  @override
+  String get habitWeekSat => 'Сб';
+
+  @override
+  String get habitWeekSun => 'Вс';
+
+  @override
+  String get habitGoalUnitTimes => 'раз';
+
+  @override
+  String get habitStackingNoHabits => '— Сначала создай другую привычку —';
 }

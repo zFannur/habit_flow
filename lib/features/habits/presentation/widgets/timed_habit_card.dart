@@ -17,6 +17,7 @@ class TimedHabitCard extends StatefulWidget {
   const TimedHabitCard({
     super.key,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.name,
     required this.subtitle,
     this.streak,
@@ -25,6 +26,7 @@ class TimedHabitCard extends StatefulWidget {
   });
 
   final String emoji;
+  final String? iconTelegramFileId;
   final String name;
   final String subtitle;
   final int? streak;
@@ -85,6 +87,7 @@ class _TimedHabitCardState extends State<TimedHabitCard> {
         children: [
           HabitEmojiIcon(
             emoji: widget.emoji,
+            iconTelegramFileId: widget.iconTelegramFileId,
             tint: c.warning.withValues(alpha: 0.1),
           ),
           const SizedBox(width: HFTokens.s12),
