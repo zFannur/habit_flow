@@ -139,6 +139,7 @@
   "habitCreateStepCounter": "Шаг {step} из {total}",
   "@habitCreateStepCounter": {"placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}},
   "habitCreateSubmit": "Создать привычку",
+  "habitEditSubmit": "Редактировать привычку",
   "habitCreateStep1Title": "Какой тип?",
   "habitCreateStep1Subtitle": "Это влияет на то, как ты будешь её отмечать.",
   "habitTypeBinary": "Бинарная",

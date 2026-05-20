@@ -139,6 +139,7 @@
   "habitCreateStepCounter": "Step {step} of {total}",
   "@habitCreateStepCounter": {"placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}},
   "habitCreateSubmit": "Create habit",
+  "habitEditSubmit": "Edit habit",
   "habitCreateStep1Title": "Which type?",
   "habitCreateStep1Subtitle": "This affects how you'll mark it.",
   "habitTypeBinary": "Binary",

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
@@ -305,6 +304,7 @@ class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
             _WizardFooter(
               step: _step,
               disabled: !_canNext(draft) || _submitting,
+              isEditing: draft.isEditing,
               onNext: () => _next(draft),
             ),
           ],
@@ -392,17 +392,19 @@ class _WizardFooter extends StatelessWidget {
     required this.step,
     required this.disabled,
     required this.onNext,
+    this.isEditing = false,
   });
 
   final int step;
   final bool disabled;
   final VoidCallback onNext;
+  final bool isEditing;
 
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
-    final label = step < 4 ? l.commonNext : l.habitCreateSubmit;
+    final label = step < 4 ? l.commonNext : (isEditing ? l.habitEditSubmit : l.habitCreateSubmit);
 
     return Container(
       decoration: BoxDecoration(
@@ -672,68 +674,31 @@ class _Step2 extends StatefulWidget {
 }
 
 class _Step2State extends State<_Step2> {
-  String _iconTab = 'emoji';
   bool _accentOpen = false;
+  bool _isCustomActive = false;
+  final _customCategoryCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    if (widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty) {
-      _iconTab = 'photo';
+    _customCategoryCtrl.text = widget.category;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l = AppLocalizations.of(context);
+    final categories = _getCategories(l);
+    final predefinedCategories = categories.sublist(0, categories.length - 1);
+    if (widget.category.isNotEmpty && !predefinedCategories.contains(widget.category)) {
+      _isCustomActive = true;
     }
   }
 
-  Future<void> _showPhotoDialog() async {
-    final l = AppLocalizations.of(context);
-    final c = HFColors.of(context);
-    final controller = TextEditingController(text: widget.iconTelegramFileId);
-
-    final result = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: c.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          l.habitCreateStep2PhotoUpload,
-          style: dialogContext.tt.titleLarge!.copyWith(color: c.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Отправьте фото нашему Telegram-боту, скопируйте полученный ID файла (file_id) и вставьте его ниже:',
-              style: dialogContext.tt.bodyMedium!.copyWith(color: c.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            HFInput(
-              controller: controller,
-              hint: 'Вставьте file_id...',
-              autofocus: true,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Отмена', style: TextStyle(color: c.textTertiary)),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: c.accent,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Text('Сохранить'),
-          ),
-        ],
-      ),
-    );
-
-    if (result != null) {
-      widget.onIconTelegramFileId(result.isEmpty ? null : result);
-    }
+  @override
+  void dispose() {
+    _customCategoryCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -741,6 +706,7 @@ class _Step2State extends State<_Step2> {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
     final categories = _getCategories(l);
+    final predefinedCategories = categories.sublist(0, categories.length - 1);
     final currentCategory = widget.category.isEmpty ? categories.first : widget.category;
     final emojis = _getEmojiSetForCategory(l, currentCategory);
     final selectedColor = _accentColors.firstWhere(
@@ -774,14 +740,40 @@ class _Step2State extends State<_Step2> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (final cat in categories)
+              for (final cat in predefinedCategories)
                 HFChip(
                   label: cat,
-                  selected: currentCategory == cat,
-                  onTap: () => widget.onCategory(cat),
+                  selected: !_isCustomActive && widget.category == cat,
+                  onTap: () {
+                    setState(() {
+                      _isCustomActive = false;
+                      _customCategoryCtrl.clear();
+                    });
+                    widget.onCategory(cat);
+                  },
                 ),
+              HFChip(
+                label: l.habitCatNew,
+                selected: _isCustomActive,
+                onTap: () {
+                  setState(() {
+                    _isCustomActive = true;
+                  });
+                  widget.onCategory(_customCategoryCtrl.text);
+                },
+              ),
             ],
           ),
+          if (_isCustomActive) ...[
+            const SizedBox(height: 12),
+            HFInput(
+              controller: _customCategoryCtrl,
+              hint: 'Название новой категории...',
+              onChanged: (val) {
+                widget.onCategory(val);
+              },
+            ),
+          ],
           const SizedBox(height: 24),
 
           // Icon
@@ -798,168 +790,41 @@ class _Step2State extends State<_Step2> {
                 border: Border.all(color: widget.accent, width: 2.5),
               ),
               alignment: Alignment.center,
-              child: widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty
-                  ? ClipOval(
-                      child: Image.network(
-                        '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=${widget.iconTelegramFileId}',
-                        headers: {
-                          'Authorization': 'Bearer ${Supabase.instance.client.auth.currentSession?.accessToken}',
-                        },
-                        width: 96,
-                        height: 96,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Text(
-                          widget.icon,
-                          style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
-                        ),
-                      ),
-                    )
-                  : Text(
-                      widget.icon,
-                      style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
-                    ),
+              child: Text(
+                widget.icon,
+                style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
+              ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
-          // Tabs
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: c.bgTertiary,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                _TabButton(
-                  label: l.habitCreateStep2EmojiTab,
-                  active: _iconTab == 'emoji',
-                  onTap: () => setState(() => _iconTab = 'emoji'),
+          GridView.count(
+            crossAxisCount: 8,
+            mainAxisSpacing: 6,
+            crossAxisSpacing: 6,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              for (final em in emojis)
+                GestureDetector(
+                  onTap: () => widget.onIcon(em),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: widget.icon == em
+                          ? c.accent.withValues(alpha: 0.12)
+                          : c.bgSecondary,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: widget.icon == em ? c.accent : Colors.transparent,
+                        width: 1.5,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(em, style: context.tt.headlineMedium!.copyWith(height: 1)),
+                  ),
                 ),
-                _TabButton(
-                  label: l.habitCreateStep2PhotoTab,
-                  active: _iconTab == 'photo',
-                  onTap: () => setState(() => _iconTab = 'photo'),
-                ),
-              ],
-            ),
+            ],
           ),
-          const SizedBox(height: 14),
-
-          if (_iconTab == 'emoji')
-            GridView.count(
-              crossAxisCount: 8,
-              mainAxisSpacing: 6,
-              crossAxisSpacing: 6,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                for (final em in emojis)
-                  GestureDetector(
-                    onTap: () => widget.onIcon(em),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: widget.icon == em
-                            ? c.accent.withValues(alpha: 0.12)
-                            : c.bgSecondary,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: widget.icon == em ? c.accent : Colors.transparent,
-                          width: 1.5,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(em, style: context.tt.headlineMedium!.copyWith(height: 1)),
-                    ),
-                  ),
-              ],
-            )
-          else if (widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: c.bgSecondary,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: c.border, width: 1),
-              ),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=${widget.iconTelegramFileId}',
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 60,
-                        height: 60,
-                        color: c.bgTertiary,
-                        child: Icon(LucideIcons.image, color: c.textTertiary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Фото загружено',
-                          style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'ID: ${widget.iconTelegramFileId!.length > 15 ? "${widget.iconTelegramFileId!.substring(0, 15)}..." : widget.iconTelegramFileId}',
-                          style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: Icon(LucideIcons.edit2, size: 20, color: c.accent),
-                    onPressed: _showPhotoDialog,
-                  ),
-                  IconButton(
-                    icon: const Icon(LucideIcons.trash2, size: 20, color: Colors.redAccent),
-                    onPressed: () => widget.onIconTelegramFileId(null),
-                  ),
-                ],
-              ),
-            )
-          else
-            InkWell(
-              onTap: _showPhotoDialog,
-              borderRadius: BorderRadius.circular(14),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-                decoration: BoxDecoration(
-                  color: c.bgSecondary,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: c.border, width: 2, style: BorderStyle.solid),
-                ),
-                child: Column(
-                  children: [
-                    Center(child: Icon(LucideIcons.upload, size: 24, color: c.textTertiary)),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: Text(
-                        l.habitCreateStep2PhotoUpload,
-                        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Center(
-                      child: Text(
-                        l.habitCreateStep2PhotoHint,
-                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
           const SizedBox(height: 20),
 
@@ -1031,38 +896,6 @@ class _Step2State extends State<_Step2> {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _TabButton extends StatelessWidget {
-  const _TabButton({required this.label, required this.active, required this.onTap});
-
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = HFColors.of(context);
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: active ? c.card : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
-            boxShadow: active ? HFTokens.cardShadow(c.shadow) : null,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: context.tt.titleSmall!.copyWith(color: active ? c.textPrimary : c.textTertiary),
-          ),
-        ),
       ),
     );
   }

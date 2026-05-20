@@ -800,6 +800,12 @@ abstract class AppLocalizations {
   /// **'Создать привычку'**
   String get habitCreateSubmit;
 
+  /// No description provided for @habitEditSubmit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Редактировать привычку'**
+  String get habitEditSubmit;
+
   /// No description provided for @habitCreateStep1Title.
   ///
   /// In ru, this message translates to:

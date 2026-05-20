@@ -393,6 +393,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habitCreateSubmit => 'Create habit';
 
   @override
+  String get habitEditSubmit => 'Edit habit';
+
+  @override
   String get habitCreateStep1Title => 'Which type?';
 
   @override

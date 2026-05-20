@@ -396,6 +396,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get habitCreateSubmit => 'Создать привычку';
 
   @override
+  String get habitEditSubmit => 'Редактировать привычку';
+
+  @override
   String get habitCreateStep1Title => 'Какой тип?';
 
   @override
