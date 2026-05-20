@@ -1349,6 +1349,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not create the invoice. Please try again.';
 
   @override
+  String get donateNotAvailableTitle =>
+      'Payment is not available in standalone app';
+
+  @override
+  String get donateNotAvailableMessage =>
+      'Please open Habit Flow directly inside Telegram (as a Mini App) to support the project.';
+
+  @override
   String get notificationsTitle => 'Notifications';
 
   @override

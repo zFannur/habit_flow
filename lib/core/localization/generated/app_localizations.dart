@@ -2570,6 +2570,18 @@ abstract class AppLocalizations {
   /// **'Не удалось создать инвойс. Попробуй ещё раз.'**
   String get donateErrorMessage;
 
+  /// No description provided for @donateNotAvailableTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оплата недоступна в мобильном приложении'**
+  String get donateNotAvailableTitle;
+
+  /// No description provided for @donateNotAvailableMessage.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пожалуйста, откройте Habit Flow непосредственно в Telegram (как Mini App), чтобы поддержать проект.'**
+  String get donateNotAvailableMessage;
+
   /// No description provided for @notificationsTitle.
   ///
   /// In ru, this message translates to:

@@ -1356,6 +1356,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось создать инвойс. Попробуй ещё раз.';
 
   @override
+  String get donateNotAvailableTitle =>
+      'Оплата недоступна в мобильном приложении';
+
+  @override
+  String get donateNotAvailableMessage =>
+      'Пожалуйста, откройте Habit Flow непосредственно в Telegram (как Mini App), чтобы поддержать проект.';
+
+  @override
   String get notificationsTitle => 'Уведомления';
 
   @override

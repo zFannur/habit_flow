@@ -469,6 +469,8 @@
   "donateThanksMessage": "Ты поддержал проект. Это очень важно!",
   "donateErrorTitle": "Ошибка",
   "donateErrorMessage": "Не удалось создать инвойс. Попробуй ещё раз.",
+  "donateNotAvailableTitle": "Оплата недоступна в мобильном приложении",
+  "donateNotAvailableMessage": "Пожалуйста, откройте Habit Flow непосредственно в Telegram (как Mini App), чтобы поддержать проект.",
 
   "notificationsTitle": "Уведомления",
   "notificationsTelegramBanner": "Уведомления через Telegram",

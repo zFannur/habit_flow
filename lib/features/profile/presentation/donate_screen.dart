@@ -1,4 +1,5 @@
 import 'package:habit_flow/core/config/text_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -151,6 +152,7 @@ class _DonateScreenState extends ConsumerState<DonateScreen> {
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
+    const isMobileApp = !kIsWeb;
 
     return Scaffold(
       backgroundColor: c.bgPrimary,
@@ -166,22 +168,71 @@ class _DonateScreenState extends ConsumerState<DonateScreen> {
                   const SizedBox(height: 16),
                   const _HeroCard(),
                   const SizedBox(height: 16),
-                  _PresetsSection(
-                    presets: _presets,
-                    selected: _selected,
-                    onSelect: (i) => setState(() => _selected = i),
-                    customCtl: _customCtl,
-                  ),
-                  const SizedBox(height: 16),
+                  if (isMobileApp) ...[
+                    const _NotAvailableCard(),
+                    const SizedBox(height: 16),
+                  ] else ...[
+                    _PresetsSection(
+                      presets: _presets,
+                      selected: _selected,
+                      onSelect: (i) => setState(() => _selected = i),
+                      customCtl: _customCtl,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   const _BenefitsCard(),
-                  const SizedBox(height: 16),
-                  _CtaSection(
-                    selectedStars: _selectedStars,
-                    loading: _loading,
-                    onPay: (_selectedStars > 0 && !_loading) ? _onPay : null,
-                  ),
+                  if (!isMobileApp) ...[
+                    const SizedBox(height: 16),
+                    _CtaSection(
+                      selectedStars: _selectedStars,
+                      loading: _loading,
+                      onPay: (_selectedStars > 0 && !_loading) ? _onPay : null,
+                    ),
+                  ],
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotAvailableCard extends StatelessWidget {
+  const _NotAvailableCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: c.warning.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: c.warning.withValues(alpha: 0.4), width: 1.5),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Icon(LucideIcons.alertTriangle, size: 40, color: c.warning),
+          const SizedBox(height: 12),
+          Text(
+            l.donateNotAvailableTitle,
+            textAlign: TextAlign.center,
+            style: context.tt.titleMedium!.copyWith(
+              color: c.textPrimary,
+              fontWeight: FontWeight.bold,
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l.donateNotAvailableMessage,
+            textAlign: TextAlign.center,
+            style: context.tt.bodyMedium!.copyWith(
+              color: c.textSecondary,
+              height: 1.5,
             ),
           ),
         ],

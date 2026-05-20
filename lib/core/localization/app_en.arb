@@ -469,6 +469,8 @@
   "donateThanksMessage": "You supported the project. It means a lot!",
   "donateErrorTitle": "Error",
   "donateErrorMessage": "Could not create the invoice. Please try again.",
+  "donateNotAvailableTitle": "Payment is not available in standalone app",
+  "donateNotAvailableMessage": "Please open Habit Flow directly inside Telegram (as a Mini App) to support the project.",
 
   "notificationsTitle": "Notifications",
   "notificationsTelegramBanner": "Notifications via Telegram",
