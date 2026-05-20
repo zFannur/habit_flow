@@ -119,7 +119,15 @@ class ChatController extends StateNotifier<ChatState> {
     OpenRouterClient Function(String apiKey)? clientFactory,
   })  : _ref = ref,
         _clientFactory = clientFactory ?? _defaultClientFactory,
-        super(const ChatState());
+        super(const ChatState()) {
+    _ref.listen<AsyncValue<String?>>(openRouterKeyProvider, (prev, next) {
+      next.whenData((key) {
+        if (key != null && key.isNotEmpty && state.errorMessage == 'no_key') {
+          state = state.copyWith(clearError: true);
+        }
+      });
+    });
+  }
 
   final Ref _ref;
   final OpenRouterClient Function(String apiKey) _clientFactory;

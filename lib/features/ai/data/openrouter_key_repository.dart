@@ -89,10 +89,11 @@ enum OpenRouterKeyStatus { unchecked, checking, ok, error }
 /// Notifier для UI ai_settings_screen — хранит текущий ключ и статус проверки.
 class OpenRouterKeyController
     extends StateNotifier<OpenRouterKeyControllerState> {
-  OpenRouterKeyController(this._repo)
+  OpenRouterKeyController(this._repo, this._ref)
     : super(const OpenRouterKeyControllerState());
 
   final OpenRouterKeyRepository _repo;
+  final Ref _ref;
 
   Future<void> bootstrap() async {
     final storedRes = await _repo.load().run();
@@ -106,11 +107,13 @@ class OpenRouterKeyController
       key: key,
       status: OpenRouterKeyStatus.unchecked,
     );
+    _ref.invalidate(openRouterKeyProvider);
   }
 
   Future<void> clear() async {
     await _repo.clear().run();
     state = const OpenRouterKeyControllerState();
+    _ref.invalidate(openRouterKeyProvider);
   }
 
   Future<void> test() async {
@@ -163,7 +166,7 @@ final openRouterKeyControllerProvider =
       OpenRouterKeyControllerState
     >((ref) {
       final repo = ref.watch(openRouterKeyRepositoryProvider);
-      final controller = OpenRouterKeyController(repo);
+      final controller = OpenRouterKeyController(repo, ref);
       // Загружаем сохранённый ключ при первом обращении.
       controller.bootstrap();
       return controller;
