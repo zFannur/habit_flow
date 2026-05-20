@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../data/habit_log_model.dart';
+import '../data/habit_model.dart';
 import '../data/habits_providers.dart';
 import 'widgets/habit_more_sheet.dart';
 import '../domain/habit_calculations.dart';
@@ -60,9 +62,7 @@ class _DetailBody extends ConsumerWidget {
   const _DetailBody({required this.habitId, required this.habit});
 
   final String habitId;
-  // Using dynamic to avoid importing the full model file reference — actual
-  // type from habitDetailProvider is HabitModel.
-  final dynamic habit;
+  final HabitModel habit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -102,9 +102,10 @@ class _DetailBody extends ConsumerWidget {
             onMore: () => _showMenu(context, ref),
           ),
           _Hero(
-            name: (habit.name as String?) ?? '',
-            emoji: (habit.emoji as String?) ?? '⭐',
-            category: (habit.category as String?) ?? '',
+            name: habit.name,
+            emoji: habit.emoji ?? '⭐',
+            iconTelegramFileId: habit.iconTelegramFileId,
+            category: habit.category ?? '',
             streak: streak,
           ),
           _SectionHeader(label: AppLocalizations.of(context).habitDetailStatistics),
@@ -168,20 +169,15 @@ class _DetailBody extends ConsumerWidget {
     );
   }
 
-  void _showMoreSheet(BuildContext context, dynamic habit) {
-    // ignore: avoid_dynamic_calls
+  void _showMoreSheet(BuildContext context, HabitModel habit) {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => HabitMoreSheet(
-        // ignore: avoid_dynamic_calls
-        identity: habit.identityStatement as String?,
-        // ignore: avoid_dynamic_calls
-        reward: habit.reward as String?,
-        // ignore: avoid_dynamic_calls
-        implementationWhen: habit.implementationWhen as String?,
-        // ignore: avoid_dynamic_calls
-        implementationWhere: habit.implementationWhere as String?,
+        identity: habit.identityStatement,
+        reward: habit.reward,
+        implementationWhen: habit.implementationWhen,
+        implementationWhere: habit.implementationWhere,
       ),
     );
   }
@@ -479,12 +475,14 @@ class _Hero extends StatelessWidget {
   const _Hero({
     required this.name,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.category,
     required this.streak,
   });
 
   final String name;
   final String emoji;
+  final String? iconTelegramFileId;
   final String category;
   final int streak;
 
@@ -492,6 +490,27 @@ class _Hero extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
+
+    Widget imageContent;
+    if (iconTelegramFileId != null && iconTelegramFileId!.isNotEmpty) {
+      final imageUrl = '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=$iconTelegramFileId';
+      imageContent = ClipOval(
+        child: Image.network(
+          imageUrl,
+          width: 80,
+          height: 80,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: Text(emoji, style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 38.0)),
+            );
+          },
+        ),
+      );
+    } else {
+      imageContent = Text(emoji, style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 38.0));
+    }
+
     return Container(
       color: c.bgPrimary,
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
@@ -523,7 +542,7 @@ class _Hero extends StatelessWidget {
               ],
             ),
             alignment: Alignment.center,
-            child: Text(emoji, style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 38.0)),
+            child: imageContent,
           ),
           const SizedBox(height: 14),
           Text(
