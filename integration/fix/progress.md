@@ -4,7 +4,7 @@
 |---|---|---|---|
 | 01 | W32 | Защитить секреты в `.gitignore` | ✅ Выполнено |
 | 02 | W10 | Inline `TextStyle()` → `Theme.textTheme` | ✅ Выполнено |
-| 03 | W22 | Репозитории возвращают `Either<Failure, T>` | ⏳ Ожидание |
+| 03 | W22 | Репозитории возвращают `Either<Failure, T>` | ✅ Выполнено |
 | 04 | W11 | Убрать `UnimplementedError` и TODO | ⏳ Ожидание |
 | 05 | W9 | Палитра графиков в `tokens.dart` | ⏳ Ожидание |
 | 06 | W23 | `Navigator.push` → `context.push` (go_router) | ⏳ Ожидание |
