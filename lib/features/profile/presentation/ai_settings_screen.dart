@@ -1,9 +1,11 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
+import '../../../core/config/env.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../../ai/data/ai_style_repository.dart';
@@ -34,8 +36,7 @@ class _AiSettingsScreenState extends ConsumerState<AiSettingsScreen> {
       data: (s) => s.wireName,
       orElse: () => AiStyle.coach.wireName,
     );
-    // TODO(07-04): replace with real `users.is_supporter` flag once the
-    // donations feature lands. Until then Poet stays locked for everyone.
+    // см. issue #7
     const isSupporter = false;
 
     return Scaffold(
@@ -117,13 +118,7 @@ class _Header extends StatelessWidget {
               Expanded(
                 child: Text(
                   AppLocalizations.of(context).aiSettingsTitle,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary,
-                    letterSpacing: -0.02 * 17,
-                    height: 1.2,
-                  ),
+                  style: context.tt.titleLarge!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 17),
                 ),
               ),
             ],
@@ -181,13 +176,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(4, 0, 4, 6),
       child: Text(
         label.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.08 * 11,
-          color: c.textTertiary,
-          height: 1.2,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.08 * 11),
       ),
     );
   }
@@ -303,12 +292,7 @@ class _ApiKeySectionState extends ConsumerState<_ApiKeySection> {
                   children: [
                     Text(
                       l.aiSettingsApiKeyLabel,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        height: 1.3,
-                      ),
+                      style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.3),
                     ),
                     const SizedBox(height: 10),
                     if (showInput)
@@ -321,7 +305,7 @@ class _ApiKeySectionState extends ConsumerState<_ApiKeySection> {
                         _LinkButton(
                           label: l.aiSettingsApiKeyLink,
                           onTap: () => const TelegramService()
-                              .openLink('https://openrouter.ai/keys'),
+                              .openLink(Env.openRouterKeysUrl),
                         ),
                         const SizedBox(width: 16),
                         _LinkButton(
@@ -379,13 +363,7 @@ class _ApiKeySectionState extends ConsumerState<_ApiKeySection> {
                     _showKey ? key : _maskKey(key),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 13,
-                      color: c.textPrimary,
-                      letterSpacing: 0.02 * 13,
-                      height: 1.4,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textPrimary, height: 1.4, letterSpacing: 0.02 * 13),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -425,25 +403,14 @@ class _ApiKeySectionState extends ConsumerState<_ApiKeySection> {
             child: TextField(
               controller: _inputCtl,
               autofocus: true,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 13,
-                color: c.textPrimary,
-                letterSpacing: 0.02 * 13,
-                height: 1.4,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textPrimary, height: 1.4, letterSpacing: 0.02 * 13),
               cursorColor: c.accent,
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
                 hintText: 'sk-or-v1-...',
-                hintStyle: TextStyle(
-                  fontFamily: '',
-                  fontSize: 13,
-                  color: c.textTertiary,
-                  height: 1.4,
-                ),
+                hintStyle: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4),
               ),
             ),
           ),
@@ -511,12 +478,7 @@ class _PrimaryButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                height: 1.2,
-              ),
+              style: context.tt.titleSmall!.copyWith(color: Colors.white, height: 1.2),
             ),
           ),
         ),
@@ -538,14 +500,7 @@ class _LinkButton extends StatelessWidget {
       onTap: onTap,
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: c.accent,
-          height: 1.4,
-          decoration: TextDecoration.underline,
-          decorationColor: c.accent,
-        ),
+        style: context.tt.bodySmall!.copyWith(color: c.accent, height: 1.4),
       ),
     );
   }
@@ -592,27 +547,17 @@ class _TestButton extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   l.commonSending,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: fg,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelLarge!.copyWith(color: fg, height: 1.2),
                 ),
               ] else ...[
-                const Text(
+                Text(
                   '🧪',
-                  style: TextStyle(fontSize: 14, height: 1.2),
+                  style: context.tt.bodyMedium!.copyWith(height: 1.2),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   l.aiSettingsTestButton,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: fg,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelLarge!.copyWith(color: fg, height: 1.2),
                 ),
               ],
             ],
@@ -741,12 +686,7 @@ class _StatusRow extends StatelessWidget {
         ],
         Text(
           text,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: textColor,
-            height: 1.4,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: textColor, height: 1.4, fontSize: 12.0),
         ),
       ],
     );
@@ -876,7 +816,7 @@ class _ModelSectionState extends ConsumerState<_ModelSection> {
         child: Center(
           child: Text(
             l.aiSettingsModelsEmpty,
-            style: TextStyle(fontSize: 13, color: c.textTertiary),
+            style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
           ),
         ),
       );
@@ -925,14 +865,14 @@ class _ModelSectionState extends ConsumerState<_ModelSection> {
                   child: TextField(
                     controller: _searchCtrl,
                     onChanged: (v) => setState(() => _query = v),
-                    style: TextStyle(fontSize: 14, color: c.textPrimary),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textPrimary),
                     cursorColor: c.accent,
                     decoration: InputDecoration(
                       isDense: true,
                       border: InputBorder.none,
                       hintText: l.aiSettingsModelSearchHint,
                       hintStyle:
-                          TextStyle(fontSize: 14, color: c.textTertiary),
+                          context.tt.bodyMedium!.copyWith(color: c.textTertiary),
                     ),
                   ),
                 ),
@@ -977,14 +917,7 @@ class _ModelSectionState extends ConsumerState<_ModelSection> {
               children: [
                 Text(
                   l.aiSettingsAllModelsLink,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: c.accent,
-                    height: 1.4,
-                    decoration: TextDecoration.underline,
-                    decorationColor: c.accent,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.accent, height: 1.4),
                 ),
                 const SizedBox(width: 4),
                 Icon(LucideIcons.chevronRight, size: 14, color: c.accent),
@@ -1046,12 +979,7 @@ class _ModelRow extends StatelessWidget {
                       children: [
                         Text(
                           model.name,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: c.textPrimary,
-                            height: 1.3,
-                          ),
+                          style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.3),
                         ),
                         if (model.free) const _FreeBadge(),
                       ],
@@ -1150,13 +1078,7 @@ class _FreeBadge extends StatelessWidget {
       ),
       child: Text(
         AppLocalizations.of(context).aiBadgeFree,
-        style: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.04 * 10,
-          color: Color(0xFF16A34A),
-          height: 1.2,
-        ),
+        style: context.tt.bodyMedium!.copyWith(color: Color(0xFF16A34A), height: 1.2, letterSpacing: 0.04 * 10, fontWeight: FontWeight.w800, fontSize: 10.0),
       ),
     );
   }
@@ -1185,11 +1107,7 @@ class _MetaLine extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text(
               '·',
-              style: TextStyle(
-                fontSize: 12,
-                color: c.border,
-                height: 1.4,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.border, height: 1.4, fontSize: 12.0),
             ),
           ),
         );
@@ -1197,11 +1115,7 @@ class _MetaLine extends StatelessWidget {
       children.add(
         Text(
           parts[i],
-          style: TextStyle(
-            fontSize: 12,
-            color: c.textTertiary,
-            height: 1.4,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 12.0),
         ),
       );
     }
@@ -1234,21 +1148,12 @@ class _PriceLabel extends StatelessWidget {
       children: [
         Text(
           'за 1M',
-          style: TextStyle(
-            fontSize: 11,
-            color: c.textTertiary,
-            height: 1.3,
-          ),
+          style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.3),
         ),
         Text(
           price,
           textAlign: TextAlign.right,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: c.textSecondary,
-            height: 1.3,
-          ),
+          style: context.tt.labelMedium!.copyWith(color: c.textSecondary, height: 1.3),
         ),
       ],
     );
@@ -1369,12 +1274,7 @@ class _StyleSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
           child: Text(
             l.aiSettingsStyleSubtitle,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: c.textSecondary,
-              height: 1.4,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: c.textSecondary, height: 1.4),
           ),
         ),
         _Card(
@@ -1403,13 +1303,7 @@ class _StyleSection extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(2, 0, 0, 6),
                 child: Text(
                   l.aiSettingsStyleExampleHeader,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: c.textTertiary,
-                    letterSpacing: 0.05 * 11,
-                    height: 1.4,
-                  ),
+                  style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.4, letterSpacing: 0.05 * 11),
                 ),
               ),
               _PreviewBubble(style: current),
@@ -1450,7 +1344,7 @@ class _StyleRow extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 1),
                 child: Text(
                   style.emoji,
-                  style: const TextStyle(fontSize: 22, height: 1),
+                  style: context.tt.headlineMedium!.copyWith(height: 1),
                 ),
               ),
               const SizedBox(width: 10),
@@ -1460,21 +1354,12 @@ class _StyleRow extends StatelessWidget {
                   children: [
                     Text(
                       style.name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        height: 1.3,
-                      ),
+                      style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.3),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       style.desc,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: c.textTertiary,
-                        height: 1.45,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.45, fontSize: 12.0),
                     ),
                   ],
                 ),
@@ -1497,12 +1382,7 @@ class _StyleRow extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   'Pro',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2),
                 ),
               ],
             ),
@@ -1565,18 +1445,14 @@ class _PreviewBubble extends StatelessWidget {
               padding: const EdgeInsets.only(top: 1),
               child: Text(
                 style.emoji,
-                style: const TextStyle(fontSize: 18, height: 1),
+                style: context.tt.headlineSmall!.copyWith(height: 1),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 style.preview,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: c.textSecondary,
-                  height: 1.6,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.6),
               ),
             ),
           ],
@@ -1644,11 +1520,7 @@ class _UsageSection extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
                 child: Text(
                   l.aiSettingsUsageNote,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: c.textTertiary,
-                    height: 1.5,
-                  ),
+                  style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.5),
                 ),
               ),
             ],
@@ -1680,12 +1552,7 @@ class _StatRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: c.textSecondary,
-                height: 1.3,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.3),
             ),
           ),
           RichText(
@@ -1693,22 +1560,12 @@ class _StatRow extends StatelessWidget {
               children: [
                 TextSpan(
                   text: value,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.3),
                 ),
                 if (suffix != null)
                   TextSpan(
                     text: suffix,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                      color: c.textTertiary,
-                      height: 1.3,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.3),
                   ),
               ],
             ),
@@ -1770,13 +1627,7 @@ class _HowItWorksSheet extends StatelessWidget {
             ),
             Text(
               l.aiSettingsHowItWorks,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: c.textPrimary,
-                letterSpacing: -0.02 * 20,
-                height: 1.3,
-              ),
+              style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1.3, letterSpacing: -0.02 * 20, fontSize: 20.0),
             ),
             const SizedBox(height: 14),
             for (var i = 0; i < items.length; i++) ...[
@@ -1799,12 +1650,7 @@ class _HowItWorksSheet extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     l.commonUnderstand,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: Colors.white, height: 1.2),
                   ),
                 ),
               ),
@@ -1841,7 +1687,7 @@ class _HowItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
-          child: Text(icon, style: const TextStyle(fontSize: 18, height: 1)),
+          child: Text(icon, style: context.tt.headlineSmall!.copyWith(height: 1)),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1850,21 +1696,12 @@ class _HowItem extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  height: 1.3,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.3),
               ),
               const SizedBox(height: 3),
               Text(
                 text,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: c.textSecondary,
-                  height: 1.55,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.55),
               ),
             ],
           ),

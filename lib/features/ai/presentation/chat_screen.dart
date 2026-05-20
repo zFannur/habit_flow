@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -114,7 +115,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     if (result == null || result.isEmpty || result == currentTitle) return;
-    await ref.read(aiMessagesRepositoryProvider).renameChat(chatId, result);
+    await ref.read(aiMessagesRepositoryProvider).renameChat(chatId, result).run();
     ref.invalidate(aiChatsStreamProvider);
   }
 
@@ -139,7 +140,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     if (ok != true) return;
-    await ref.read(aiMessagesRepositoryProvider).deleteChat(chatId);
+    await ref.read(aiMessagesRepositoryProvider).deleteChat(chatId).run();
     if (ref.read(currentChatIdProvider) == chatId) {
       ref.read(currentChatIdProvider.notifier).state = null;
     }
@@ -179,7 +180,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               leading: const Icon(LucideIcons.trash2),
               title: Text(
                 l.aiChatDelete,
-                style: TextStyle(color: HFColors.of(context).danger),
+                style: context.tt.bodyMedium!.copyWith(color: HFColors.of(context).danger),
               ),
               onTap: () {
                 Navigator.pop(ctx);
@@ -397,13 +398,7 @@ class _Header extends StatelessWidget {
               children: [
                 Text(
                   'ИИ',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    letterSpacing: -0.17,
-                    height: 1.2,
-                  ),
+                  style: context.tt.titleLarge!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.17),
                 ),
                 const SizedBox(height: 3),
                 Container(
@@ -415,14 +410,14 @@ class _Header extends StatelessWidget {
                     color: const Color(0x1FA855F7),
                     borderRadius: BorderRadius.circular(HFTokens.rFull),
                   ),
-                  child: const Text(
+                  child: Text(
                     '🎓 Coach',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
+                    style: context.tt.bodyMedium!.copyWith(
                       color: HFTokens.premium,
-                      letterSpacing: 0.3,
                       height: 1.2,
+                      letterSpacing: 0.3,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 10.0,
                     ),
                   ),
                 ),
@@ -477,21 +472,12 @@ class _RateLimitBanner extends StatelessWidget {
               children: [
                 Text(
                   l.aiChatRateLimitedTitle,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                    color: c.danger,
-                    height: 1.3,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.danger, height: 1.3, fontWeight: FontWeight.w700, fontSize: 13.5),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   l.aiChatRateLimitedText,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: c.textSecondary,
-                    height: 1.5,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.5, fontSize: 12.5),
                 ),
               ],
             ),
@@ -534,22 +520,13 @@ class _ErrorBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.3, fontWeight: FontWeight.w700, fontSize: 13.5),
                 ),
                 if (body != null) ...[
                   const SizedBox(height: 3),
                   Text(
                     body,
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      color: c.textSecondary,
-                      height: 1.5,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.5, fontSize: 12.5),
                   ),
                 ],
               ],
@@ -748,21 +725,12 @@ class _Disclaimer extends StatelessWidget {
                   children: [
                     Text(
                       AppLocalizations.of(context).aiChatDisclaimerTitle,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        height: 1.3,
-                      ),
+                      style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.3),
                     ),
                     const SizedBox(height: 5),
                     Text(
                       AppLocalizations.of(context).aiChatDisclaimerText,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: c.textSecondary,
-                        height: 1.6,
-                      ),
+                      style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.6, fontSize: 12.5),
                     ),
                   ],
                 ),
@@ -789,12 +757,7 @@ class _Disclaimer extends StatelessWidget {
                   ),
                   child: Text(
                     AppLocalizations.of(context).aiChatDisclaimerOk,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: c.textPrimary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.2),
                   ),
                 ),
               ),
@@ -844,11 +807,7 @@ class _MessageRow extends StatelessWidget {
       child: isUser
           ? Text(
               message.content,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white,
-                height: 1.6,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: Colors.white, height: 1.6),
             )
           : _Markdown(text: message.content),
     );
@@ -876,12 +835,7 @@ class _MessageRow extends StatelessWidget {
             child: Text(
               _formatTime(message.createdAt),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: c.textTertiary,
-                fontWeight: FontWeight.w500,
-                height: 1.2,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, fontWeight: FontWeight.w500),
             ),
           ),
         Padding(
@@ -930,7 +884,7 @@ class _Markdown extends StatelessWidget {
       }
       final isBullet = line.startsWith('- ') || line.startsWith('• ');
       final content = isBullet ? line.substring(2) : line;
-      final spans = _renderInline(content, c);
+      final spans = _renderInline(content, c, context.tt);
 
       if (isBullet) {
         children.add(
@@ -943,23 +897,14 @@ class _Markdown extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 1),
                   child: Text(
                     '•',
-                    style: TextStyle(
-                      color: c.accent,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      height: 1.6,
-                    ),
+                    style: context.tt.labelLarge!.copyWith(color: c.accent, height: 1.6),
                   ),
                 ),
                 const SizedBox(width: HFTokens.s8),
                 Expanded(
                   child: Text.rich(
                     TextSpan(
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: c.textPrimary,
-                        height: 1.6,
-                      ),
+                      style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
                       children: spans,
                     ),
                   ),
@@ -972,11 +917,7 @@ class _Markdown extends StatelessWidget {
         children.add(
           Text.rich(
             TextSpan(
-              style: TextStyle(
-                fontSize: 14,
-                color: c.textPrimary,
-                height: 1.6,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
               children: spans,
             ),
           ),
@@ -990,7 +931,7 @@ class _Markdown extends StatelessWidget {
     );
   }
 
-  List<InlineSpan> _renderInline(String text, HFColors c) {
+  List<InlineSpan> _renderInline(String text, HFColors c, TextTheme tt) {
     final spans = <InlineSpan>[];
     final pattern = RegExp(r'\*\*(.+?)\*\*|`(.+?)`');
     var last = 0;
@@ -1002,19 +943,14 @@ class _Markdown extends StatelessWidget {
         spans.add(
           TextSpan(
             text: m.group(1),
-            style: const TextStyle(fontWeight: FontWeight.w700),
+            style: tt.labelLarge,
           ),
         );
       } else if (m.group(2) != null) {
         spans.add(
           TextSpan(
             text: m.group(2),
-            style: TextStyle(
-              fontFamily: 'monospace',
-              fontSize: 12.6,
-              color: c.accent,
-              background: Paint()..color = c.accent.withValues(alpha: 0.12),
-            ),
+            style: tt.bodyMedium!.copyWith(color: c.accent, fontSize: 12.6),
           ),
         );
       }
@@ -1092,12 +1028,7 @@ class _InputBar extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   '${isNearLimit ? '⚠ ' : ''}${AppLocalizations.of(context).aiChatTokenCounter('gpt-oss-120b:free', requestsUsed, requestsLimit)}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: progressTextColor,
-                    fontWeight: FontWeight.w500,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelSmall!.copyWith(color: progressTextColor, height: 1.2, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -1134,11 +1065,7 @@ class _InputBar extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 prompts[i],
-                                style: TextStyle(
-                                  fontSize: 13.5,
-                                  color: c.textPrimary,
-                                  height: 1.3,
-                                ),
+                                style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.3, fontSize: 13.5),
                               ),
                             ),
                           ],
@@ -1179,11 +1106,7 @@ class _InputBar extends StatelessWidget {
                       focusNode: focusNode,
                       minLines: 1,
                       maxLines: 5,
-                      style: TextStyle(
-                        fontSize: 15,
-                        height: 1.5,
-                        color: c.textPrimary,
-                      ),
+                      style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.5),
                       cursorColor: c.accent,
                       decoration: InputDecoration(
                         isDense: true,
@@ -1191,11 +1114,7 @@ class _InputBar extends StatelessWidget {
                         contentPadding: EdgeInsets.zero,
                         hintText:
                             AppLocalizations.of(context).aiChatInputPlaceholder,
-                        hintStyle: TextStyle(
-                          fontSize: 15,
-                          color: c.textTertiary,
-                          height: 1.5,
-                        ),
+                        hintStyle: context.tt.titleMedium!.copyWith(color: c.textTertiary, height: 1.5),
                       ),
                     ),
                   ),
@@ -1323,12 +1242,7 @@ class _Drawer extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 14),
                     child: Text(
                       AppLocalizations.of(context).aiChatHistoryTitle,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        height: 1.3,
-                      ),
+                      style: context.tt.titleLarge!.copyWith(color: c.textPrimary, height: 1.3),
                     ),
                   ),
                   InkWell(
@@ -1356,12 +1270,7 @@ class _Drawer extends StatelessWidget {
                           const SizedBox(width: HFTokens.s8),
                           Text(
                             AppLocalizations.of(context).aiChatNew,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: c.accent,
-                              height: 1.2,
-                            ),
+                            style: context.tt.labelLarge!.copyWith(color: c.accent, height: 1.2),
                           ),
                         ],
                       ),
@@ -1448,23 +1357,12 @@ class _DrawerChatTile extends StatelessWidget {
                         chat.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: isActive
-                              ? FontWeight.w700
-                              : FontWeight.w600,
-                          color: isActive ? c.accent : c.textPrimary,
-                          height: 1.3,
-                        ),
+                        style: context.tt.bodyMedium!.copyWith(color: isActive ? c.accent : c.textPrimary, height: 1.3, fontSize: 13.5),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         _formatChatDate(chat.updatedAt),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: c.textTertiary,
-                          height: 1.2,
-                        ),
+                        style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2),
                       ),
                     ],
                   ),
@@ -1606,12 +1504,7 @@ class _ContextMenuItem extends StatelessWidget {
             const SizedBox(width: 9),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w500,
-                color: color,
-                height: 1.2,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: color, height: 1.2, fontSize: 13.5),
             ),
           ],
         ),

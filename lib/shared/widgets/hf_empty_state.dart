@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -35,31 +36,20 @@ class HFEmptyState extends StatelessWidget {
           Text(
             emoji,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 72, height: 1),
+            style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 72.0),
           ),
           const SizedBox(height: 24),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
-              letterSpacing: -0.01 * 18,
-              color: c.textPrimary,
-            ),
+            style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.01 * 18),
           ),
           if (description != null) ...[
             const SizedBox(height: 10),
             Text(
               description!,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 1.6,
-                color: c.textSecondary,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.6),
             ),
           ],
           if (action != null) ...[

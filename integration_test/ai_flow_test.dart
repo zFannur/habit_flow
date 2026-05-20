@@ -23,6 +23,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:fpdart/fpdart.dart';
+import 'package:habit_flow/core/errors/result.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -93,7 +96,7 @@ class _FakeMessagesRepo extends AiMessagesRepository {
   }
 
   @override
-  Future<AiChat> createChat({String? title}) async {
+  AppTask<AiChat> createChat({String? title}) {
     _seq += 1;
     final chat = AiChat(
       id: 'chat-$_seq',
@@ -104,16 +107,36 @@ class _FakeMessagesRepo extends AiMessagesRepository {
     );
     chats.add(chat);
     _chatsCtrl.add(List.unmodifiable(chats));
-    return chat;
+    return TaskEither.of(chat);
   }
 
   @override
-  Future<AiMessage> insertMessage({
+  AppTask<List<AiChat>> listChats() {
+    return TaskEither.of(chats);
+  }
+
+  @override
+  AppTask<void> renameChat(String chatId, String title) {
+    return TaskEither.of(null);
+  }
+
+  @override
+  AppTask<void> deleteChat(String chatId) {
+    return TaskEither.of(null);
+  }
+
+  @override
+  AppTask<int> dailyUserMessageCount() {
+    return TaskEither.of(messages.where((m) => m.role == 'user').length);
+  }
+
+  @override
+  AppTask<AiMessage> insertMessage({
     required String chatId,
     required String role,
     required String content,
     int? tokensUsed,
-  }) async {
+  }) {
     final msg = AiMessage(
       id: 'msg-${messages.length + 1}',
       chatId: chatId,
@@ -127,12 +150,12 @@ class _FakeMessagesRepo extends AiMessagesRepository {
     _ctrl(chatId).add(
       messages.where((m) => m.chatId == chatId).toList(growable: false),
     );
-    return msg;
+    return TaskEither.of(msg);
   }
 
   @override
-  Future<List<AiMessage>> listMessages(String chatId) async {
-    return messages.where((m) => m.chatId == chatId).toList();
+  AppTask<List<AiMessage>> listMessages(String chatId) {
+    return TaskEither.of(messages.where((m) => m.chatId == chatId).toList());
   }
 
   @override
@@ -196,20 +219,22 @@ class _FakeKeyRepo extends OpenRouterKeyRepository {
   bool valid;
 
   @override
-  Future<void> save(String value) async {
+  AppTask<void> save(String value) {
     key = value;
+    return TaskEither.of(null);
   }
 
   @override
-  Future<String?> load() async => key;
+  AppTask<String?> load() => TaskEither.of(key);
 
   @override
-  Future<void> clear() async {
+  AppTask<void> clear() {
     key = null;
+    return TaskEither.of(null);
   }
 
   @override
-  Future<bool> isValid({String? key}) async => valid;
+  AppTask<bool> isValid({String? key}) => TaskEither.of(valid);
 }
 
 /// Scripted OpenRouter client — replays canned chunks (or an error) and

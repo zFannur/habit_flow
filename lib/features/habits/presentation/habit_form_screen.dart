@@ -1,8 +1,11 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../shared/widgets/hf_button.dart';
@@ -13,30 +16,6 @@ import '../../../shared/widgets/hf_slider.dart';
 import '../data/habit_draft.dart';
 import '../data/habits_providers.dart';
 import '../domain/habit_type.dart';
-
-// TODO(l10n): localize category list
-const _categories = <String>[
-  'Здоровье',
-  'Спорт',
-  'Учёба',
-  'Работа',
-  'Отношения',
-  'Финансы',
-  'Хобби',
-  'Ментальное',
-  '+ Новая',
-];
-
-const _emojiSets = <String, List<String>>{
-  'Здоровье': ['🥗', '🥦', '💊', '🩺', '🫀', '🩹', '🧬', '💉', '🫁', '🧠', '🦷', '🏥', '🧪', '🍎', '🥑', '🫖'],
-  'Спорт': ['🏃', '💪', '🧘', '🚴', '🏊', '⚽', '🎾', '🏋️', '🤸', '🥊', '🏅', '🎯', '🧗', '🛹', '⛷️', '🏄'],
-  'Учёба': ['📚', '✏️', '🎓', '📖', '🔬', '🔭', '💻', '📝', '🗂️', '📐', '📓', '🧮', '📊', '🖊️', '🗃️', '📜'],
-  'Работа': ['💼', '📧', '🖥️', '📱', '📅', '⏰', '💡', '📈', '🗓️', '🖨️', '☕', '🧑‍💼', '📞', '🔧', '📌', '🗝️'],
-  'Отношения': ['❤️', '👨‍👩‍👧', '🤝', '💌', '🎁', '🥂', '💑', '👨‍👩‍👦', '🫂', '💬', '📸', '🌹', '💍', '🏡', '🫶', '✨'],
-  'Финансы': ['💰', '📉', '💳', '🏦', '💵', '📊', '🪙', '💹', '🏧', '💎', '🤑', '📑', '💸', '🔐', '📒', '🎰'],
-  'Хобби': ['🎨', '🎸', '📷', '✂️', '🧩', '🎮', '📻', '🎭', '🖌️', '🎼', '🧵', '🪴', '♟️', '🎲', '🪁', '🎻'],
-  'Ментальное': ['🧘', '😌', '🌿', '🕯️', '📔', '🫧', '🌊', '☁️', '🌙', '⭐', '🦋', '🌸', '🔮', '🫁', '🌱', '💆'],
-};
 
 const _defaultEmoji = ['💪', '🌟', '⚡', '🎯', '🌱', '✨', '🔥', '💡', '🎨', '📚', '🧘', '🌊', '❤️', '🏃', '💎', '🌿'];
 
@@ -57,30 +36,40 @@ class _AccentColor {
   final Color color;
 }
 
-const _weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+List<String> _getCategories(AppLocalizations l) => [
+      l.habitCatHealth,
+      l.habitCatSport,
+      l.habitCatStudy,
+      l.habitCatWork,
+      l.habitCatRelationships,
+      l.habitCatFinance,
+      l.habitCatHobby,
+      l.habitCatMental,
+      l.habitCatNew,
+    ];
 
-// TODO(l10n): localize repeat types list
-const _repeatTypes = [
-  'Каждый день',
-  'По дням недели',
-  'X раз в неделю',
-  'Каждые N дней',
-  'По датам месяца',
-];
-
-/// Placeholder option shown in the stacking dropdown when the user has no
-/// habits yet. Renders as the only entry so the field is never empty but
-/// still communicates that stacking needs an anchor habit.
-const _stackingNoHabitsHint = '— Сначала создай другую привычку —';
-
-class HabitCreateScreen extends ConsumerStatefulWidget {
-  const HabitCreateScreen({super.key});
-
-  @override
-  ConsumerState<HabitCreateScreen> createState() => _HabitCreateScreenState();
+List<String> _getEmojiSetForCategory(AppLocalizations l, String category) {
+  if (category == l.habitCatHealth) return ['🥗', '🥦', '💊', '🩺', '🫀', '🩹', '🧬', '💉', '🫁', '🧠', '🦷', '🏥', '🧪', '🍎', '🥑', '🫖'];
+  if (category == l.habitCatSport) return ['🏃', '💪', '🧘', '🚴', '🏊', '⚽', '🎾', '🏋️', '🤸', '🥊', '🏅', '🎯', '🧗', '🛹', '⛷️', '🏄'];
+  if (category == l.habitCatStudy) return ['📚', '✏️', '🎓', '📖', '🔬', '🔭', '💻', '📝', '🗂️', '📐', '📓', '🧮', '📊', '🖊️', '🗃️', '📜'];
+  if (category == l.habitCatWork) return ['💼', '📧', '🖥️', '📱', '📅', '⏰', '💡', '📈', '🗓️', '🖨️', '☕', '🧑‍💼', '📞', '🔧', '📌', '🗝️'];
+  if (category == l.habitCatRelationships) return ['❤️', '👨‍👩‍👧', '🤝', '💌', '🎁', '🥂', '💑', '👨‍👩‍👦', '🫂', '💬', '📸', '🌹', '💍', '🏡', '🫶', '✨'];
+  if (category == l.habitCatFinance) return ['💰', '📉', '💳', '🏦', '💵', '📊', '🪙', '💹', '🏧', '💎', '🤑', '📑', '💸', '🔐', '📒', '🎰'];
+  if (category == l.habitCatHobby) return ['🎨', '🎸', '📷', '✂️', '🧩', '🎮', '📻', '🎭', '🖌️', '🎼', '🧵', '🪴', '♟️', '🎲', '🪁', '🎻'];
+  if (category == l.habitCatMental) return ['🧘', '😌', '🌿', '🕯️', '📔', '🫧', '🌊', '☁️', '🌙', '⭐', '🦋', '🌸', '🔮', '🫁', '🌱', '💆'];
+  return _defaultEmoji;
 }
 
-class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
+class HabitFormScreen extends ConsumerStatefulWidget {
+  const HabitFormScreen({super.key, this.habitId});
+
+  final String? habitId;
+
+  @override
+  ConsumerState<HabitFormScreen> createState() => _HabitFormScreenState();
+}
+
+class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
   int _step = 1;
 
   // Local text controllers — kept in widget state because TextEditingController
@@ -94,6 +83,29 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
   final _rewardCtrl = TextEditingController();
 
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.habitId != null) {
+        final habitAsync = ref.read(habitDetailProvider(widget.habitId!));
+        final habit = habitAsync.valueOrNull;
+        if (habit != null) {
+          ref.read(habitDraftProvider.notifier).loadForEdit(habit);
+          _nameCtrl.text = habit.name;
+          _stackingCtrl.text = habit.stackAfterHabitId ?? '';
+          _whenCtrl.text = habit.implementationWhen ?? '';
+          _whereCtrl.text = habit.implementationWhere ?? '';
+          _identityCtrl.text = habit.identityStatement ?? '';
+          _twoMinCtrl.text = habit.twoMinuteVersion ?? '';
+          _rewardCtrl.text = habit.reward ?? '';
+        }
+      } else {
+        ref.read(habitDraftProvider.notifier).reset();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -145,12 +157,17 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
       final userId = ref.read(currentUserIdProvider);
       final repo = ref.read(habitsRepositoryProvider);
       final finalDraft = ref.read(habitDraftProvider);
-      await repo.create(finalDraft.toModel(userId));
+      if (finalDraft.isEditing) {
+        await repo.update(finalDraft.toModel(userId));
+        // Force refresh the single habit detail cache
+        ref.invalidate(habitDetailProvider(finalDraft.editingId!));
+      } else {
+        await repo.create(finalDraft.toModel(userId));
+      }
       ref.read(habitDraftProvider.notifier).reset();
-      // Realtime publication on `habits` is best-effort and can lag; force a
-      // refresh so today/habits screens see the new row immediately.
-      ref.invalidate(habitsStreamProvider);
-      ref.invalidate(todayHabitsProvider);
+      // Logs for today need a refresh so the new habit's empty log slot
+      // appears. The habits list itself is updated by realtime stream.
+      ref.invalidate(todayLogsProvider);
       if (mounted) {
         context.pop();
       }
@@ -186,14 +203,21 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
   }
 
   String _buildRepeatLabel(AppLocalizations l, HabitDraft draft) {
-    if (draft.repeatType == 'По дням недели' &&
+    if (draft.repeatType == RepeatTypeKey.weekdays &&
         draft.selectedWeekdays.isNotEmpty) {
-      return _weekdays.where(draft.selectedWeekdays.contains).join(', ');
+      final days = [l.habitWeekMon, l.habitWeekTue, l.habitWeekWed, l.habitWeekThu, l.habitWeekFri, l.habitWeekSat, l.habitWeekSun];
+      return draft.selectedWeekdays.map((d) => days[d - 1]).join(', ');
     }
-    if (draft.repeatType == 'X раз в неделю') {
+    if (draft.repeatType == RepeatTypeKey.nPerWeek) {
       return l.habitCreateStep3FrequencyValue(draft.timesPerWeek);
     }
-    return draft.repeatType;
+    switch (draft.repeatType) {
+      case RepeatTypeKey.daily: return l.habitRepeatDaily;
+      case RepeatTypeKey.weekdays: return l.habitRepeatWeekdays;
+      case RepeatTypeKey.nPerWeek: return l.habitRepeatNPerWeek;
+      case RepeatTypeKey.everyNDays: return l.habitRepeatEveryN;
+      case RepeatTypeKey.monthlyDates: return l.habitRepeatMonthly;
+    }
   }
 
   @override
@@ -208,7 +232,7 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _WizardHeader(step: _step, onBack: _back),
+            _WizardHeader(step: _step, onBack: _back, isEditing: draft.isEditing),
             Expanded(
               child: SingleChildScrollView(
                 key: ValueKey(_step),
@@ -224,7 +248,9 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
                       category: draft.category,
                       onCategory: notifier.setCategory,
                       icon: draft.emoji,
+                      iconTelegramFileId: draft.iconTelegramFileId,
                       onIcon: notifier.setEmoji,
+                      onIconTelegramFileId: notifier.setIconTelegramFileId,
                       accent: draft.accentColor ?? _accentColors.first.color,
                       onAccent: notifier.setAccentColor,
                     ),
@@ -259,6 +285,7 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
                       rewardCtrl: _rewardCtrl,
                       habitName: _nameCtrl.text,
                       habitIcon: draft.emoji,
+                      habitIconTelegramFileId: draft.iconTelegramFileId,
                       habitType: draft.type,
                       accent: draft.accentColor ?? _accentColors.first.color,
                       category: draft.category,
@@ -288,10 +315,11 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
 }
 
 class _WizardHeader extends StatelessWidget {
-  const _WizardHeader({required this.step, required this.onBack});
+  const _WizardHeader({required this.step, required this.onBack, this.isEditing = false});
 
   final int step;
   final VoidCallback onBack;
+  final bool isEditing;
 
   @override
   Widget build(BuildContext context) {
@@ -317,7 +345,7 @@ class _WizardHeader extends StatelessWidget {
                       border: Border.all(color: c.border, width: 1.5),
                     ),
                     child: Icon(
-                      step == 1 ? LucideIcons.x : LucideIcons.arrowLeft,
+                      step == (isEditing ? 2 : 1) ? LucideIcons.x : LucideIcons.arrowLeft,
                       size: 18,
                       color: c.textSecondary,
                     ),
@@ -327,12 +355,7 @@ class _WizardHeader extends StatelessWidget {
                   child: Center(
                     child: Text(
                       l.habitCreateStepCounter(step, 4),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: c.textTertiary,
-                        letterSpacing: 0.02 * 12,
-                      ),
+                      style: context.tt.labelMedium!.copyWith(color: c.textTertiary, letterSpacing: 0.02 * 12),
                     ),
                   ),
                 ),
@@ -399,12 +422,7 @@ class _WizardFooter extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: disabled ? c.textTertiary : Colors.white,
-              letterSpacing: -0.01 * 15,
-            ),
+            style: context.tt.titleMedium!.copyWith(color: disabled ? c.textTertiary : Colors.white, letterSpacing: -0.01 * 15),
           ),
         ),
       ),
@@ -428,22 +446,12 @@ class _StepHeading extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: c.textPrimary,
-              letterSpacing: -0.03 * 24,
-              height: 1.2,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.03 * 24, fontSize: 24.0),
           ),
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: TextStyle(
-              fontSize: 14,
-              color: c.textTertiary,
-              height: 1.5,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.5),
           ),
         ],
       ),
@@ -461,12 +469,7 @@ class _UpperLabel extends StatelessWidget {
     final c = HFColors.of(context);
     return Text(
       text.toUpperCase(),
-      style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w700,
-        color: c.textSecondary,
-        letterSpacing: 0.04 * 12,
-      ),
+      style: context.tt.labelMedium!.copyWith(color: c.textSecondary, letterSpacing: 0.04 * 12),
     );
   }
 }
@@ -512,7 +515,7 @@ class _Step1 extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Выбор недоступен — выберите тип ниже.',
-            style: TextStyle(fontSize: 0, color: c.bgPrimary),
+            style: context.tt.bodyMedium!.copyWith(color: c.bgPrimary, fontSize: 0.0),
           ),
         ],
       ),
@@ -599,31 +602,17 @@ class _TypeCard extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: c.textPrimary,
-                          height: 1.2,
-                        ),
+                        style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         sub,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: isAnti ? c.anti : c.textSecondary,
-                          height: 1.3,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: isAnti ? c.anti : c.textSecondary, height: 1.3),
                       ),
                       const SizedBox(height: 3),
                       Text(
                         'Пример: $example',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: c.textTertiary,
-                          height: 1.3,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.3, fontSize: 12.0),
                       ),
                     ],
                   ),
@@ -660,7 +649,9 @@ class _Step2 extends StatefulWidget {
     required this.category,
     required this.onCategory,
     required this.icon,
+    this.iconTelegramFileId,
     required this.onIcon,
+    required this.onIconTelegramFileId,
     required this.accent,
     required this.onAccent,
   });
@@ -670,7 +661,9 @@ class _Step2 extends StatefulWidget {
   final String category;
   final ValueChanged<String> onCategory;
   final String icon;
+  final String? iconTelegramFileId;
   final ValueChanged<String> onIcon;
+  final ValueChanged<String?> onIconTelegramFileId;
   final Color accent;
   final ValueChanged<Color> onAccent;
 
@@ -683,10 +676,73 @@ class _Step2State extends State<_Step2> {
   bool _accentOpen = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty) {
+      _iconTab = 'photo';
+    }
+  }
+
+  Future<void> _showPhotoDialog() async {
+    final l = AppLocalizations.of(context);
+    final c = HFColors.of(context);
+    final controller = TextEditingController(text: widget.iconTelegramFileId);
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: c.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          l.habitCreateStep2PhotoUpload,
+          style: dialogContext.tt.titleLarge!.copyWith(color: c.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Отправьте фото нашему Telegram-боту, скопируйте полученный ID файла (file_id) и вставьте его ниже:',
+              style: dialogContext.tt.bodyMedium!.copyWith(color: c.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            HFInput(
+              controller: controller,
+              hint: 'Вставьте file_id...',
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text('Отмена', style: TextStyle(color: c.textTertiary)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: c.accent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text('Сохранить'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      widget.onIconTelegramFileId(result.isEmpty ? null : result);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
-    final emojis = _emojiSets[widget.category] ?? _defaultEmoji;
+    final categories = _getCategories(l);
+    final currentCategory = widget.category.isEmpty ? categories.first : widget.category;
+    final emojis = _getEmojiSetForCategory(l, currentCategory);
     final selectedColor = _accentColors.firstWhere(
       (a) => a.color.toARGB32() == widget.accent.toARGB32(),
       orElse: () => _accentColors.first,
@@ -718,10 +774,10 @@ class _Step2State extends State<_Step2> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (final cat in _categories)
+              for (final cat in categories)
                 HFChip(
                   label: cat,
-                  selected: widget.category == cat,
+                  selected: currentCategory == cat,
                   onTap: () => widget.onCategory(cat),
                 ),
             ],
@@ -742,10 +798,26 @@ class _Step2State extends State<_Step2> {
                 border: Border.all(color: widget.accent, width: 2.5),
               ),
               alignment: Alignment.center,
-              child: Text(
-                widget.icon,
-                style: const TextStyle(fontSize: 44, height: 1),
-              ),
+              child: widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=${widget.iconTelegramFileId}',
+                        headers: {
+                          'Authorization': 'Bearer ${Supabase.instance.client.auth.currentSession?.accessToken}',
+                        },
+                        width: 96,
+                        height: 96,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Text(
+                          widget.icon,
+                          style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      widget.icon,
+                      style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
+                    ),
             ),
           ),
           const SizedBox(height: 16),
@@ -797,37 +869,95 @@ class _Step2State extends State<_Step2> {
                         ),
                       ),
                       alignment: Alignment.center,
-                      child: Text(em, style: const TextStyle(fontSize: 22, height: 1)),
+                      child: Text(em, style: context.tt.headlineMedium!.copyWith(height: 1)),
                     ),
                   ),
               ],
             )
-          else
+          else if (widget.iconTelegramFileId != null && widget.iconTelegramFileId!.isNotEmpty)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: c.bgSecondary,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: c.border, width: 2, style: BorderStyle.solid),
+                border: Border.all(color: c.border, width: 1),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  Icon(LucideIcons.upload, size: 24, color: c.textTertiary),
-                  const SizedBox(height: 10),
-                  Text(
-                    l.habitCreateStep2PhotoUpload,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: c.textSecondary,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=${widget.iconTelegramFileId}',
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 60,
+                        height: 60,
+                        color: c.bgTertiary,
+                        child: Icon(LucideIcons.image, color: c.textTertiary),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l.habitCreateStep2PhotoHint,
-                    style: TextStyle(fontSize: 12, color: c.textTertiary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Фото загружено',
+                          style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'ID: ${widget.iconTelegramFileId!.length > 15 ? "${widget.iconTelegramFileId!.substring(0, 15)}..." : widget.iconTelegramFileId}',
+                          style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(LucideIcons.edit2, size: 20, color: c.accent),
+                    onPressed: _showPhotoDialog,
+                  ),
+                  IconButton(
+                    icon: const Icon(LucideIcons.trash2, size: 20, color: Colors.redAccent),
+                    onPressed: () => widget.onIconTelegramFileId(null),
                   ),
                 ],
+              ),
+            )
+          else
+            InkWell(
+              onTap: _showPhotoDialog,
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+                decoration: BoxDecoration(
+                  color: c.bgSecondary,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: c.border, width: 2, style: BorderStyle.solid),
+                ),
+                child: Column(
+                  children: [
+                    Center(child: Icon(LucideIcons.upload, size: 24, color: c.textTertiary)),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        l.habitCreateStep2PhotoUpload,
+                        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: Text(
+                        l.habitCreateStep2PhotoHint,
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -852,16 +982,12 @@ class _Step2State extends State<_Step2> {
                   const SizedBox(width: 10),
                   Text(
                     l.habitCreateStep2AccentColorLabel,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: c.textPrimary,
-                    ),
+                    style: context.tt.labelLarge!.copyWith(color: c.textPrimary),
                   ),
                   const SizedBox(width: 10),
                   Text(
                     selectedColor.name,
-                    style: TextStyle(fontSize: 12, color: c.textTertiary),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
                   ),
                   const Spacer(),
                   Icon(
@@ -934,11 +1060,7 @@ class _TabButton extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: active ? c.textPrimary : c.textTertiary,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: active ? c.textPrimary : c.textTertiary),
           ),
         ),
       ),
@@ -972,10 +1094,10 @@ class _Step3 extends StatefulWidget {
   });
 
   final HabitType? habitType;
-  final String repeatType;
-  final ValueChanged<String> onRepeatType;
-  final Set<String> weekdays;
-  final ValueChanged<String> onToggleWeekday;
+  final RepeatTypeKey repeatType;
+  final ValueChanged<RepeatTypeKey> onRepeatType;
+  final Set<int> weekdays;
+  final ValueChanged<int> onToggleWeekday;
   final Set<int> monthDays;
   final ValueChanged<int> onToggleMonthDay;
   final int timesPerWeek;
@@ -1023,39 +1145,46 @@ class _Step3State extends State<_Step3> {
 
           _UpperLabel(l.habitCreateStep3RepeatTypeLabel),
           const SizedBox(height: 8),
-          _SelectField(
+          _SelectField<RepeatTypeKey>(
             value: widget.repeatType,
-            options: _repeatTypes,
+            options: RepeatTypeKey.values,
             onChanged: widget.onRepeatType,
+            labelBuilder: (k) {
+              switch (k) {
+                case RepeatTypeKey.daily: return l.habitRepeatDaily;
+                case RepeatTypeKey.weekdays: return l.habitRepeatWeekdays;
+                case RepeatTypeKey.nPerWeek: return l.habitRepeatNPerWeek;
+                case RepeatTypeKey.everyNDays: return l.habitRepeatEveryN;
+                case RepeatTypeKey.monthlyDates: return l.habitRepeatMonthly;
+              }
+            },
           ),
           const SizedBox(height: 20),
 
-          if (widget.repeatType == 'По дням недели') ...[
+          if (widget.repeatType == RepeatTypeKey.weekdays) ...[
             Row(
               children: [
-                for (var i = 0; i < _weekdays.length; i++) ...[
+                for (var i = 0; i < 7; i++) ...[
                   if (i > 0) const SizedBox(width: 6),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => widget.onToggleWeekday(_weekdays[i]),
+                      onTap: () => widget.onToggleWeekday(i + 1),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
                         decoration: BoxDecoration(
-                          color: widget.weekdays.contains(_weekdays[i])
+                          color: widget.weekdays.contains(i + 1)
                               ? c.accent
                               : c.bgSecondary,
                           borderRadius: BorderRadius.circular(10),
-                          border: widget.weekdays.contains(_weekdays[i])
+                          border: widget.weekdays.contains(i + 1)
                               ? null
                               : Border.all(color: c.border, width: 1.5),
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          _weekdays[i],
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: widget.weekdays.contains(_weekdays[i])
+                          [l.habitWeekMon, l.habitWeekTue, l.habitWeekWed, l.habitWeekThu, l.habitWeekFri, l.habitWeekSat, l.habitWeekSun][i],
+                          style: context.tt.labelMedium!.copyWith(
+                            color: widget.weekdays.contains(i + 1)
                                 ? Colors.white
                                 : c.textSecondary,
                           ),
@@ -1069,7 +1198,7 @@ class _Step3State extends State<_Step3> {
             const SizedBox(height: 20),
           ],
 
-          if (widget.repeatType == 'X раз в неделю') ...[
+          if (widget.repeatType == RepeatTypeKey.nPerWeek) ...[
             Container(
               decoration: BoxDecoration(
                 color: c.bgSecondary,
@@ -1082,20 +1211,12 @@ class _Step3State extends State<_Step3> {
                     children: [
                       Text(
                         l.habitCreateStep3FrequencyLabel,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: c.textSecondary,
-                        ),
+                        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
                       ),
                       const Spacer(),
                       Text(
                         l.habitCreateStep3FrequencyValue(widget.timesPerWeek),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: c.accent,
-                        ),
+                        style: context.tt.headlineSmall!.copyWith(color: c.accent),
                       ),
                     ],
                   ),
@@ -1110,8 +1231,8 @@ class _Step3State extends State<_Step3> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('1', style: TextStyle(fontSize: 11, color: c.textTertiary)),
-                      Text('7', style: TextStyle(fontSize: 11, color: c.textTertiary)),
+                      Text('1', style: context.tt.labelSmall!.copyWith(color: c.textTertiary)),
+                      Text('7', style: context.tt.labelSmall!.copyWith(color: c.textTertiary)),
                     ],
                   ),
                 ],
@@ -1120,7 +1241,7 @@ class _Step3State extends State<_Step3> {
             const SizedBox(height: 20),
           ],
 
-          if (widget.repeatType == 'Каждые N дней') ...[
+          if (widget.repeatType == RepeatTypeKey.everyNDays) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
@@ -1130,14 +1251,10 @@ class _Step3State extends State<_Step3> {
               child: Row(
                 children: [
                   Expanded(
-                    // TODO(l10n): localize "Каждые N дней" stepper composition
+                    // см. issue #4
                     child: Text(
                       'Каждые',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: c.textSecondary,
-                      ),
+                      style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
                     ),
                   ),
                   _StepperButton(
@@ -1150,11 +1267,7 @@ class _Step3State extends State<_Step3> {
                     child: Text(
                       '${widget.everyN}',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: c.textPrimary,
-                      ),
+                      style: context.tt.headlineSmall!.copyWith(color: c.textPrimary),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -1165,11 +1278,7 @@ class _Step3State extends State<_Step3> {
                   const SizedBox(width: 12),
                   Text(
                     'дней',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: c.textSecondary,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
                   ),
                 ],
               ),
@@ -1177,7 +1286,7 @@ class _Step3State extends State<_Step3> {
             const SizedBox(height: 20),
           ],
 
-          if (widget.repeatType == 'По датам месяца') ...[
+          if (widget.repeatType == RepeatTypeKey.monthlyDates) ...[
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -1189,12 +1298,7 @@ class _Step3State extends State<_Step3> {
                 children: [
                   Text(
                     l.habitCreateStep3SelectDays,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: c.textTertiary,
-                      letterSpacing: 0.05 * 12,
-                    ),
+                    style: context.tt.labelMedium!.copyWith(color: c.textTertiary, letterSpacing: 0.05 * 12),
                   ),
                   const SizedBox(height: 10),
                   GridView.count(
@@ -1218,9 +1322,7 @@ class _Step3State extends State<_Step3> {
                             alignment: Alignment.center,
                             child: Text(
                               '$d',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                              style: context.tt.labelMedium!.copyWith(
                                 color: widget.monthDays.contains(d)
                                     ? Colors.white
                                     : c.textSecondary,
@@ -1258,11 +1360,7 @@ class _Step3State extends State<_Step3> {
                     child: Text(
                       '${widget.goalValue}',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: c.textPrimary,
-                      ),
+                      style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, fontSize: 24.0),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -1332,11 +1430,7 @@ class _Step3State extends State<_Step3> {
                         const SizedBox(width: 10),
                         Text(
                           l.habitCreateStep3AddReminder,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: c.accent,
-                          ),
+                          style: context.tt.labelLarge!.copyWith(color: c.accent),
                         ),
                       ],
                     ),
@@ -1348,7 +1442,7 @@ class _Step3State extends State<_Step3> {
           const SizedBox(height: 8),
           Text(
             l.habitCreateStep3RemindersHint,
-            style: TextStyle(fontSize: 12, color: c.textTertiary, height: 1.5),
+            style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.5, fontSize: 12.0),
           ),
           const SizedBox(height: 20),
 
@@ -1371,11 +1465,7 @@ class _Step3State extends State<_Step3> {
                         const SizedBox(width: 10),
                         Text(
                           l.habitCreateStep3PeriodLabel,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: c.textPrimary,
-                          ),
+                          style: context.tt.labelLarge!.copyWith(color: c.textPrimary),
                         ),
                         const Spacer(),
                         Icon(
@@ -1398,11 +1488,7 @@ class _Step3State extends State<_Step3> {
                       children: [
                         Text(
                           l.habitCreateStep3StartDateLabel,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: c.textSecondary,
-                          ),
+                          style: context.tt.labelMedium!.copyWith(color: c.textSecondary),
                         ),
                         const SizedBox(height: 6),
                         Container(
@@ -1415,7 +1501,7 @@ class _Step3State extends State<_Step3> {
                           ),
                           child: Text(
                             '07.05.2026',
-                            style: TextStyle(fontSize: 14, color: c.textPrimary),
+                            style: context.tt.bodyMedium!.copyWith(color: c.textPrimary),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -1448,6 +1534,7 @@ class _StackingPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
     if (existingHabits.isEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -1457,12 +1544,8 @@ class _StackingPicker extends StatelessWidget {
           border: Border.all(color: c.border, width: 1.5),
         ),
         child: Text(
-          _stackingNoHabitsHint,
-          style: TextStyle(
-            fontSize: 13,
-            color: c.textTertiary,
-            fontStyle: FontStyle.italic,
-          ),
+          l.habitStackingNoHabits,
+          style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontStyle: FontStyle.italic),
         ),
       );
     }
@@ -1477,17 +1560,20 @@ class _StackingPicker extends StatelessWidget {
   }
 }
 
-class _SelectField extends StatelessWidget {
+class _SelectField<T> extends StatelessWidget {
   const _SelectField({
+    super.key,
     required this.value,
     required this.options,
     required this.onChanged,
+    this.labelBuilder,
     this.compact = false,
   });
 
-  final String value;
-  final List<String> options;
-  final ValueChanged<String> onChanged;
+  final T value;
+  final List<T> options;
+  final ValueChanged<T> onChanged;
+  final String Function(T)? labelBuilder;
   final bool compact;
 
   @override
@@ -1504,15 +1590,15 @@ class _SelectField extends StatelessWidget {
         border: Border.all(color: c.border, width: 1.5),
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
+        child: DropdownButton<T>(
           value: value,
           isDense: true,
           icon: Icon(LucideIcons.chevronDown, size: 14, color: c.textTertiary),
-          style: TextStyle(fontSize: 14, color: c.textPrimary),
+          style: context.tt.bodyMedium!.copyWith(color: c.textPrimary),
           dropdownColor: c.card,
           items: [
             for (final o in options)
-              DropdownMenuItem(value: o, child: Text(o)),
+              DropdownMenuItem(value: o, child: Text(labelBuilder != null ? labelBuilder!(o) : o.toString())),
           ],
           onChanged: (v) {
             if (v != null) onChanged(v);
@@ -1547,11 +1633,7 @@ class _StepperButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           icon,
-          style: TextStyle(
-            fontSize: big ? 20 : 18,
-            color: c.textPrimary,
-            height: 1,
-          ),
+          style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1),
         ),
       ),
     );
@@ -1581,11 +1663,7 @@ class _ReminderChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             time,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: c.textPrimary,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: c.textPrimary),
           ),
           const SizedBox(width: 6),
           GestureDetector(
@@ -1609,6 +1687,7 @@ class _Step4 extends StatelessWidget {
     required this.rewardCtrl,
     required this.habitName,
     required this.habitIcon,
+    this.habitIconTelegramFileId,
     required this.habitType,
     required this.accent,
     required this.category,
@@ -1625,6 +1704,7 @@ class _Step4 extends StatelessWidget {
   final TextEditingController rewardCtrl;
   final String habitName;
   final String habitIcon;
+  final String? habitIconTelegramFileId;
   final HabitType? habitType;
   final Color accent;
   final String category;
@@ -1667,22 +1747,12 @@ class _Step4 extends StatelessWidget {
               children: [
                 Text(
                   l.habitCreateStep4Title,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary,
-                    letterSpacing: -0.03 * 24,
-                    height: 1.2,
-                  ),
+                  style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.03 * 24, fontSize: 24.0),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   l.habitCreateStep4Subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: c.textTertiary,
-                    height: 1.6,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.6),
                 ),
               ],
             ),
@@ -1735,7 +1805,7 @@ class _Step4 extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   l.habitCreateStep4IdentityNote,
-                  style: TextStyle(fontSize: 12, color: c.textTertiary, height: 1.5),
+                  style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.5, fontSize: 12.0),
                 ),
               ],
             ),
@@ -1767,12 +1837,7 @@ class _Step4 extends StatelessWidget {
           // Preview
           Text(
             l.habitCreateStep4PreviewLabel,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: c.textTertiary,
-              letterSpacing: 0.06 * 12,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: c.textTertiary, letterSpacing: 0.06 * 12),
           ),
           const SizedBox(height: 10),
           Container(
@@ -1794,7 +1859,7 @@ class _Step4 extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Container(
+                     Container(
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
@@ -1803,10 +1868,24 @@ class _Step4 extends StatelessWidget {
                         border: Border.all(color: accent, width: 2),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
-                        habitIcon.isEmpty ? '🌟' : habitIcon,
-                        style: const TextStyle(fontSize: 26, height: 1),
-                      ),
+                      child: habitIconTelegramFileId != null && habitIconTelegramFileId!.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: Image.network(
+                                '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=$habitIconTelegramFileId',
+                                width: 52,
+                                height: 52,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Text(
+                                  habitIcon.isEmpty ? '🌟' : habitIcon,
+                                  style: context.tt.headlineLarge!.copyWith(height: 1),
+                                ),
+                              ),
+                            )
+                          : Text(
+                              habitIcon.isEmpty ? '🌟' : habitIcon,
+                              style: context.tt.headlineLarge!.copyWith(height: 1),
+                            ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -1815,20 +1894,12 @@ class _Step4 extends StatelessWidget {
                         children: [
                           Text(
                             habitName.isEmpty ? l.habitCreateStep4PreviewName : habitName,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: c.textPrimary,
-                              letterSpacing: -0.02 * 16,
-                            ),
+                            style: context.tt.bodyLarge!.copyWith(color: c.textPrimary, letterSpacing: -0.02 * 16, fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             '$category · ${_typeLabel(l)}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: c.textSecondary,
-                            ),
+                            style: context.tt.bodySmall!.copyWith(color: c.textSecondary),
                           ),
                         ],
                       ),
@@ -1838,22 +1909,12 @@ class _Step4 extends StatelessWidget {
                       children: [
                         Text(
                           l.habitCreateStep4PreviewStreak,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: c.textTertiary,
-                            letterSpacing: 0.04 * 11,
-                          ),
+                          style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.04 * 11),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           '0',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: accent,
-                            height: 1,
-                          ),
+                          style: context.tt.headlineMedium!.copyWith(color: accent, height: 1),
                         ),
                       ],
                     ),
@@ -1896,17 +1957,12 @@ class _Step4 extends StatelessWidget {
                           children: [
                             Text(
                               l.habitCreateStep4PreviewToday,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: c.textTertiary,
-                                letterSpacing: 0.04 * 11,
-                              ),
+                              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.04 * 11),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               _todayActionLabel(l),
-                              style: TextStyle(fontSize: 13, color: c.textSecondary),
+                              style: context.tt.bodySmall!.copyWith(color: c.textSecondary),
                             ),
                           ],
                         ),
@@ -1994,7 +2050,7 @@ class _AccordionSectionState extends State<_AccordionSection> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
                 children: [
-                  Text(widget.emoji, style: const TextStyle(fontSize: 22, height: 1)),
+                  Text(widget.emoji, style: context.tt.headlineMedium!.copyWith(height: 1)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -2002,20 +2058,13 @@ class _AccordionSectionState extends State<_AccordionSection> {
                       children: [
                         Text(
                           widget.title,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: c.textPrimary,
-                          ),
+                          style: context.tt.labelLarge!.copyWith(color: c.textPrimary),
                         ),
                         if (!_open) ...[
                           const SizedBox(height: 2),
                           Text(
                             widget.subtitle,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: c.textTertiary,
-                            ),
+                            style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
                           ),
                         ],
                       ],
@@ -2041,11 +2090,7 @@ class _AccordionSectionState extends State<_AccordionSection> {
                 children: [
                   Text(
                     widget.subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: c.textSecondary,
-                      height: 1.5,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.5),
                   ),
                   const SizedBox(height: 12),
                   widget.child,
@@ -2081,11 +2126,7 @@ class _MetaPill extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: c.textSecondary,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textSecondary, fontSize: 12.0),
           ),
         ],
       ),
@@ -2107,11 +2148,7 @@ class _NewBadge extends StatelessWidget {
       ),
       child: Text(
         l.commonNewBadge,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: c.accent,
-        ),
+        style: context.tt.labelMedium!.copyWith(color: c.accent),
       ),
     );
   }

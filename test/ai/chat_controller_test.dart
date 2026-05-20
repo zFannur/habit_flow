@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:habit_flow/core/errors/failure.dart';
+import 'package:habit_flow/core/errors/result.dart';
 import 'package:habit_flow/features/ai/data/ai_messages_repository.dart';
 import 'package:habit_flow/features/ai/data/chat_providers.dart';
 import 'package:habit_flow/features/ai/data/openrouter_client.dart';
@@ -40,7 +43,7 @@ class _FakeRepo extends AiMessagesRepository {
   bool failOnInsert = false;
 
   @override
-  Future<AiChat> createChat({String? title}) async {
+  AppTask<AiChat> createChat({String? title}) {
     chatSeq++;
     final chat = AiChat(
       id: 'chat-$chatSeq',
@@ -50,23 +53,43 @@ class _FakeRepo extends AiMessagesRepository {
       updatedAt: DateTime.utc(2026, 5, 7),
     );
     createdChats.add(chat);
-    return chat;
+    return TaskEither.of(chat);
   }
 
   @override
-  Future<List<AiMessage>> listMessages(String chatId) async {
-    return inserted.where((m) => m.chatId == chatId).toList();
+  AppTask<List<AiChat>> listChats() {
+    return TaskEither.of(createdChats);
   }
 
   @override
-  Future<AiMessage> insertMessage({
+  AppTask<void> renameChat(String chatId, String title) {
+    return TaskEither.of(null);
+  }
+
+  @override
+  AppTask<void> deleteChat(String chatId) {
+    return TaskEither.of(null);
+  }
+
+  @override
+  AppTask<List<AiMessage>> listMessages(String chatId) {
+    return TaskEither.of(inserted.where((m) => m.chatId == chatId).toList());
+  }
+
+  @override
+  AppTask<int> dailyUserMessageCount() {
+    return TaskEither.of(inserted.where((m) => m.role == 'user').length);
+  }
+
+  @override
+  AppTask<AiMessage> insertMessage({
     required String chatId,
     required String role,
     required String content,
     int? tokensUsed,
-  }) async {
+  }) {
     if (failOnInsert) {
-      throw StateError('insert failed');
+      return TaskEither.left(const Failure.unknown(message: 'insert failed'));
     }
     final m = AiMessage(
       id: 'msg-${inserted.length + 1}',
@@ -78,7 +101,7 @@ class _FakeRepo extends AiMessagesRepository {
       createdAt: DateTime.utc(2026, 5, 7, 12, inserted.length),
     );
     inserted.add(m);
-    return m;
+    return TaskEither.of(m);
   }
 
   @override
@@ -93,14 +116,13 @@ class _FakeRepo extends AiMessagesRepository {
     return Stream.value(createdChats);
   }
 }
-
 class _FakeKeyRepo extends OpenRouterKeyRepository {
   _FakeKeyRepo({this.key = 'sk-test'});
 
   String? key;
 
   @override
-  Future<String?> load() async => key;
+  AppTask<String?> load() => TaskEither.of(key);
 }
 
 class _ScriptedClient extends OpenRouterClient {

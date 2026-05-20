@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -172,7 +173,11 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
         updatedAt: DateTime.now(),
       );
 
-      final saved = await repo.upsert(entry);
+      final savedRes = await repo.upsert(entry).run();
+      final saved = savedRes.match(
+        (f) => throw f,
+        (ok) => ok,
+      );
       _loadedId = saved.id;
 
       ref.invalidate(journalEntriesProvider);
@@ -217,7 +222,7 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
             children: [
               Text(
                 l.journalEditLoadError,
-                style: TextStyle(color: c.textPrimary, fontSize: 16),
+                style: context.tt.bodyLarge!.copyWith(color: c.textPrimary),
               ),
               const SizedBox(height: 16),
               TextButton(
@@ -351,21 +356,11 @@ class _Header extends StatelessWidget {
                 children: [
                   Text(
                     dateLabel,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: c.textPrimary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.2),
                   ),
                   Text(
                     dateSubLabel,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: c.textTertiary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -390,12 +385,7 @@ class _Header extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Text(
                             l.journalEditSave,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: c.accent,
-                              height: 1.2,
-                            ),
+                            style: context.tt.titleMedium!.copyWith(color: c.accent, height: 1.2),
                           ),
                         ),
                       ),
@@ -433,13 +423,7 @@ class _HabitsBlock extends StatelessWidget {
         children: [
           Text(
             AppLocalizations.of(context).journalEditHabitsTitle,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: c.textTertiary,
-              letterSpacing: 0.06 * 12,
-              height: 1.2,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.06 * 12),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -485,26 +469,16 @@ class _HabitPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(tag.icon, style: const TextStyle(fontSize: 13, height: 1.2)),
+          Text(tag.icon, style: context.tt.bodySmall!.copyWith(height: 1.2)),
           const SizedBox(width: 6),
           Text(
             tag.done ? '✅' : '❌',
-            style: TextStyle(
-              fontSize: 13,
-              color: iconColor,
-              fontWeight: FontWeight.w600,
-              height: 1.2,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: iconColor, height: 1.2),
           ),
           const SizedBox(width: 6),
           Text(
             tag.name,
-            style: TextStyle(
-              fontSize: 12,
-              color: nameColor,
-              fontWeight: FontWeight.w500,
-              height: 1.2,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: nameColor, height: 1.2, fontSize: 12.0),
           ),
         ],
       ),
@@ -552,25 +526,14 @@ class _ScaleSlider extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
               ),
               SizedBox(
                 width: 32,
                 child: Text(
                   '$value',
                   textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: color,
-                    letterSpacing: -0.02 * 26,
-                    height: 1,
-                  ),
+                  style: context.tt.headlineLarge!.copyWith(color: color, height: 1, letterSpacing: -0.02 * 26),
                 ),
               ),
             ],
@@ -578,7 +541,7 @@ class _ScaleSlider extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              Text(minEmoji, style: const TextStyle(fontSize: 20, height: 1)),
+              Text(minEmoji, style: context.tt.headlineSmall!.copyWith(height: 1, fontSize: 20.0)),
               const SizedBox(width: 10),
               Expanded(
                 child: SliderTheme(
@@ -609,7 +572,7 @@ class _ScaleSlider extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Text(maxEmoji, style: const TextStyle(fontSize: 20, height: 1)),
+              Text(maxEmoji, style: context.tt.headlineSmall!.copyWith(height: 1, fontSize: 20.0)),
             ],
           ),
           Padding(
@@ -620,13 +583,7 @@ class _ScaleSlider extends StatelessWidget {
                 for (var n = 1; n <= 10; n++)
                   Text(
                     '$n',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight:
-                          n == value ? FontWeight.w700 : FontWeight.w400,
-                      color: n == value ? color : c.textTertiary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: n == value ? color : c.textTertiary, height: 1.2, fontSize: 10.0),
                   ),
               ],
             ),
@@ -668,12 +625,7 @@ class _FreeTextCard extends StatelessWidget {
         children: [
           Text(
             l.journalEditEntryLabel,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: c.textPrimary,
-              height: 1.2,
-            ),
+            style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
           ),
           const SizedBox(height: 10),
           Container(
@@ -689,20 +641,12 @@ class _FreeTextCard extends StatelessWidget {
               focusNode: focusNode,
               maxLines: null,
               minLines: 6,
-              style: TextStyle(
-                fontSize: 14,
-                color: c.textPrimary,
-                height: 1.6,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
               decoration: InputDecoration(
                 isCollapsed: true,
                 border: InputBorder.none,
                 hintText: l.journalEditPlaceholder,
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  color: c.textTertiary,
-                  height: 1.6,
-                ),
+                hintStyle: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.6),
               ),
             ),
           ),
@@ -711,11 +655,7 @@ class _FreeTextCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text(
               l.journalEditCharCount(controller.text.length),
-              style: TextStyle(
-                fontSize: 11,
-                color: c.textTertiary,
-                height: 1.2,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2),
             ),
           ),
         ],
@@ -776,23 +716,13 @@ class _QuestionsToggle extends StatelessWidget {
               Expanded(
                 child: Text(
                   AppLocalizations.of(context).journalEditQuestionsShow,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: c.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
                 ),
               ),
               if (open) ...[
                 Text(
                   AppLocalizations.of(context).journalEditQuestionsHide,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: c.accent,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelMedium!.copyWith(color: c.accent, height: 1.2),
                 ),
                 const SizedBox(width: 6),
               ],
@@ -856,12 +786,7 @@ class _QuestionFieldState extends State<_QuestionField> {
                     Expanded(
                       child: Text(
                         widget.question,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: c.textPrimary,
-                          height: 1.4,
-                        ),
+                        style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.4),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -896,22 +821,14 @@ class _QuestionFieldState extends State<_QuestionField> {
                     controller: widget.controller,
                     maxLines: null,
                     minLines: 2,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: c.textPrimary,
-                      height: 1.5,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textPrimary, height: 1.5),
                     decoration: InputDecoration(
                       isCollapsed: true,
                       border: InputBorder.none,
                       hintText: AppLocalizations.of(
                         context,
                       ).journalEditQuestionPlaceholder,
-                      hintStyle: TextStyle(
-                        fontSize: 13,
-                        color: c.textTertiary,
-                        height: 1.5,
-                      ),
+                      hintStyle: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.5),
                     ),
                   ),
                 ),
@@ -940,11 +857,7 @@ class _ChangeTemplateLink extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context).journalEditChangeTemplate,
-              style: TextStyle(
-                fontSize: 13,
-                color: c.textTertiary,
-                height: 1.2,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2),
             ),
             const SizedBox(width: 4),
             Icon(LucideIcons.chevronRight, size: 14, color: c.textTertiary),

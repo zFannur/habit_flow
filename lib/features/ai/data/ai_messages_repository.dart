@@ -1,4 +1,8 @@
+import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/errors/failure.dart';
+import '../../../core/errors/result.dart';
 
 /// Lightweight projection of an `ai_messages` row.
 class AiMessage {
@@ -77,17 +81,32 @@ class AiMessagesRepository {
   static const _chatsTable = 'ai_chats';
   static const _messagesTable = 'ai_messages';
 
+  Failure _mapError(Object e) {
+    if (e is PostgrestException) {
+      return Failure.server(
+        status: int.tryParse(e.code ?? '') ?? 500,
+        message: e.message,
+      );
+    }
+    return Failure.unknown(message: e.toString());
+  }
+
   /// All chats for the current user, newest first.
-  Future<List<AiChat>> listChats() async {
-    final rows = await _client
-        .from(_chatsTable)
-        .select()
-        .eq('user_id', _userId)
-        .order('updated_at', ascending: false);
-    return (rows as List)
-        .cast<Map<String, dynamic>>()
-        .map(AiChat.fromJson)
-        .toList();
+  AppTask<List<AiChat>> listChats() {
+    return TaskEither.tryCatch(
+      () async {
+        final rows = await _client
+            .from(_chatsTable)
+            .select()
+            .eq('user_id', _userId)
+            .order('updated_at', ascending: false);
+        return (rows as List)
+            .cast<Map<String, dynamic>>()
+            .map(AiChat.fromJson)
+            .toList();
+      },
+      (e, st) => _mapError(e),
+    );
   }
 
   /// Realtime stream of chats (newest first) for the drawer list.
@@ -103,47 +122,63 @@ class AiMessagesRepository {
   /// Insert a fresh chat with [title]. Falls back to a generic title when
   /// caller passes `null` so the row has a useful drawer label until the
   /// first reply arrives.
-  Future<AiChat> createChat({String? title}) async {
-    final cleanTitle = (title != null && title.isNotEmpty) ? title : null;
-    final row = await _client
-        .from(_chatsTable)
-        .insert({
-          'user_id': _userId,
-          'title': ?cleanTitle,
-        })
-        .select()
-        .single();
-    return AiChat.fromJson(row);
+  AppTask<AiChat> createChat({String? title}) {
+    return TaskEither.tryCatch(
+      () async {
+        final cleanTitle = (title != null && title.isNotEmpty) ? title : null;
+        final row = await _client
+            .from(_chatsTable)
+            .insert({
+              'user_id': _userId,
+              'title': ?cleanTitle,
+            })
+            .select()
+            .single();
+        return AiChat.fromJson(row);
+      },
+      (e, st) => _mapError(e),
+    );
   }
 
-  Future<void> renameChat(String chatId, String title) async {
-    await _client
-        .from(_chatsTable)
-        .update({'title': title})
-        .eq('id', chatId)
-        .eq('user_id', _userId);
+  AppTask<void> renameChat(String chatId, String title) {
+    return TaskEither.tryCatch(
+      () => _client
+          .from(_chatsTable)
+          .update({'title': title})
+          .eq('id', chatId)
+          .eq('user_id', _userId),
+      (e, st) => _mapError(e),
+    );
   }
 
-  Future<void> deleteChat(String chatId) async {
-    await _client
-        .from(_chatsTable)
-        .delete()
-        .eq('id', chatId)
-        .eq('user_id', _userId);
+  AppTask<void> deleteChat(String chatId) {
+    return TaskEither.tryCatch(
+      () => _client
+          .from(_chatsTable)
+          .delete()
+          .eq('id', chatId)
+          .eq('user_id', _userId),
+      (e, st) => _mapError(e),
+    );
   }
 
   /// Messages for [chatId] ordered chronologically.
-  Future<List<AiMessage>> listMessages(String chatId) async {
-    final rows = await _client
-        .from(_messagesTable)
-        .select()
-        .eq('chat_id', chatId)
-        .eq('user_id', _userId)
-        .order('created_at', ascending: true);
-    return (rows as List)
-        .cast<Map<String, dynamic>>()
-        .map(AiMessage.fromJson)
-        .toList();
+  AppTask<List<AiMessage>> listMessages(String chatId) {
+    return TaskEither.tryCatch(
+      () async {
+        final rows = await _client
+            .from(_messagesTable)
+            .select()
+            .eq('chat_id', chatId)
+            .eq('user_id', _userId)
+            .order('created_at', ascending: true);
+        return (rows as List)
+            .cast<Map<String, dynamic>>()
+            .map(AiMessage.fromJson)
+            .toList();
+      },
+      (e, st) => _mapError(e),
+    );
   }
 
   /// Realtime stream of messages for [chatId] ordered chronologically.
@@ -159,36 +194,46 @@ class AiMessagesRepository {
   /// Number of `role = 'user'` messages this user sent today (UTC). Used to
   /// drive the request-progress bar in the chat composer; persists across
   /// app restarts unlike a local counter.
-  Future<int> dailyUserMessageCount() async {
-    final now = DateTime.now().toUtc();
-    final startOfDay = DateTime.utc(now.year, now.month, now.day);
-    final res = await _client
-        .from(_messagesTable)
-        .count(CountOption.exact)
-        .eq('user_id', _userId)
-        .eq('role', 'user')
-        .gte('created_at', startOfDay.toIso8601String());
-    return res;
+  AppTask<int> dailyUserMessageCount() {
+    return TaskEither.tryCatch(
+      () async {
+        final now = DateTime.now().toUtc();
+        final startOfDay = DateTime.utc(now.year, now.month, now.day);
+        final res = await _client
+            .from(_messagesTable)
+            .count(CountOption.exact)
+            .eq('user_id', _userId)
+            .eq('role', 'user')
+            .gte('created_at', startOfDay.toIso8601String());
+        return res;
+      },
+      (e, st) => _mapError(e),
+    );
   }
 
   /// Inserts a single message and returns the persisted row.
-  Future<AiMessage> insertMessage({
+  AppTask<AiMessage> insertMessage({
     required String chatId,
     required String role,
     required String content,
     int? tokensUsed,
-  }) async {
-    final row = await _client
-        .from(_messagesTable)
-        .insert({
-          'chat_id': chatId,
-          'user_id': _userId,
-          'role': role,
-          'content': content,
-          'tokens_used': ?tokensUsed,
-        })
-        .select()
-        .single();
-    return AiMessage.fromJson(row);
+  }) {
+    return TaskEither.tryCatch(
+      () async {
+        final row = await _client
+            .from(_messagesTable)
+            .insert({
+              'chat_id': chatId,
+              'user_id': _userId,
+              'role': role,
+              'content': content,
+              'tokens_used': ?tokensUsed,
+            })
+            .select()
+            .single();
+        return AiMessage.fromJson(row);
+      },
+      (e, st) => _mapError(e),
+    );
   }
 }

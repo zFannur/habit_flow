@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -49,14 +50,9 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: const Text(
+                        child: Text(
                           'N',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            height: 1,
-                          ),
+                          style: context.tt.headlineSmall!.copyWith(color: Colors.white, height: 1),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -66,21 +62,12 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                           children: [
                             Text(
                               'Nova',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: c.textPrimary,
-                                height: 1.2,
-                              ),
+                              style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               '@nova_habits',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: c.textTertiary,
-                                height: 1.2,
-                              ),
+                              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2),
                             ),
                           ],
                         ),
@@ -151,12 +138,7 @@ class _Section extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
           child: Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: c.textTertiary,
-              letterSpacing: 0.08 * 11,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.08 * 11),
           ),
         ),
         Container(
@@ -215,12 +197,7 @@ class _RadioRow extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: c.textPrimary,
-                height: 1.2,
-              ),
+              style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2, fontWeight: FontWeight.w500),
             ),
           ],
         ),

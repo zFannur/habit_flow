@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -204,19 +205,11 @@ class _AiSummaryProgressAction extends StatelessWidget {
           children: [
             Text(
               '$value из $max',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: c.textTertiary,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
             ),
             Text(
               '$pct%',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: c.accent,
-              ),
+              style: context.tt.labelMedium!.copyWith(color: c.accent),
             ),
           ],
         ),
@@ -247,11 +240,7 @@ class _CountdownPill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             text,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: c.danger,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: c.danger),
           ),
         ],
       ),
@@ -282,11 +271,7 @@ class _SuccessScorePill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             '$done из $total',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: c.success,
-            ),
+            style: context.tt.labelLarge!.copyWith(color: c.success),
           ),
         ],
       ),
@@ -317,23 +302,12 @@ class _QuoteOfDay extends StatelessWidget {
           children: [
             Text(
               l.quoteOfDayLabel,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.06 * 11,
-                color: c.textTertiary,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.06 * 11),
             ),
             const SizedBox(height: 6),
             Text(
               quote,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                height: 1.6,
-                fontStyle: FontStyle.italic,
-                color: c.textSecondary,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.6, fontStyle: FontStyle.italic),
             ),
           ],
         ),

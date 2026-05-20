@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -20,12 +21,7 @@ class StreakBadge extends StatelessWidget {
       ),
       child: Text(
         '🔥 $days',
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: c.warning,
-          height: 1.2,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.warning, height: 1.2),
       ),
     );
   }

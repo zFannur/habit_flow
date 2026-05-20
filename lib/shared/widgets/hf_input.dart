@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/config/text_theme.dart';
 import '../../core/config/tokens.dart';
 
 /// Текстовое поле / textarea (см. design-system.html → Inputs).
@@ -15,6 +16,7 @@ class HFInput extends StatefulWidget {
     this.onChanged,
     this.keyboardType,
     this.textInputAction,
+    this.autofocus = false,
   });
 
   final TextEditingController? controller;
@@ -25,6 +27,7 @@ class HFInput extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
+  final bool autofocus;
 
   @override
   State<HFInput> createState() => _HFInputState();
@@ -62,11 +65,8 @@ class _HFInputState extends State<HFInput> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+            style: context.tt.labelMedium!.copyWith(
               color: c.textSecondary,
-              height: 1.2,
             ),
           ),
           const SizedBox(height: 6),
@@ -85,13 +85,13 @@ class _HFInputState extends State<HFInput> {
           child: TextField(
             controller: _controller,
             focusNode: _focus,
+            autofocus: widget.autofocus,
             minLines: widget.minLines,
             maxLines: widget.maxLines,
             onChanged: widget.onChanged,
             keyboardType: widget.keyboardType,
             textInputAction: widget.textInputAction,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.tt.bodyMedium!.copyWith(
               color: c.textPrimary,
               height: 1.5,
             ),
@@ -100,9 +100,8 @@ class _HFInputState extends State<HFInput> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
               hintText: widget.hint,
-              hintStyle: TextStyle(
+              hintStyle: context.tt.bodyMedium!.copyWith(
                 color: c.textTertiary,
-                fontSize: 14,
                 height: 1.5,
               ),
             ),

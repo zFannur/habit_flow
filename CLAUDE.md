@@ -33,6 +33,9 @@ flutter gen-l10n
 | `OPENROUTER_BASE_URL` | нет | `https://openrouter.ai/api/v1` | базовый URL OpenRouter |
 | `OPENROUTER_DEFAULT_MODEL` | нет | `openai/gpt-oss-120b:free` | модель по умолчанию |
 | `ENV` | нет | `development` | `production` включает строгие режимы (см. `Env.isProduction`) |
+| `APP_BASE_URL` | нет | `https://habitflow.app` | канонический URL Mini App (HTTP-Referer) |
+| `BOT_PUBLIC_CHANNEL` | нет | `https://t.me/habitflow_dev` | публичный канал/чат проекта в Telegram |
+| `OPENROUTER_KEYS_URL` | нет | `https://openrouter.ai/keys` | дашборд ключей OpenRouter |
 
 Релизная сборка:
 

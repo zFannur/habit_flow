@@ -1,12 +1,16 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../data/habit_log_model.dart';
+import '../data/habit_model.dart';
 import '../data/habits_providers.dart';
 import 'widgets/habit_more_sheet.dart';
 import '../domain/habit_calculations.dart';
@@ -34,7 +38,7 @@ class HabitDetailScreen extends ConsumerWidget {
             error: (e, _) => Center(
               child: Text(
                 e.toString(),
-                style: TextStyle(color: c.danger),
+                style: context.tt.bodyMedium!.copyWith(color: c.danger),
               ),
             ),
             data: (habit) {
@@ -42,7 +46,7 @@ class HabitDetailScreen extends ConsumerWidget {
                 return Center(
                   child: Text(
                     '404',
-                    style: TextStyle(color: c.textTertiary),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textTertiary),
                   ),
                 );
               }
@@ -59,9 +63,7 @@ class _DetailBody extends ConsumerWidget {
   const _DetailBody({required this.habitId, required this.habit});
 
   final String habitId;
-  // Using dynamic to avoid importing the full model file reference — actual
-  // type from habitDetailProvider is HabitModel.
-  final dynamic habit;
+  final HabitModel habit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -101,9 +103,10 @@ class _DetailBody extends ConsumerWidget {
             onMore: () => _showMenu(context, ref),
           ),
           _Hero(
-            name: (habit.name as String?) ?? '',
-            emoji: (habit.emoji as String?) ?? '⭐',
-            category: (habit.category as String?) ?? '',
+            name: habit.name,
+            emoji: habit.emoji ?? '⭐',
+            iconTelegramFileId: habit.iconTelegramFileId,
+            category: habit.category ?? '',
             streak: streak,
           ),
           _SectionHeader(label: AppLocalizations.of(context).habitDetailStatistics),
@@ -167,20 +170,15 @@ class _DetailBody extends ConsumerWidget {
     );
   }
 
-  void _showMoreSheet(BuildContext context, dynamic habit) {
-    // ignore: avoid_dynamic_calls
+  void _showMoreSheet(BuildContext context, HabitModel habit) {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => HabitMoreSheet(
-        // ignore: avoid_dynamic_calls
-        identity: habit.identityStatement as String?,
-        // ignore: avoid_dynamic_calls
-        reward: habit.reward as String?,
-        // ignore: avoid_dynamic_calls
-        implementationWhen: habit.implementationWhen as String?,
-        // ignore: avoid_dynamic_calls
-        implementationWhere: habit.implementationWhere as String?,
+        identity: habit.identityStatement,
+        reward: habit.reward,
+        implementationWhen: habit.implementationWhen,
+        implementationWhere: habit.implementationWhere,
       ),
     );
   }
@@ -209,12 +207,7 @@ class _DetailBody extends ConsumerWidget {
                 color: c.textPrimary,
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Edit mode coming soon'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  context.push('/habits/$habitId/edit');
                 },
                 divider: true,
               ),
@@ -279,10 +272,7 @@ class _DetailBody extends ConsumerWidget {
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(
               l.commonDelete,
-              style: TextStyle(
-                color: HFColors.of(context).danger,
-                fontWeight: FontWeight.w600,
-              ),
+              style: context.tt.labelLarge!.copyWith(color: HFColors.of(context).danger),
             ),
           ),
         ],
@@ -444,13 +434,7 @@ class _Header extends StatelessWidget {
             background: c.bgTertiary,
             child: Text(
               '···',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: c.textPrimary,
-                height: 1,
-              ),
+              style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1, letterSpacing: 2, fontSize: 20.0),
             ),
           ),
         ],
@@ -492,12 +476,14 @@ class _Hero extends StatelessWidget {
   const _Hero({
     required this.name,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.category,
     required this.streak,
   });
 
   final String name;
   final String emoji;
+  final String? iconTelegramFileId;
   final String category;
   final int streak;
 
@@ -505,6 +491,30 @@ class _Hero extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
+
+    Widget imageContent;
+    if (iconTelegramFileId != null && iconTelegramFileId!.isNotEmpty) {
+      final imageUrl = '${Env.supabaseUrl}/functions/v1/get_telegram_photo?file_id=$iconTelegramFileId';
+      imageContent = ClipOval(
+        child: Image.network(
+          imageUrl,
+          headers: {
+            'Authorization': 'Bearer ${Supabase.instance.client.auth.currentSession?.accessToken}',
+          },
+          width: 80,
+          height: 80,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: Text(emoji, style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 38.0)),
+            );
+          },
+        ),
+      );
+    } else {
+      imageContent = Text(emoji, style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 38.0));
+    }
+
     return Container(
       color: c.bgPrimary,
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
@@ -536,30 +546,19 @@ class _Hero extends StatelessWidget {
               ],
             ),
             alignment: Alignment.center,
-            child: Text(emoji, style: const TextStyle(fontSize: 38, height: 1)),
+            child: imageContent,
           ),
           const SizedBox(height: 14),
           Text(
             name,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: c.textPrimary,
-              letterSpacing: -0.02 * 22,
-              height: 1.2,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 22),
           ),
           if (category.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               category,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: c.textTertiary,
-                height: 1.2,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
             ),
           ],
           if (streak > 0) ...[
@@ -576,12 +575,7 @@ class _Hero extends StatelessWidget {
               ),
               child: Text(
                 '🔥 ${l.habitDetailCurrentStreak.replaceAll('\n', ' ')}: $streak',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: HFTokens.warning,
-                  height: 1.2,
-                ),
+                style: context.tt.titleSmall!.copyWith(color: HFTokens.warning, height: 1.2),
               ),
             ),
           ],
@@ -603,13 +597,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
       child: Text(
         label.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.08 * 11,
-          color: c.textTertiary,
-          height: 1.2,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.08 * 11),
       ),
     );
   }
@@ -644,24 +632,13 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: valueColor,
-              height: 1.1,
-              letterSpacing: -0.03 * 28,
-            ),
+            style: context.tt.displayMedium!.copyWith(color: valueColor, height: 1.1, letterSpacing: -0.03 * 28),
           ),
           const SizedBox(height: 5),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: c.textTertiary,
-              height: 1.4,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 10.0),
           ),
         ],
       ),
@@ -707,12 +684,7 @@ class _HeatmapLegend extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   entry.$2,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 10.0),
                 ),
               ],
             ),
@@ -766,12 +738,7 @@ class _Heatmap extends StatelessWidget {
                       child: Center(
                         child: Text(
                           days[i],
-                          style: TextStyle(
-                            fontSize: 8.5,
-                            fontWeight: FontWeight.w600,
-                            color: c.textTertiary,
-                            height: 1,
-                          ),
+                          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontWeight: FontWeight.w600, fontSize: 8.5),
                         ),
                       ),
                     ),
@@ -875,11 +842,7 @@ class _ChartCard extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 4),
                         child: Text(
                           '${value.toInt()}%',
-                          style: TextStyle(
-                            fontSize: 8,
-                            color: c.textTertiary,
-                            height: 1,
-                          ),
+                          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 8.0),
                         ),
                       ),
                     ),
@@ -896,11 +859,7 @@ class _ChartCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             l.habitDetailChartWeekShort(i + 1),
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: c.textTertiary,
-                              height: 1,
-                            ),
+                            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 8.0),
                           ),
                         );
                       },
@@ -938,11 +897,7 @@ class _ChartCard extends StatelessWidget {
                       for (final s in spots)
                         LineTooltipItem(
                           '${s.y.toInt()}%',
-                          const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: HFTokens.success,
-                          ),
+                          context.tt.labelSmall!.copyWith(color: HFTokens.success),
                         ),
                     ],
                   ),
@@ -961,20 +916,11 @@ class _ChartCard extends StatelessWidget {
               children: [
                 Text(
                   l.habitDetailChartWeeks(data.length),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 10.0),
                 ),
                 Text(
                   l.habitDetailChartAverage(avg),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: HFTokens.success,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: HFTokens.success, height: 1.2, fontWeight: FontWeight.w700, fontSize: 10.0),
                 ),
               ],
             ),
@@ -1074,27 +1020,16 @@ class _BehaviorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 20, height: 1)),
+          Text(emoji, style: context.tt.headlineSmall!.copyWith(height: 1, fontSize: 20.0)),
           const SizedBox(height: 6),
           Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.06 * 10,
-              color: c.textTertiary,
-              height: 1.2,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.06 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
           ),
           const SizedBox(height: 3),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: c.textPrimary,
-              height: 1.3,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: c.textPrimary, height: 1.3),
           ),
         ],
       ),
@@ -1122,10 +1057,7 @@ class _HistoryList extends StatelessWidget {
         child: Center(
           child: Text(
             '—',
-            style: TextStyle(
-              fontSize: 13,
-              color: c.textTertiary,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
           ),
         ),
       );
@@ -1227,28 +1159,15 @@ class _HistoryItemState extends State<_HistoryItem> {
                           children: [
                             Text(
                               widget.item.date,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: c.textPrimary,
-                                height: 1.2,
-                              ),
+                              style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.2),
                             ),
                             Text(
                               statusEmoji,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                height: 1.2,
-                              ),
+                              style: context.tt.bodySmall!.copyWith(height: 1.2, fontSize: 12.0),
                             ),
                             Text(
                               statusLabel,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: dot,
-                                height: 1.2,
-                              ),
+                              style: context.tt.labelSmall!.copyWith(color: dot, height: 1.2),
                             ),
                           ],
                         ),
@@ -1258,12 +1177,7 @@ class _HistoryItemState extends State<_HistoryItem> {
                             widget.item.comment!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontStyle: FontStyle.italic,
-                              color: c.textSecondary,
-                              height: 1.4,
-                            ),
+                            style: context.tt.labelSmall!.copyWith(color: c.textSecondary, height: 1.4, fontStyle: FontStyle.italic),
                           ),
                         ],
                       ],
@@ -1290,12 +1204,7 @@ class _HistoryItemState extends State<_HistoryItem> {
                     children: [
                       Text(
                         widget.item.comment!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                          color: c.textSecondary,
-                          height: 1.6,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.6, fontStyle: FontStyle.italic, fontSize: 12.0),
                       ),
                       const SizedBox(height: 10),
                       Container(
@@ -1312,12 +1221,7 @@ class _HistoryItemState extends State<_HistoryItem> {
                         ),
                         child: Text(
                           l.habitDetailHistoryEdit,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: c.accent,
-                            height: 1.2,
-                          ),
+                          style: context.tt.labelSmall!.copyWith(color: c.accent, height: 1.2),
                         ),
                       ),
                     ],
@@ -1359,12 +1263,7 @@ class _AiButton extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 l.habitDetailAiChat,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: c.accent,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.accent, height: 1.2),
               ),
             ],
           ),
@@ -1407,12 +1306,7 @@ class _MenuItem extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: color,
-                height: 1.2,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: color, height: 1.2),
             ),
           ],
         ),

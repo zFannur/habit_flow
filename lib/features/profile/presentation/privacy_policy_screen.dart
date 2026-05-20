@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -81,21 +82,12 @@ class _Section extends StatelessWidget {
           children: [
             Text(
               label.toUpperCase(),
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: c.textTertiary,
-                letterSpacing: 0.08 * 11,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.08 * 11),
             ),
             const SizedBox(height: 8),
             Text(
               body,
-              style: TextStyle(
-                fontSize: 14,
-                color: c.textPrimary,
-                height: 1.6,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
             ),
           ],
         ),

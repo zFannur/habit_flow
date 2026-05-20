@@ -99,7 +99,8 @@ void main() {
         ),
       );
 
-      final list = await repo.list();
+      final listRes = await repo.list().run();
+      final list = listRes.getOrElse((_) => const []);
       expect(list, hasLength(2));
       expect(list.where((m) => m.free).map((m) => m.id), ['a/free']);
       expect(list.where((m) => !m.free).map((m) => m.id), ['b/paid']);
@@ -119,7 +120,8 @@ void main() {
         ),
       );
 
-      expect(await repo.list(), isEmpty);
+      final listRes = await repo.list().run();
+      expect(listRes.getOrElse((_) => const []), isEmpty);
     });
   });
 

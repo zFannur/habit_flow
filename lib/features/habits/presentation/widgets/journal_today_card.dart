@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -96,7 +97,7 @@ class JournalTodayCard extends StatelessWidget {
                   children: [
                     Text(
                       written ? '✅' : '📝',
-                      style: const TextStyle(fontSize: 32, height: 1),
+                      style: context.tt.displayMedium!.copyWith(height: 1, fontSize: 32.0),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -129,21 +130,12 @@ class _NotWrittenContent extends StatelessWidget {
       children: [
         Text(
           l.journalCardTitle,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            height: 1.2,
-          ),
+          style: context.tt.titleMedium!.copyWith(color: Colors.white, height: 1.2),
         ),
         const SizedBox(height: 2),
         Text(
           l.journalCardSubtitle,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Color(0x99FFFFFF),
-            height: 1.4,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: Color(0x99FFFFFF), height: 1.4, fontSize: 12.0),
         ),
         const SizedBox(height: 10),
         _FrostedButton(label: l.commonOpen, onTap: onOpen),
@@ -162,24 +154,16 @@ class _WrittenContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Запись сделана в 22:14',
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0x99FFFFFF),
-            height: 1.2,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: const Color(0x99FFFFFF), height: 1.2, fontSize: 12.0),
         ),
         const SizedBox(height: 2),
-        const Text(
+        Text(
           '«Сегодня удалось сохранить спокойствие в сложной ситуации...»',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            color: Color(0xD9FFFFFF),
-            height: 1.4,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: const Color(0xD9FFFFFF), height: 1.4),
         ),
         const SizedBox(height: 8),
         InkWell(
@@ -188,12 +172,7 @@ class _WrittenContent extends StatelessWidget {
             padding: EdgeInsets.zero,
             child: Text(
               l.journalCardEditLink,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Color(0xBFFFFFFF),
-                height: 1.2,
-              ),
+              style: context.tt.titleSmall!.copyWith(color: Color(0xBFFFFFFF), height: 1.2),
             ),
           ),
         ),
@@ -224,12 +203,7 @@ class _FrostedButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              height: 1.2,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: Colors.white, height: 1.2),
           ),
         ),
       ),

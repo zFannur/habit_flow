@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
+import '../../../core/config/env.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../../habits/data/habit_log_model.dart';
@@ -76,7 +78,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     final text = '📊 HabitFlow · $periodLabel\n'
         '✅ $doneCount выполнено · ❌ $missedCount пропущено\n'
         '🎯 $completionPct% завершено';
-    final url = Uri.encodeComponent('https://t.me/habitflow_dev');
+    final url = Uri.encodeComponent(Env.botPublicChannel);
     final shareUrl =
         'https://t.me/share/url?url=$url&text=${Uri.encodeComponent(text)}';
     const TelegramService().openLink(shareUrl);
@@ -270,10 +272,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     }
     rated.sort((a, b) => b.$2.compareTo(a.$2));
 
-    const colors = [
-      Color(0xFF22C55E),
-      Color(0xFF3B82F6),
-      Color(0xFFA855F7),
+    final colors = [
+      HFTokens.chartPalette[0],
+      HFTokens.chartPalette[1],
+      HFTokens.chartPalette[3],
     ];
 
     return [
@@ -290,15 +292,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   /// Category pie slices from stats.byCategory — top 5 by rate, assign colors.
   List<_CategorySlice> _pieSlices(Map<String, double> byCategory) {
     if (byCategory.isEmpty) return const [];
-    const colors = [
-      Color(0xFF22C55E),
-      Color(0xFF3B82F6),
-      Color(0xFFF59E0B),
-      Color(0xFFA855F7),
-      Color(0xFFEC4899),
-      Color(0xFF06B6D4),
-      Color(0xFFEF4444),
-    ];
+    final colors = HFTokens.chartPalette.take(7).toList();
     final sorted = byCategory.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     final top = sorted.take(5).toList();
@@ -454,17 +448,17 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
 // ─────────────────────────────────────── Helpers
 
 Color _barColor(int v) {
-  if (v < 40) return const Color(0xFFEF4444);
-  if (v < 70) return const Color(0xFFF59E0B);
-  return const Color(0xFF22C55E);
+  if (v < 40) return HFTokens.danger;
+  if (v < 70) return HFTokens.warning;
+  return HFTokens.success;
 }
 
 Color _heatmapColor(int v) {
-  if (v < 30) return const Color(0xFFEF4444).withValues(alpha: 0.2);
-  if (v < 50) return const Color(0xFFEF4444).withValues(alpha: 0.5);
-  if (v < 70) return const Color(0xFFF59E0B).withValues(alpha: 0.5);
-  if (v < 85) return const Color(0xFF22C55E).withValues(alpha: 0.5);
-  return const Color(0xFF22C55E).withValues(alpha: 0.9);
+  if (v < 30) return HFTokens.danger.withValues(alpha: 0.2);
+  if (v < 50) return HFTokens.danger.withValues(alpha: 0.5);
+  if (v < 70) return HFTokens.warning.withValues(alpha: 0.5);
+  if (v < 85) return HFTokens.success.withValues(alpha: 0.5);
+  return HFTokens.success.withValues(alpha: 0.9);
 }
 
 class _DayValue {
@@ -535,13 +529,7 @@ class _AnalyticsStaticHeader extends StatelessWidget {
                 Expanded(
                   child: Text(
                     AppLocalizations.of(context).analyticsTitle,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: c.textPrimary,
-                      letterSpacing: -0.02 * 22,
-                      height: 1.2,
-                    ),
+                    style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 22),
                   ),
                 ),
                 _IconButton(
@@ -645,12 +633,7 @@ class _SegmentedItem extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: selected ? c.textPrimary : c.textTertiary,
-              height: 1.2,
-            ),
+            style: context.tt.labelLarge!.copyWith(color: selected ? c.textPrimary : c.textTertiary, height: 1.2),
           ),
         ),
       ),
@@ -685,13 +668,7 @@ class _PeriodNav extends StatelessWidget {
             child: Center(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  letterSpacing: -0.01 * 15,
-                  height: 1.2,
-                ),
+                style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.01 * 15),
               ),
             ),
           ),
@@ -775,12 +752,7 @@ class _CardHeading extends StatelessWidget {
     final c = HFColors.of(context);
     return Text(
       text,
-      style: TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w700,
-        color: c.textPrimary,
-        height: 1.2,
-      ),
+      style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
     );
   }
 }
@@ -813,37 +785,21 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 Text(
                   l.analyticsSummaryLabel,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: c.textTertiary,
-                    letterSpacing: 0.06 * 11,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.06 * 11),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '$completionPct%',
-                  style: TextStyle(
-                    fontSize: 52,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary,
-                    height: 1,
-                    letterSpacing: -0.03 * 52,
-                  ),
+                  style: context.tt.displayLarge!.copyWith(color: c.textPrimary, height: 1, letterSpacing: -0.03 * 52, fontSize: 52.0),
                 ),
                 const SizedBox(height: 6),
                 // Trend row: static placeholder — real trend requires prev period data.
-                // TODO(real-data): compute delta vs previous week/month.
+                // см. issue #1
                 const SizedBox.shrink(),
                 const SizedBox(height: 3),
                 Text(
                   l.analyticsSubtextPeriod(periodLabel),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
                 ),
               ],
             ),
@@ -870,17 +826,12 @@ class _MiniDonut extends StatelessWidget {
         painter: _DonutPainter(
           value: value.toDouble(),
           track: c.bgTertiary,
-          fill: const Color(0xFF22C55E),
+          fill: HFTokens.success,
         ),
         child: Center(
           child: Text(
             '$value%',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: c.textPrimary,
-              height: 1,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: c.textPrimary, height: 1),
           ),
         ),
       ),
@@ -953,27 +904,27 @@ class _MetricsGrid extends StatelessWidget {
         label: l.analyticsMetricCompleted,
         value: '$doneCount',
         icon: LucideIcons.checkCircle2,
-        color: const Color(0xFF22C55E),
+        color: HFTokens.success,
       ),
       _MetricData(
         label: l.analyticsMetricSkipped,
         value: '$missedCount',
         icon: LucideIcons.xCircle,
-        color: const Color(0xFFEF4444),
+        color: HFTokens.danger,
       ),
       _MetricData(
         label: l.analyticsMetricBestDay,
         value: bestDayLabel,
         sub: bestDayPct > 0 ? '$bestDayPct%' : null,
         icon: LucideIcons.trophy,
-        color: const Color(0xFFF59E0B),
+        color: HFTokens.warning,
       ),
       _MetricData(
         label: l.analyticsMetricStreaks,
         value: '$currentStreak',
         sub: l.analyticsMetricStreaksSubtext,
         icon: LucideIcons.trendingUp,
-        color: const Color(0xFF3B82F6),
+        color: HFTokens.lAccent,
       ),
     ];
     return Column(
@@ -1040,35 +991,18 @@ class _MetricTile extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             data.label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: c.textTertiary,
-              letterSpacing: 0.04 * 11,
-              height: 1.2,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.04 * 11),
           ),
           const SizedBox(height: 3),
           Text(
             data.value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: c.textPrimary,
-              height: 1.1,
-              letterSpacing: -0.02 * 24,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.1, letterSpacing: -0.02 * 24, fontSize: 24.0),
           ),
           if (data.sub != null) ...[
             const SizedBox(height: 2),
             Text(
               data.sub!,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: data.color,
-                height: 1.2,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: data.color, height: 1.2),
             ),
           ],
         ],
@@ -1104,19 +1038,12 @@ class _BarChartCard extends StatelessWidget {
               if (selectedIdx != null)
                 RichText(
                   text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: c.textSecondary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.2, fontSize: 12.0),
                     children: [
                       TextSpan(text: '${data[selectedIdx!].label}: '),
                       TextSpan(
                         text: '${data[selectedIdx!].value}%',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: _barColor(data[selectedIdx!].value),
-                        ),
+                        style: context.tt.labelLarge!.copyWith(color: _barColor(data[selectedIdx!].value)),
                       ),
                     ],
                   ),
@@ -1137,17 +1064,17 @@ class _BarChartCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _LegendDot(
-                color: const Color(0xFFEF4444),
+                color: HFTokens.danger,
                 label: AppLocalizations.of(context).analyticsLegendLow,
               ),
               const SizedBox(width: 12),
               _LegendDot(
-                color: const Color(0xFFF59E0B),
+                color: HFTokens.warning,
                 label: AppLocalizations.of(context).analyticsLegendMedium,
               ),
               const SizedBox(width: 12),
               _LegendDot(
-                color: const Color(0xFF22C55E),
+                color: HFTokens.success,
                 label: AppLocalizations.of(context).analyticsLegendHigh,
               ),
             ],
@@ -1177,11 +1104,7 @@ class _LegendDot extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
-            color: c.textTertiary,
-            height: 1.2,
-          ),
+          style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2),
         ),
       ],
     );
@@ -1275,11 +1198,7 @@ class _BarChart extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 4),
                   child: Text(
                     '${value.toInt()}%',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: c.textTertiary,
-                      height: 1,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 9.0),
                   ),
                 );
               },
@@ -1297,13 +1216,7 @@ class _BarChart extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     data[i].label,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? c.textPrimary : c.textTertiary,
-                      height: 1,
-                    ),
+                    style: context.tt.labelSmall!.copyWith(color: isSelected ? c.textPrimary : c.textTertiary, height: 1),
                   ),
                 );
               },
@@ -1386,12 +1299,7 @@ class _HeatmapGrid extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 3),
                         child: Text(
                           d,
-                          style: TextStyle(
-                            fontSize: 9,
-                            color: c.textTertiary,
-                            fontWeight: FontWeight.w600,
-                            height: 1,
-                          ),
+                          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontWeight: FontWeight.w600, fontSize: 9.0),
                         ),
                       ),
                     ),
@@ -1444,12 +1352,7 @@ class _HeatmapColumn extends StatelessWidget {
           child: Center(
             child: Text(
               '${weekIdx + 1}н',
-              style: TextStyle(
-                fontSize: 9,
-                color: c.textTertiary,
-                fontWeight: FontWeight.w600,
-                height: 1,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontWeight: FontWeight.w600, fontSize: 9.0),
             ),
           ),
         ),
@@ -1491,12 +1394,7 @@ class _HeatmapCell extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         cell!.label,
-        style: TextStyle(
-          fontSize: 8,
-          fontWeight: FontWeight.w700,
-          color: textColor,
-          height: 1,
-        ),
+        style: context.tt.bodyMedium!.copyWith(color: textColor, height: 1, fontWeight: FontWeight.w700, fontSize: 8.0),
       ),
     );
   }
@@ -1510,11 +1408,11 @@ class _HeatmapLegend extends StatelessWidget {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
     final swatches = [
-      const Color(0xFFEF4444).withValues(alpha: 0.2),
-      const Color(0xFFEF4444).withValues(alpha: 0.5),
-      const Color(0xFFF59E0B).withValues(alpha: 0.5),
-      const Color(0xFF22C55E).withValues(alpha: 0.5),
-      const Color(0xFF22C55E).withValues(alpha: 0.9),
+      HFTokens.danger.withValues(alpha: 0.2),
+      HFTokens.danger.withValues(alpha: 0.5),
+      HFTokens.warning.withValues(alpha: 0.5),
+      HFTokens.success.withValues(alpha: 0.5),
+      HFTokens.success.withValues(alpha: 0.9),
     ];
     return Wrap(
       spacing: 6,
@@ -1523,7 +1421,7 @@ class _HeatmapLegend extends StatelessWidget {
       children: [
         Text(
           l.analyticsHeatmapLess,
-          style: TextStyle(fontSize: 10, color: c.textTertiary, height: 1.2),
+          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 10.0),
         ),
         for (final color in swatches)
           Container(
@@ -1540,7 +1438,7 @@ class _HeatmapLegend extends StatelessWidget {
           ),
         Text(
           l.analyticsHeatmapMore,
-          style: TextStyle(fontSize: 10, color: c.textTertiary, height: 1.2),
+          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 10.0),
         ),
       ],
     );
@@ -1637,21 +1535,12 @@ class _PieLegendRow extends StatelessWidget {
         Expanded(
           child: Text(
             slice.label,
-            style: TextStyle(
-              fontSize: 12,
-              color: c.textSecondary,
-              height: 1.2,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.2, fontSize: 12.0),
           ),
         ),
         Text(
           '${slice.pct}%',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: c.textPrimary,
-            height: 1.2,
-          ),
+          style: context.tt.labelMedium!.copyWith(color: c.textPrimary, height: 1.2),
         ),
       ],
     );
@@ -1686,12 +1575,12 @@ class _MoodLineCard extends StatelessWidget {
             Row(
               children: [
                 _LineLegend(
-                  color: const Color(0xFF3B82F6),
+                  color: HFTokens.lAccent,
                   label: AppLocalizations.of(context).analyticsMoodLine,
                 ),
                 const SizedBox(width: 16),
                 _LineLegend(
-                  color: const Color(0xFFF59E0B),
+                  color: HFTokens.warning,
                   label: AppLocalizations.of(context).analyticsEnergyLine,
                 ),
               ],
@@ -1725,11 +1614,7 @@ class _LineLegend extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
-            color: c.textSecondary,
-            height: 1.2,
-          ),
+          style: context.tt.labelSmall!.copyWith(color: c.textSecondary, height: 1.2),
         ),
       ],
     );
@@ -1790,11 +1675,7 @@ class _MoodLineChart extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 4),
                   child: Text(
                     '${value.toInt()}',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: c.textTertiary,
-                      height: 1,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 9.0),
                   ),
                 );
               },
@@ -1812,11 +1693,7 @@ class _MoodLineChart extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     data[i].label,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: c.textTertiary,
-                      height: 1,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 10.0),
                   ),
                 );
               },
@@ -1825,9 +1702,9 @@ class _MoodLineChart extends StatelessWidget {
         ),
         lineBarsData: [
           if (moodSpots.isNotEmpty)
-            _lineBar(moodSpots, const Color(0xFF3B82F6), card),
+            _lineBar(moodSpots, HFTokens.lAccent, card),
           if (energySpots.isNotEmpty)
-            _lineBar(energySpots, const Color(0xFFF59E0B), card),
+            _lineBar(energySpots, HFTokens.warning, card),
         ],
       ),
     );
@@ -1875,13 +1752,7 @@ class _TopHabitsCard extends StatelessWidget {
               _CardHeading(AppLocalizations.of(context).analyticsTopHabitsTitle),
               Text(
                 AppLocalizations.of(context).analyticsTopHabitsSubtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: c.textTertiary,
-                  letterSpacing: 0.05 * 11,
-                  height: 1.2,
-                ),
+                style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.05 * 11),
               ),
             ],
           ),
@@ -1921,16 +1792,11 @@ class _TopHabitRow extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             '$rank',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: c.textTertiary,
-              height: 1,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1),
           ),
         ),
         const SizedBox(width: 12),
-        Text(habit.emoji, style: const TextStyle(fontSize: 18, height: 1)),
+        Text(habit.emoji, style: context.tt.headlineSmall!.copyWith(height: 1)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -1943,22 +1809,12 @@ class _TopHabitRow extends StatelessWidget {
                     child: Text(
                       habit.name,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: c.textPrimary,
-                        height: 1.2,
-                      ),
+                      style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
                     ),
                   ),
                   Text(
                     '${habit.pct}%',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: habit.color,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleSmall!.copyWith(color: habit.color, height: 1.2),
                   ),
                 ],
               ),
@@ -2092,11 +1948,7 @@ class _IdleBody extends StatelessWidget {
       children: [
         Text(
           text,
-          style: TextStyle(
-            fontSize: 13,
-            color: c.textSecondary,
-            height: 1.55,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.55),
         ),
         const SizedBox(height: 14),
         _PrimaryRefreshButton(label: cta, onTap: onTap),
@@ -2125,11 +1977,7 @@ class _LoadingBody extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 13,
-                color: c.textSecondary,
-                height: 1.4,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.4),
             ),
           ),
         ],
@@ -2180,11 +2028,7 @@ class _ErrorBody extends StatelessWidget {
       children: [
         Text(
           text,
-          style: TextStyle(
-            fontSize: 13,
-            color: c.textSecondary,
-            height: 1.55,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.55),
         ),
         const SizedBox(height: 14),
         _PrimaryRefreshButton(label: primaryLabel, onTap: primaryAction),
@@ -2209,11 +2053,7 @@ class _DataBody extends StatelessWidget {
         children: [
           Text(
             l.correlationsEmpty,
-            style: TextStyle(
-              fontSize: 13,
-              color: c.textSecondary,
-              height: 1.55,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.55),
           ),
           const SizedBox(height: 14),
           _PrimaryRefreshButton(
@@ -2274,45 +2114,26 @@ class _InsightTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${insight.habit} · ${insight.factor}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.3),
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 '${(insight.strength * 100).round()}%',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: c.textTertiary,
-                  height: 1.2,
-                ),
+                style: context.tt.labelMedium!.copyWith(color: c.textTertiary, height: 1.2),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             dirLabel,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: dirColor,
-              height: 1.2,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: dirColor, height: 1.2),
           ),
           if (insight.note != null && insight.note!.trim().isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
               insight.note!,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: c.textSecondary,
-                height: 1.45,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.45, fontSize: 12.5),
             ),
           ],
         ],
@@ -2353,12 +2174,7 @@ class _PrimaryRefreshButton extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: Colors.white, height: 1.2),
               ),
             ],
           ),
@@ -2379,11 +2195,7 @@ class _EmptyPlaceholder extends StatelessWidget {
       child: Center(
         child: Text(
           '—',
-          style: TextStyle(
-            fontSize: 20,
-            color: c.textTertiary,
-            height: 1,
-          ),
+          style: context.tt.headlineSmall!.copyWith(color: c.textTertiary, height: 1, fontSize: 20.0),
         ),
       ),
     );

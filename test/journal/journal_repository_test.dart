@@ -71,7 +71,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final entry = await repo.findByDate(DateTime.utc(2026, 5, 7));
+      final entryRes = await repo.findByDate(DateTime.utc(2026, 5, 7)).run();
+      final entry = entryRes.getOrElse((f) => fail('findByDate failed: $f'));
       expect(entry, isNotNull);
       expect(entry!.id, '11111111-1111-1111-1111-111111111111');
       expect(entry.date, DateTime.utc(2026, 5, 7));
@@ -96,7 +97,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final entry = await repo.findByDate(DateTime.utc(2026, 5, 7));
+      final entryRes = await repo.findByDate(DateTime.utc(2026, 5, 7)).run();
+      final entry = entryRes.getOrElse((f) => fail('findByDate failed: $f'));
       expect(entry, isNull);
     });
 
@@ -123,7 +125,8 @@ void main() {
         updatedAt: DateTime.utc(2026, 5, 7, 12, 5),
       );
 
-      final result = await repo.upsert(entry);
+      final resultRes = await repo.upsert(entry).run();
+      final result = resultRes.getOrElse((f) => fail('upsert failed: $f'));
       expect(result.id, entry.id);
 
       final req = recorder.requests.single as http.Request;
@@ -147,7 +150,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      await repo.delete('abc');
+      final result = await repo.delete('abc').run();
+      expect(result.isRight(), isTrue);
 
       final req = recorder.requests.single;
       expect(req.method, 'DELETE');
@@ -170,7 +174,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final n = await repo.totalCount();
+      final nRes = await repo.totalCount().run();
+      final n = nRes.getOrElse((f) => fail('totalCount failed: $f'));
       expect(n, 42);
 
       final req = recorder.requests.single;

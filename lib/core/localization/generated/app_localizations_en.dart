@@ -209,6 +209,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingS3Templates => 'From templates';
 
   @override
+  String get onboardingS3TemplatesSub => 'Recommended';
+
+  @override
   String get onboardingS3BadgeRecommended => '★ Recommended';
 
   @override
@@ -1592,4 +1595,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorChangeModel => 'Change model';
+
+  @override
+  String get deviceLinkTitle => 'Pair Device';
+
+  @override
+  String get deviceLinkBtn => 'Log in via Telegram';
+
+  @override
+  String get deviceLinkInstructions =>
+      '1. Tap the button below to open our Telegram bot.\n2. Tap \'Start\' or \'Launch\' to confirm linking.\n3. Keep this screen open; your device will pair automatically.';
+
+  @override
+  String get deviceLinkOpenBotBtn => 'Open Telegram Bot';
+
+  @override
+  String get deviceLinkWaiting => 'Waiting for confirmation...';
+
+  @override
+  String get deviceLinkSuccess => 'Device successfully paired! Redirecting...';
+
+  @override
+  String deviceLinkFailed(String reason) {
+    return 'Failed to pair device: $reason';
+  }
+
+  @override
+  String get deviceLinkReasonExpired =>
+      'The link has expired. Please try again.';
+
+  @override
+  String get deviceLinkReasonConsumed =>
+      'This link was already used. Please try again.';
+
+  @override
+  String get deviceLinkReasonNetwork => 'Network error. Check your connection.';
+
+  @override
+  String get deviceLinkReasonUnknown =>
+      'An unknown error occurred. Please try again.';
+
+  @override
+  String get habitCatHealth => 'Health';
+
+  @override
+  String get habitCatSport => 'Sport';
+
+  @override
+  String get habitCatStudy => 'Study';
+
+  @override
+  String get habitCatWork => 'Work';
+
+  @override
+  String get habitCatRelationships => 'Relationships';
+
+  @override
+  String get habitCatFinance => 'Finance';
+
+  @override
+  String get habitCatHobby => 'Hobby';
+
+  @override
+  String get habitCatMental => 'Mental';
+
+  @override
+  String get habitCatNew => '+ New';
+
+  @override
+  String get habitRepeatDaily => 'Every day';
+
+  @override
+  String get habitRepeatWeekdays => 'By weekdays';
+
+  @override
+  String get habitRepeatNPerWeek => 'X times a week';
+
+  @override
+  String get habitRepeatEveryN => 'Every N days';
+
+  @override
+  String get habitRepeatMonthly => 'By dates of month';
+
+  @override
+  String get habitWeekMon => 'Mon';
+
+  @override
+  String get habitWeekTue => 'Tue';
+
+  @override
+  String get habitWeekWed => 'Wed';
+
+  @override
+  String get habitWeekThu => 'Thu';
+
+  @override
+  String get habitWeekFri => 'Fri';
+
+  @override
+  String get habitWeekSat => 'Sat';
+
+  @override
+  String get habitWeekSun => 'Sun';
+
+  @override
+  String get habitGoalUnitTimes => 'times';
+
+  @override
+  String get habitStackingNoHabits => '— Create another habit first —';
 }

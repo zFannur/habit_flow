@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 
 import '../../../core/config/env.dart';
+import '../../../core/errors/failure.dart';
+import '../../../core/errors/result.dart';
 
 /// Описание модели OpenRouter из `GET /models`.
 ///
@@ -73,22 +76,27 @@ class OpenRouterClient {
     'Authorization': 'Bearer $apiKey',
     'Content-Type': 'application/json',
     // OpenRouter рекомендует эти заголовки для атрибуции / лимитов.
-    'HTTP-Referer': 'https://habitflow.app',
+    'HTTP-Referer': Env.appBaseUrl,
     'X-Title': 'HabitFlow',
   };
 
   /// Список доступных моделей. Бросает [DioException] на не-2xx.
-  Future<List<OpenRouterModel>> models() async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      '$_baseUrl/models',
-      options: Options(headers: _headers),
+  AppTask<List<OpenRouterModel>> models() {
+    return TaskEither.tryCatch(
+      () async {
+        final response = await _dio.get<Map<String, dynamic>>(
+          '$_baseUrl/models',
+          options: Options(headers: _headers),
+        );
+        final data = response.data?['data'];
+        if (data is! List) return const [];
+        return data
+            .whereType<Map>()
+            .map((m) => OpenRouterModel.fromJson(Map<String, dynamic>.from(m)))
+            .toList();
+      },
+      (e, st) => Failure.unknown(message: e.toString()),
     );
-    final data = response.data?['data'];
-    if (data is! List) return const [];
-    return data
-        .whereType<Map>()
-        .map((m) => OpenRouterModel.fromJson(Map<String, dynamic>.from(m)))
-        .toList();
   }
 
   /// Chat completion. Возвращает [Stream<String>] с дельтами.

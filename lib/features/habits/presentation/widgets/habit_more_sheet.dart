@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -48,12 +49,7 @@ class HabitMoreSheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               child: Text(
                 l.habitMoreSheetTitle,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  height: 1.2,
-                ),
+                style: context.tt.bodyLarge!.copyWith(color: c.textPrimary, height: 1.2, fontWeight: FontWeight.w700),
               ),
             ),
             Container(height: 1, color: c.border),
@@ -112,7 +108,7 @@ class _SheetRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 18, height: 1.3)),
+          Text(emoji, style: context.tt.headlineSmall!.copyWith(height: 1.3)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -120,23 +116,12 @@ class _SheetRow extends StatelessWidget {
               children: [
                 Text(
                   label.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.06 * 10,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.06 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value ?? '—',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: value != null ? c.textPrimary : c.textTertiary,
-                    height: 1.4,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: value != null ? c.textPrimary : c.textTertiary, height: 1.4),
                 ),
               ],
             ),

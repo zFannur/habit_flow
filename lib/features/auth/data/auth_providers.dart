@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
+import '../../../core/errors/failure.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../../core/services/telegram_service.dart';
 import '../domain/auth_state.dart';
@@ -34,21 +35,21 @@ class AuthController extends StateNotifier<AuthState> {
     try {
       state = await _repo.restoreSession();
     } catch (e) {
-      state = Failed(e);
+      state = Failed(Failure.unknown(message: e.toString()));
     }
   }
 
   /// Exchange Telegram initData for a fresh JWT.
   Future<void> signIn(String initData) async {
-    try {
-      state = await _repo.signInWithTelegram(initData);
-    } catch (e) {
-      state = Failed(e);
-    }
+    final res = await _repo.signInWithTelegram(initData).run();
+    res.match(
+      (f) => state = Failed(f),
+      (ok) => state = ok,
+    );
   }
 
   Future<void> signOut() async {
-    await _repo.signOut();
+    await _repo.signOut().run();
     state = const Unauthenticated();
   }
 }

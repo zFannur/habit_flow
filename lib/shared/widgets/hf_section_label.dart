@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -19,12 +20,7 @@ class HFSectionLabel extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 10),
       child: Text(
         label.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.08 * 11,
-          color: c.textTertiary,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.08 * 11),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,8 +11,7 @@ import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../data/donations_repository.dart';
 
-// TODO(real-data): replace with a real userProvider once it exists so the
-// supporter badge in profile refreshes after payment.
+// см. issue #9
 final _supabaseClientProvider = Provider<SupabaseClient>(
   (_) => Supabase.instance.client,
 );
@@ -31,7 +31,7 @@ class DonateScreen extends ConsumerStatefulWidget {
 }
 
 class _DonateScreenState extends ConsumerState<DonateScreen> {
-  // TODO(l10n): localize donation presets
+  // см. issue #10
   static const _presets = <_Preset>[
     _Preset(stars: 50, usd: r'$0.65', label: 'Кофе автору'),
     _Preset(stars: 150, usd: r'$1.95', label: 'Хороший обед', popular: true),
@@ -78,7 +78,7 @@ class _DonateScreenState extends ConsumerState<DonateScreen> {
         if (!mounted) return;
         if (status == TgInvoiceStatus.paid) {
           // Invalidate supabase auth user stream so is_supporter refreshes.
-          // TODO(real-data): invalidate userProvider when it exists.
+          // см. issue #11
           ref.invalidate(_supabaseClientProvider);
           _showToast(
             title: l.donateThanksTitle,
@@ -134,21 +134,12 @@ class _DonateScreenState extends ConsumerState<DonateScreen> {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
               ),
               const SizedBox(height: 2),
               Text(
                 message,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: c.textSecondary,
-                  height: 1.4,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.4),
               ),
             ],
           ),
@@ -236,13 +227,7 @@ class _Header extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 l.donateTitle,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  letterSpacing: -0.02 * 20,
-                  height: 1.2,
-                ),
+                style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 20, fontSize: 20.0),
               ),
             ],
           ),
@@ -301,13 +286,7 @@ class _HeroCard extends StatelessWidget {
                 Text(
                   l.donateHeroTitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary,
-                    letterSpacing: -0.02 * 22,
-                    height: 1.2,
-                  ),
+                  style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 22),
                 ),
                 const SizedBox(height: 12),
                 ConstrainedBox(
@@ -315,12 +294,7 @@ class _HeroCard extends StatelessWidget {
                   child: Text(
                     l.donateHeroMessage,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: c.textSecondary,
-                      height: 1.65,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.65),
                   ),
                 ),
               ],
@@ -413,13 +387,7 @@ class _PresetsSection extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10),
           child: Text(
             l.donatePresetsLabel,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: c.textSecondary,
-              letterSpacing: 0.01 * 13,
-              height: 1.2,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: c.textSecondary, height: 1.2, letterSpacing: 0.01 * 13),
           ),
         ),
         // Top padding reserves room for the floating "Popular" badge that
@@ -577,13 +545,7 @@ class _PresetCardState extends State<_PresetCard> {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   child: Text(
                     l.donatePopularBadge,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 0.04 * 10,
-                      height: 1.4,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: Colors.white, height: 1.4, letterSpacing: 0.04 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
                   ),
                 ),
               ),
@@ -623,12 +585,7 @@ class _PresetContent extends StatelessWidget {
             Text(
               l.donateCustomInputLabel,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: c.textTertiary,
-                height: 1.2,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2),
             ),
             const SizedBox(height: 4),
             Container(
@@ -647,24 +604,14 @@ class _PresetContent extends StatelessWidget {
                   LengthLimitingTextInputFormatter(5),
                 ],
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  height: 1.2,
-                ),
+                style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1.2),
                 cursorColor: c.accent,
                 decoration: InputDecoration(
                   isDense: true,
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                   hintText: '100',
-                  hintStyle: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  hintStyle: context.tt.headlineSmall!.copyWith(color: c.textTertiary, height: 1.2),
                 ),
               ),
             ),
@@ -679,12 +626,7 @@ class _PresetContent extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             l.donateCustomButton,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: selected ? c.accent : c.textPrimary,
-              height: 1.2,
-            ),
+            style: context.tt.titleMedium!.copyWith(color: selected ? c.accent : c.textPrimary, height: 1.2),
           ),
         ],
       );
@@ -696,34 +638,18 @@ class _PresetContent extends StatelessWidget {
       children: [
         Text(
           '${preset.stars} ⭐',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: selected ? c.accent : c.textPrimary,
-            letterSpacing: -0.02 * 20,
-            height: 1,
-          ),
+          style: context.tt.headlineSmall!.copyWith(color: selected ? c.accent : c.textPrimary, height: 1, letterSpacing: -0.02 * 20, fontSize: 20.0),
         ),
         const SizedBox(height: 5),
         Text(
           '≈ ${preset.usd}',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: c.textTertiary,
-            height: 1.2,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
         ),
         const SizedBox(height: 6),
         Text(
           preset.label ?? '',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: selected ? c.accent : c.textSecondary,
-            height: 1.3,
-          ),
+          style: context.tt.labelSmall!.copyWith(color: selected ? c.accent : c.textSecondary, height: 1.3),
         ),
       ],
     );
@@ -752,13 +678,7 @@ class _BenefitsCard extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 14),
             child: Text(
               l.donateBenefitsTitle,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: c.textPrimary,
-                letterSpacing: -0.01 * 15,
-                height: 1.2,
-              ),
+              style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.01 * 15),
             ),
           ),
           _BenefitRow(icon: '💎', text: l.donateBenefitBadge),
@@ -794,18 +714,13 @@ class _BenefitRow extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
-          child: Text(icon, style: const TextStyle(fontSize: 18, height: 1)),
+          child: Text(icon, style: context.tt.headlineSmall!.copyWith(height: 1)),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: c.textPrimary,
-              height: 1.4,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.4),
           ),
         ),
       ],
@@ -877,13 +792,7 @@ class _CtaSection extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: fg,
-                      letterSpacing: -0.01 * 16,
-                      height: 1.2,
-                    ),
+                    style: context.tt.bodyLarge!.copyWith(color: fg, height: 1.2, letterSpacing: -0.01 * 16, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
@@ -896,12 +805,7 @@ class _CtaSection extends StatelessWidget {
           child: Text(
             l.donateMobileNote,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w400,
-              color: c.textTertiary,
-              height: 1.5,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.5, fontWeight: FontWeight.w400),
           ),
         ),
         const SizedBox(height: 8),
@@ -912,12 +816,7 @@ class _CtaSection extends StatelessWidget {
             children: [
               Text(
                 l.donateHistoryLink,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: c.accent,
-                  height: 1.4,
-                ),
+                style: context.tt.titleSmall!.copyWith(color: c.accent, height: 1.4),
               ),
               const SizedBox(width: 4),
               Icon(LucideIcons.arrowRight, size: 13, color: c.accent),

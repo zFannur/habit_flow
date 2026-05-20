@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -93,13 +94,7 @@ class _Header extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: c.textPrimary,
-                letterSpacing: -0.01 * 17,
-                height: 1.3,
-              ),
+              style: context.tt.titleLarge!.copyWith(color: c.textPrimary, height: 1.3, letterSpacing: -0.01 * 17),
             ),
           ),
           _SquareBtn(
@@ -183,7 +178,7 @@ class _Breadcrumb extends StatelessWidget {
             if (i > 0)
               Text(
                 '•',
-                style: TextStyle(fontSize: 13, color: c.border, height: 1),
+                style: context.tt.bodySmall!.copyWith(color: c.border, height: 1),
               ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -192,12 +187,7 @@ class _Breadcrumb extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   items[i].text,
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w500,
-                    color: c.textTertiary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.3, fontSize: 11.5),
                 ),
               ],
             ),
@@ -364,12 +354,8 @@ class _MdBlockView extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text.rich(
-            TextSpan(children: _inlineSpans(block.text, c)),
-            style: TextStyle(
-              fontSize: 14,
-              color: c.textSecondary,
-              height: 1.65,
-            ),
+            TextSpan(children: _inlineSpans(block.text, c, context.tt)),
+            style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.65),
           ),
         );
       case _MdBlockKind.bullets:
@@ -394,12 +380,8 @@ class _MdBlockView extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text.rich(
-                        TextSpan(children: _inlineSpans(block.items[i], c)),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: c.textSecondary,
-                          height: 1.55,
-                        ),
+                        TextSpan(children: _inlineSpans(block.items[i], c, context.tt)),
+                        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.55),
                       ),
                     ),
                   ],
@@ -430,22 +412,13 @@ class _MdBlockView extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         '${i + 1}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: c.accent,
-                          height: 1,
-                        ),
+                        style: context.tt.labelSmall!.copyWith(color: c.accent, height: 1),
                       ),
                     ),
                     Expanded(
                       child: Text.rich(
-                        TextSpan(children: _inlineSpans(block.items[i], c)),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: c.textSecondary,
-                          height: 1.55,
-                        ),
+                        TextSpan(children: _inlineSpans(block.items[i], c, context.tt)),
+                        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.55),
                       ),
                     ),
                   ],
@@ -483,13 +456,7 @@ class _Heading extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: c.textPrimary,
-            letterSpacing: -0.01 * 15,
-            height: 1.3,
-          ),
+          style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3, letterSpacing: -0.01 * 15),
         ),
       );
     }
@@ -497,12 +464,7 @@ class _Heading extends StatelessWidget {
       padding: EdgeInsets.only(top: first ? 0 : 12, bottom: 6),
       child: Text(
         text,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          color: c.textPrimary,
-          height: 1.3,
-        ),
+        style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.3),
       ),
     );
   }
@@ -510,7 +472,7 @@ class _Heading extends StatelessWidget {
 
 /// Минимальный inline-парсер: `**bold**`, `*italic*`, `` `code` ``.
 /// Всё остальное идёт обычным текстом.
-List<TextSpan> _inlineSpans(String text, HFColors c) {
+List<TextSpan> _inlineSpans(String text, HFColors c, TextTheme tt) {
   final spans = <TextSpan>[];
   final pattern = RegExp(r'(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)');
   var pos = 0;
@@ -522,23 +484,17 @@ List<TextSpan> _inlineSpans(String text, HFColors c) {
     if (token.startsWith('**')) {
       spans.add(TextSpan(
         text: token.substring(2, token.length - 2),
-        style: TextStyle(
-          color: c.textPrimary,
-          fontWeight: FontWeight.w700,
-        ),
+        style: tt.labelLarge!.copyWith(color: c.textPrimary),
       ));
     } else if (token.startsWith('`')) {
       spans.add(TextSpan(
         text: token.substring(1, token.length - 1),
-        style: TextStyle(
-          color: c.accent,
-          fontFeatures: const [FontFeature.tabularFigures()],
-        ),
+        style: tt.bodyMedium!.copyWith(color: c.accent),
       ));
     } else {
       spans.add(TextSpan(
         text: token.substring(1, token.length - 1),
-        style: const TextStyle(fontStyle: FontStyle.italic),
+        style: tt.bodyMedium!.copyWith(fontStyle: FontStyle.italic),
       ));
     }
     pos = match.end;
@@ -571,11 +527,7 @@ class _ErrorView extends StatelessWidget {
               child: Text(
                 message,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: c.textSecondary,
-                  fontSize: 13,
-                  height: 1.5,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.5),
               ),
             ),
           ),
@@ -617,16 +569,11 @@ class _ActionBar extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('💬', style: TextStyle(fontSize: 16, height: 1)),
+                      Text('💬', style: context.tt.bodyLarge!.copyWith(height: 1)),
                       const SizedBox(width: 7),
                       Text(
                         AppLocalizations.of(context).aiSummaryAsk,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          height: 1.2,
-                        ),
+                        style: context.tt.labelLarge!.copyWith(color: Colors.white, height: 1.2),
                       ),
                     ],
                   ),
@@ -652,16 +599,11 @@ class _ActionBar extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Text('🔄', style: TextStyle(fontSize: 16, height: 1)),
+                    Text('🔄', style: context.tt.bodyLarge!.copyWith(height: 1)),
                     const SizedBox(width: 7),
                     Text(
                       AppLocalizations.of(context).aiSummaryRegenerate,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: c.textSecondary,
-                        height: 1.2,
-                      ),
+                      style: context.tt.labelLarge!.copyWith(color: c.textSecondary, height: 1.2),
                     ),
                   ],
                 ),

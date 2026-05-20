@@ -210,6 +210,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onboardingS3Templates => 'Из шаблонов';
 
   @override
+  String get onboardingS3TemplatesSub => 'Рекомендовано';
+
+  @override
   String get onboardingS3BadgeRecommended => '★ Рекомендуем';
 
   @override
@@ -1596,4 +1599,114 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorChangeModel => 'Поменять модель';
+
+  @override
+  String get deviceLinkTitle => 'Привязка устройства';
+
+  @override
+  String get deviceLinkBtn => 'Войти через Telegram';
+
+  @override
+  String get deviceLinkInstructions =>
+      '1. Нажмите кнопку ниже, чтобы открыть нашего Telegram-бота.\n2. Нажмите кнопку \'Запустить\' (Start) для подтверждения привязки.\n3. Не закрывайте этот экран, привязка произойдет автоматически.';
+
+  @override
+  String get deviceLinkOpenBotBtn => 'Открыть Telegram-бота';
+
+  @override
+  String get deviceLinkWaiting => 'Ожидание подтверждения...';
+
+  @override
+  String get deviceLinkSuccess =>
+      'Устройство успешно привязано! Перенаправление...';
+
+  @override
+  String deviceLinkFailed(String reason) {
+    return 'Не удалось привязать устройство: $reason';
+  }
+
+  @override
+  String get deviceLinkReasonExpired =>
+      'Срок действия ссылки истек. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get deviceLinkReasonConsumed =>
+      'Эта ссылка уже была использована. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get deviceLinkReasonNetwork =>
+      'Ошибка сети. Проверьте подключение к интернету.';
+
+  @override
+  String get deviceLinkReasonUnknown =>
+      'Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get habitCatHealth => 'Здоровье';
+
+  @override
+  String get habitCatSport => 'Спорт';
+
+  @override
+  String get habitCatStudy => 'Учёба';
+
+  @override
+  String get habitCatWork => 'Работа';
+
+  @override
+  String get habitCatRelationships => 'Отношения';
+
+  @override
+  String get habitCatFinance => 'Финансы';
+
+  @override
+  String get habitCatHobby => 'Хобби';
+
+  @override
+  String get habitCatMental => 'Ментальное';
+
+  @override
+  String get habitCatNew => '+ Новая';
+
+  @override
+  String get habitRepeatDaily => 'Каждый день';
+
+  @override
+  String get habitRepeatWeekdays => 'По дням недели';
+
+  @override
+  String get habitRepeatNPerWeek => 'X раз в неделю';
+
+  @override
+  String get habitRepeatEveryN => 'Каждые N дней';
+
+  @override
+  String get habitRepeatMonthly => 'По датам месяца';
+
+  @override
+  String get habitWeekMon => 'Пн';
+
+  @override
+  String get habitWeekTue => 'Вт';
+
+  @override
+  String get habitWeekWed => 'Ср';
+
+  @override
+  String get habitWeekThu => 'Чт';
+
+  @override
+  String get habitWeekFri => 'Пт';
+
+  @override
+  String get habitWeekSat => 'Сб';
+
+  @override
+  String get habitWeekSun => 'Вс';
+
+  @override
+  String get habitGoalUnitTimes => 'раз';
+
+  @override
+  String get habitStackingNoHabits => '— Сначала создай другую привычку —';
 }

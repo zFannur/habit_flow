@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -29,6 +30,7 @@ class BinaryHabitCard extends StatefulWidget {
   const BinaryHabitCard({
     super.key,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.name,
     required this.subtitle,
     this.streak,
@@ -43,6 +45,7 @@ class BinaryHabitCard extends StatefulWidget {
   });
 
   final String emoji;
+  final String? iconTelegramFileId;
   final String name;
   final String subtitle;
   final int? streak;
@@ -160,6 +163,7 @@ class _BinaryHabitCardState extends State<BinaryHabitCard> {
           children: [
             HabitEmojiIcon(
               emoji: widget.emoji,
+              iconTelegramFileId: widget.iconTelegramFileId,
               tint: _done ? c.accent.withValues(alpha: 0.08) : null,
             ),
             const SizedBox(width: HFTokens.s12),
@@ -169,13 +173,7 @@ class _BinaryHabitCardState extends State<BinaryHabitCard> {
                 children: [
                   Text(
                     widget.name,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: c.textPrimary,
-                      height: 1.3,
-                      decoration: _done ? TextDecoration.lineThrough : null,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3),
                   ),
                   const SizedBox(height: 3),
                   Wrap(
@@ -185,11 +183,7 @@ class _BinaryHabitCardState extends State<BinaryHabitCard> {
                     children: [
                       Text(
                         widget.subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: c.textTertiary,
-                          height: 1.2,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
                       ),
                       if (widget.streak != null) StreakBadge(days: widget.streak!),
                     ],
@@ -198,12 +192,7 @@ class _BinaryHabitCardState extends State<BinaryHabitCard> {
                     const SizedBox(height: 3),
                     Text(
                       extraLine,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: c.textTertiary,
-                        height: 1.2,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, fontStyle: FontStyle.italic),
                     ),
                   ],
                 ],
@@ -257,12 +246,7 @@ class _TwoMinuteSheet extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               l.habitCardLogSheetTitle,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: c.textPrimary,
-                height: 1.2,
-              ),
+              style: context.tt.bodyLarge!.copyWith(color: c.textPrimary, height: 1.2, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             _SheetOption(
@@ -310,21 +294,12 @@ class _SheetOption extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: c.textPrimary,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: c.textTertiary,
-                  height: 1.3,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.3, fontSize: 12.0),
               ),
             ],
           ),

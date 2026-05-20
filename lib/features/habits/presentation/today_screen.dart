@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -160,6 +161,7 @@ class _HabitCardRouter extends StatelessWidget {
         final anchor = _findAnchor(habit.stackAfterHabitId, ref);
         return BinaryHabitCard(
           emoji: habit.emoji ?? '✅',
+          iconTelegramFileId: habit.iconTelegramFileId,
           name: habit.name,
           subtitle: _reminderSubtitle(habit.reminderTimes),
           streak: streak > 0 ? streak : null,
@@ -180,6 +182,7 @@ class _HabitCardRouter extends StatelessWidget {
         final current = (item.log?.value ?? 0).toInt();
         return CountableHabitCard(
           emoji: habit.emoji ?? '🔢',
+          iconTelegramFileId: habit.iconTelegramFileId,
           name: habit.name,
           initial: current,
           total: target,
@@ -193,6 +196,7 @@ class _HabitCardRouter extends StatelessWidget {
       case HabitType.timed:
         return TimedHabitCard(
           emoji: habit.emoji ?? '⏱',
+          iconTelegramFileId: habit.iconTelegramFileId,
           name: habit.name,
           subtitle: _reminderSubtitle(habit.reminderTimes),
           streak: streak > 0 ? streak : null,
@@ -281,28 +285,18 @@ class _TodayHeader extends ConsumerWidget {
               children: [
                 Text(
                   dateLabel,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary,
-                    letterSpacing: -0.03 * 26,
-                    height: 1.1,
-                  ),
+                  style: context.tt.headlineLarge!.copyWith(color: c.textPrimary, height: 1.1, letterSpacing: -0.03 * 26),
                 ),
                 const SizedBox(height: 4),
                 Text.rich(
                   TextSpan(
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: c.textTertiary,
-                      height: 1.4,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4),
                     children: [
                       TextSpan(
                           text: '${l.todayHeaderStats(done, total, maxStreak)} '),
                       TextSpan(
                         text: '🔥',
-                        style: TextStyle(color: c.warning),
+                        style: context.tt.bodyMedium!.copyWith(color: c.warning),
                       ),
                     ],
                   ),
@@ -347,12 +341,7 @@ class _Avatar extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         initial,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-          height: 1,
-        ),
+        style: context.tt.bodyLarge!.copyWith(color: Colors.white, height: 1, fontWeight: FontWeight.w800),
       ),
     );
   }
@@ -368,13 +357,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        color: color,
-        letterSpacing: -0.02 * 18,
-        height: 1.2,
-      ),
+      style: context.tt.headlineSmall!.copyWith(color: color, height: 1.2, letterSpacing: -0.02 * 18),
     );
   }
 }
@@ -449,16 +432,11 @@ class _GhostAdd extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('➕', style: TextStyle(fontSize: 16, height: 1)),
+            Text('➕', style: context.tt.bodyLarge!.copyWith(height: 1)),
             const SizedBox(width: 6),
             Text(
               l.todayAddHabit,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: c.textTertiary,
-                height: 1.2,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2),
             ),
           ],
         ),

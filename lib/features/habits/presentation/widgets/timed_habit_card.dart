@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class TimedHabitCard extends StatefulWidget {
   const TimedHabitCard({
     super.key,
     required this.emoji,
+    this.iconTelegramFileId,
     required this.name,
     required this.subtitle,
     this.streak,
@@ -24,6 +26,7 @@ class TimedHabitCard extends StatefulWidget {
   });
 
   final String emoji;
+  final String? iconTelegramFileId;
   final String name;
   final String subtitle;
   final int? streak;
@@ -84,6 +87,7 @@ class _TimedHabitCardState extends State<TimedHabitCard> {
         children: [
           HabitEmojiIcon(
             emoji: widget.emoji,
+            iconTelegramFileId: widget.iconTelegramFileId,
             tint: c.warning.withValues(alpha: 0.1),
           ),
           const SizedBox(width: HFTokens.s12),
@@ -93,12 +97,7 @@ class _TimedHabitCardState extends State<TimedHabitCard> {
               children: [
                 Text(
                   widget.name,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: c.textPrimary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3),
                 ),
                 const SizedBox(height: 3),
                 Row(
@@ -106,17 +105,12 @@ class _TimedHabitCardState extends State<TimedHabitCard> {
                     if (_running)
                       Text(
                         _fmt(_elapsed),
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: c.accent,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        style: context.tt.labelMedium!.copyWith(color: c.accent),
                       )
                     else
                       Text(
                         widget.subtitle,
-                        style: TextStyle(fontSize: 12, color: c.textTertiary),
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
                       ),
                     if (widget.streak != null) ...[
                       const SizedBox(width: 8),
@@ -159,12 +153,7 @@ class _TimerPill extends StatelessWidget {
           ),
           child: Text(
             running ? l.habitTimerPause : l.habitTimerStart,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: c.accent,
-              height: 1.2,
-            ),
+            style: context.tt.titleSmall!.copyWith(color: c.accent, height: 1.2),
           ),
         ),
       ),

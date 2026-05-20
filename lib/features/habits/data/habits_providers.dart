@@ -32,7 +32,10 @@ final habitLogsRepositoryProvider = Provider<HabitLogsRepository>((ref) {
 /// Realtime list of habits for the current user.
 final habitsStreamProvider = StreamProvider<List<HabitModel>>((ref) {
   final userId = ref.watch(currentUserIdProvider);
-  return ref.watch(habitsRepositoryProvider).watchAll(userId);
+  return ref.watch(habitsRepositoryProvider).watchAll(userId).map((habits) {
+    final seen = <String>{};
+    return habits.where((h) => seen.add(h.id)).toList();
+  });
 });
 
 /// Logs for a single habit (newest first).
@@ -85,7 +88,10 @@ final todayHabitsProvider = Provider<AsyncValue<List<HabitWithLog>>>((ref) {
     logsForDay: logs,
     day: today,
   );
-  return AsyncValue.data(combined);
+  // Deduplicate — insurance against overlapping realtime + invalidate events.
+  final seen = <String>{};
+  final deduped = combined.where((h) => seen.add(h.habit.id)).toList();
+  return AsyncValue.data(deduped);
 });
 
 /// Single-habit lookup used by the detail screen. Falls back to [null] when

@@ -46,3 +46,14 @@ app.*.map.json
 
 # Local dev artifacts
 client_logs.txt
+
+# Secrets — никогда не коммитим
+.env
+.env.*
+!.env.example
+key.properties
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+.env

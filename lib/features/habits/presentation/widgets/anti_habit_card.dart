@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -71,23 +72,12 @@ class _AntiHabitCardState extends State<AntiHabitCard> {
               children: [
                 Text(
                   '${widget.days}',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: c.anti,
-                    height: 1,
-                  ),
+                  style: context.tt.headlineLarge!.copyWith(color: c.anti, height: 1),
                 ),
                 const SizedBox(height: 1),
                 Text(
                   l.habitAntiDays,
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: c.anti,
-                    letterSpacing: 0.06 * 9,
-                    height: 1,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.anti, height: 1, letterSpacing: 0.06 * 9, fontWeight: FontWeight.w700, fontSize: 9.0),
                 ),
               ],
             ),
@@ -100,33 +90,18 @@ class _AntiHabitCardState extends State<AntiHabitCard> {
               children: [
                 Text(
                   '${widget.emoji} без',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: c.anti,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelMedium!.copyWith(color: c.anti, height: 1.2),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   widget.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyLarge!.copyWith(color: c.textPrimary, height: 1.2, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 if (_held)
                   Text(
                     l.habitAntiMarkedToday,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: c.anti,
-                      height: 1.2,
-                    ),
+                    style: context.tt.labelMedium!.copyWith(color: c.anti, height: 1.2),
                   )
                 else
                   Row(
@@ -147,11 +122,7 @@ class _AntiHabitCardState extends State<AntiHabitCard> {
                               horizontal: 6, vertical: 4),
                           child: Text(
                             '⋯',
-                            style: TextStyle(
-                              color: c.textTertiary,
-                              fontSize: 18,
-                              height: 1,
-                            ),
+                            style: context.tt.headlineSmall!.copyWith(color: c.textTertiary, height: 1),
                           ),
                         ),
                       ),
@@ -185,12 +156,7 @@ class _GreenPill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              height: 1.2,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: Colors.white, height: 1.2),
           ),
         ),
       ),

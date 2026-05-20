@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -51,11 +52,7 @@ class HFCheckbox extends StatelessWidget {
           Flexible(
             child: Text(
               label!,
-              style: TextStyle(
-                fontSize: 14,
-                color: c.textPrimary,
-                height: 1.4,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.4),
             ),
           ),
         ],

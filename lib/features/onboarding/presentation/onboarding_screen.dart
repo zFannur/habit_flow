@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -180,12 +181,7 @@ class _TopBar extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Text(
                           skipLabel,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: c.textTertiary,
-                            height: 1.2,
-                          ),
+                          style: context.tt.titleSmall!.copyWith(color: c.textTertiary, height: 1.2),
                         ),
                       ),
                     )
@@ -222,11 +218,7 @@ class _BackButton extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             '←',
-            style: TextStyle(
-              fontSize: 17,
-              color: c.textSecondary,
-              height: 1,
-            ),
+            style: context.tt.titleLarge!.copyWith(color: c.textSecondary, height: 1),
           ),
         ),
       ),
@@ -297,13 +289,7 @@ class _PrimaryCta extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.01 * 16,
-                height: 1.2,
-              ),
+              style: context.tt.bodyLarge!.copyWith(color: Colors.white, height: 1.2, letterSpacing: -0.01 * 16, fontWeight: FontWeight.w700),
             ),
           ),
         ),
@@ -343,32 +329,21 @@ class _Slide1 extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     '🌱',
-                    style: TextStyle(fontSize: 80, height: 1),
+                    style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 80.0),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'HabitFlow',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      color: c.textPrimary,
-                      letterSpacing: -0.03 * 34,
-                      height: 1.1,
-                    ),
+                    style: context.tt.displayLarge!.copyWith(color: c.textPrimary, height: 1.1, letterSpacing: -0.03 * 34, fontSize: 34.0),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     l.onboardingS1Sub,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: c.textSecondary,
-                      height: 1.5,
-                      fontWeight: FontWeight.w400,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: c.textSecondary, height: 1.5, fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
@@ -434,12 +409,7 @@ class _LangOption extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: active ? c.accent : c.textSecondary,
-          height: 1.2,
-        ),
+        style: context.tt.labelMedium!.copyWith(color: active ? c.accent : c.textSecondary, height: 1.2),
       ),
     );
 
@@ -506,31 +476,17 @@ class _Slide2 extends StatelessWidget {
           const SizedBox(height: 20),
           Text(
             l.onboardingS2Title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: c.textPrimary,
-              letterSpacing: -0.02 * 24,
-              height: 1.2,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 24, fontSize: 24.0),
           ),
           const SizedBox(height: 14),
           Text(
             l.onboardingS2P1,
-            style: TextStyle(
-              fontSize: 14,
-              color: c.textSecondary,
-              height: 1.65,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.65),
           ),
           const SizedBox(height: 10),
           Text(
             l.onboardingS2P2,
-            style: TextStyle(
-              fontSize: 14,
-              color: c.textSecondary,
-              height: 1.65,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.65),
           ),
           const SizedBox(height: 16),
           Opacity(
@@ -545,22 +501,12 @@ class _Slide2 extends StatelessWidget {
                 children: [
                   Text(
                     l.onboardingS2Quote,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontStyle: FontStyle.italic,
-                      color: c.textSecondary,
-                      height: 1.5,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.5, fontStyle: FontStyle.italic),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l.onboardingS2Author,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: c.textTertiary,
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
-                    ),
+                    style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2),
                   ),
                 ],
               ),
@@ -617,9 +563,9 @@ class _IdentityCircles extends StatelessWidget {
                 ],
               ),
               alignment: Alignment.center,
-              child: const Text(
+              child: Text(
                 '🧑',
-                style: TextStyle(fontSize: 22, height: 1),
+                style: context.tt.headlineMedium!.copyWith(height: 1),
               ),
             ),
           ),
@@ -627,17 +573,17 @@ class _IdentityCircles extends StatelessWidget {
           Positioned(
             top: 180 * 0.20,
             right: 180 * 0.04,
-            child: _label(c, habitsLabel),
+            child: _label(context, c, habitsLabel),
           ),
           Positioned(
             bottom: 180 * 0.25,
             right: 0,
-            child: _label(c, actionsLabel),
+            child: _label(context, c, actionsLabel),
           ),
           Positioned(
             bottom: 180 * 0.10,
             left: 180 * 0.04,
-            child: _label(c, identityLabel),
+            child: _label(context, c, identityLabel),
           ),
         ],
       ),
@@ -660,16 +606,10 @@ class _IdentityCircles extends StatelessWidget {
     );
   }
 
-  Widget _label(HFColors c, String text) {
+  Widget _label(BuildContext context, HFColors c, String text) {
     return Text(
       text,
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w600,
-        color: c.textTertiary,
-        letterSpacing: 0.03 * 10,
-        height: 1.2,
-      ),
+      style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.03 * 10, fontWeight: FontWeight.w600, fontSize: 10.0),
     );
   }
 }
@@ -696,29 +636,18 @@ class _Slide3 extends StatelessWidget {
               children: [
                 Text(
                   l.onboardingS3Title,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary,
-                    letterSpacing: -0.02 * 26,
-                    height: 1.2,
-                  ),
+                  style: context.tt.headlineLarge!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 26),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   l.onboardingS3Sub,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: c.textSecondary,
-                    height: 1.6,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.6),
                 ),
                 const SizedBox(height: 20),
                 _PathCard(
                   emoji: '✨',
                   title: l.onboardingS3Templates,
-                  // TODO(l10n): add key onboardingS3TemplatesSub
-                  subtitle: 'Рекомендовано',
+                  subtitle: l.onboardingS3TemplatesSub,
                   highlighted: true,
                   badgeText: l.onboardingS3BadgeRecommended,
                   onTap: onNext,
@@ -790,7 +719,7 @@ class _PathCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 alignment: Alignment.center,
-                child: Text(emoji, style: const TextStyle(fontSize: 22, height: 1)),
+                child: Text(emoji, style: context.tt.headlineMedium!.copyWith(height: 1)),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -800,21 +729,12 @@ class _PathCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        height: 1.2,
-                      ),
+                      style: context.tt.bodyLarge!.copyWith(color: c.textPrimary, height: 1.2, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: c.textSecondary,
-                        height: 1.2,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.2),
                     ),
                   ],
                 ),
@@ -829,12 +749,7 @@ class _PathCard extends StatelessWidget {
                   ),
                   child: Text(
                     badgeText!,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: c.accent,
-                      height: 1.2,
-                    ),
+                    style: context.tt.labelSmall!.copyWith(color: c.accent, height: 1.2),
                   ),
                 ),
               ],
@@ -874,23 +789,12 @@ class _Slide4 extends StatelessWidget {
         children: [
           Text(
             l.onboardingS4Title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: c.textPrimary,
-              letterSpacing: -0.02 * 24,
-              height: 1.2,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 24, fontSize: 24.0),
           ),
           const SizedBox(height: 4),
           Text(
             '${l.onboardingS4Max} · ${l.onboardingS4Selected(selected.length)}/3',
-            style: TextStyle(
-              fontSize: 12,
-              color: c.textTertiary,
-              fontWeight: FontWeight.w500,
-              height: 1.2,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
           ),
           const SizedBox(height: 14),
           Expanded(
@@ -967,27 +871,18 @@ class _TemplateCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(emoji, style: const TextStyle(fontSize: 26, height: 1)),
+                  Text(emoji, style: context.tt.headlineLarge!.copyWith(height: 1)),
                   const SizedBox(height: 6),
                   Text(
                     name,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: c.textPrimary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.2),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     sub,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: c.textTertiary,
-                      height: 1.3,
-                    ),
+                    style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.3),
                   ),
                 ],
               ),
@@ -1051,9 +946,9 @@ class _Slide5 extends StatelessWidget {
                             color: c.accent.withValues(alpha: 0.1),
                           ),
                           alignment: Alignment.center,
-                          child: const Text(
+                          child: Text(
                             '🔔',
-                            style: TextStyle(fontSize: 42, height: 1),
+                            style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 42.0),
                           ),
                         ),
                       ],
@@ -1064,13 +959,7 @@ class _Slide5 extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       l.onboardingS5Title,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: c.textPrimary,
-                        letterSpacing: -0.02 * 24,
-                        height: 1.2,
-                      ),
+                      style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 24, fontSize: 24.0),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -1078,11 +967,7 @@ class _Slide5 extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       l.onboardingS5Text,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: c.textSecondary,
-                        height: 1.65,
-                      ),
+                      style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.65),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -1117,13 +1002,7 @@ class _TelegramPreview extends StatelessWidget {
         children: [
           Text(
             'TELEGRAM',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: c.textTertiary,
-              letterSpacing: 0.04 * 11,
-              height: 1.2,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.04 * 11),
           ),
           const SizedBox(height: 10),
           Container(
@@ -1147,9 +1026,9 @@ class _TelegramPreview extends StatelessWidget {
                     ),
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
+                  child: Text(
                     '🤖',
-                    style: TextStyle(fontSize: 16, height: 1),
+                    style: context.tt.bodyLarge!.copyWith(height: 1),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -1159,12 +1038,7 @@ class _TelegramPreview extends StatelessWidget {
                     children: [
                       Text(
                         l.onboardingS5BotName,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: c.accent,
-                          height: 1.2,
-                        ),
+                        style: context.tt.labelMedium!.copyWith(color: c.accent, height: 1.2),
                       ),
                       const SizedBox(height: 4),
                       const _TgBubble(),
@@ -1209,22 +1083,14 @@ class _TgBubble extends StatelessWidget {
         children: [
           Text(
             l.onboardingS5TgMsg,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFF222222),
-              height: 1.5,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: Color(0xFF222222), height: 1.5),
           ),
           const SizedBox(height: 8),
-          const Align(
+          Align(
             alignment: Alignment.centerRight,
             child: Text(
               '09:00 ✓✓',
-              style: TextStyle(
-                fontSize: 11,
-                color: Color(0xFFAAAAAA),
-                height: 1.2,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: const Color(0xFFAAAAAA), height: 1.2),
             ),
           ),
           const SizedBox(height: 8),
@@ -1259,12 +1125,7 @@ class _TgBtn extends StatelessWidget {
       child: Text(
         label,
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: c.accent,
-          height: 1.2,
-        ),
+        style: context.tt.labelMedium!.copyWith(color: c.accent, height: 1.2),
       ),
     );
   }

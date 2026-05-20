@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../core/config/text_theme.dart';
 import '../../core/config/tokens.dart';
 
 /// Стандартный header полноэкранных пушей: chevronLeft + заголовок.
@@ -47,12 +48,10 @@ class HFHeaderBar extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: context.tt.headlineMedium!.copyWith(
                     fontSize: 20,
-                    fontWeight: FontWeight.w700,
                     color: c.textPrimary,
                     letterSpacing: -0.02 * 20,
-                    height: 1.2,
                   ),
                 ),
               ),

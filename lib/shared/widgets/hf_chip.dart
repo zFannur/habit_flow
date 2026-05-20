@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -45,12 +46,7 @@ class HFChip extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                  color: fg,
-                  height: 1.2,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: fg, height: 1.2),
               ),
               if (count != null) ...[
                 const SizedBox(width: 5),
@@ -62,12 +58,7 @@ class HFChip extends StatelessWidget {
                   ),
                   child: Text(
                     '$count',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: selected ? Colors.white : c.textTertiary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.labelSmall!.copyWith(color: selected ? Colors.white : c.textTertiary, height: 1.2),
                   ),
                 ),
               ],

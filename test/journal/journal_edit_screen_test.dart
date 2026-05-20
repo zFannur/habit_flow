@@ -6,6 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habit_flow/core/config/theme.dart';
 import 'package:habit_flow/core/localization/generated/app_localizations.dart';
+import 'package:habit_flow/core/services/locale_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:habit_flow/core/errors/result.dart';
 import 'package:habit_flow/features/journal/data/journal_entry_model.dart';
 import 'package:habit_flow/features/journal/data/journal_providers.dart';
 import 'package:habit_flow/features/journal/data/journal_repository.dart';
@@ -48,13 +52,15 @@ class _FakeRepo extends JournalRepository {
       Stream.value(seeded != null ? [seeded!] : []);
 
   @override
-  Future<JournalEntryModel> upsert(JournalEntryModel entry) async {
+  AppTask<JournalEntryModel> upsert(JournalEntryModel entry) {
     upserted.add(entry);
-    return entry;
+    return TaskEither.of(entry);
   }
 
   @override
-  Future<int> totalCount() async => seeded != null ? 1 : 0;
+  AppTask<int> totalCount() {
+    return TaskEither.of(seeded != null ? 1 : 0);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -99,6 +105,7 @@ List<Override> _overrides(_FakeRepo repo) => [
       journalEntriesProvider.overrideWith(
         (_) => Stream.value(repo.seeded != null ? [repo.seeded!] : []),
       ),
+      sharedPreferencesProvider.overrideWithValue(_prefs),
     ];
 
 /// Simple wrap — no Navigator stack; good for render assertions.
@@ -142,13 +149,17 @@ Widget _wrapPushable(Widget screen, _FakeRepo repo) {
 // Tests
 // ---------------------------------------------------------------------------
 
+late SharedPreferences _prefs;
+
 void main() {
   // Force _sharedClient to initialize before FakeAsync wraps any test,
   // otherwise GoTrueClient's timers are created inside FakeAsync and leak.
-  setUpAll(() {
+  setUpAll(() async {
     // Accessing _sharedClient here triggers its lazy initializer outside
     // of any individual test's FakeAsync zone.
     expect(_sharedClient, isNotNull);
+    SharedPreferences.setMockInitialValues({});
+    _prefs = await SharedPreferences.getInstance();
   });
 
   group('JournalEditScreen — new entry', () {

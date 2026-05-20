@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/config/env.dart';
+import '../../../core/errors/failure.dart';
+import '../../../core/errors/result.dart';
 import '../../journal/data/journal_providers.dart';
 
 /// Минимальное представление OpenRouter-модели, которое нужно UI настроек.
@@ -70,24 +73,29 @@ class OpenRouterModelsRepository {
   }
 
   /// Запрашивает список моделей у Edge Function.
-  Future<List<OpenRouterModelInfo>> list() async {
-    final token = _jwt() ?? _anonKey;
-    final response = await _dio.post<Map<String, dynamic>>(
-      '$_baseUrl/functions/v1/models_list',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-          'apikey': _anonKey,
-          'Content-Type': 'application/json',
-        },
-      ),
+  AppTask<List<OpenRouterModelInfo>> list() {
+    return TaskEither.tryCatch(
+      () async {
+        final token = _jwt() ?? _anonKey;
+        final response = await _dio.post<Map<String, dynamic>>(
+          '$_baseUrl/functions/v1/models_list',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+              'apikey': _anonKey,
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+        final data = response.data?['data'];
+        if (data is! List) return const [];
+        return data
+            .whereType<Map>()
+            .map((m) => OpenRouterModelInfo.fromJson(Map<String, dynamic>.from(m)))
+            .toList();
+      },
+      (e, st) => Failure.unknown(message: e.toString()),
     );
-    final data = response.data?['data'];
-    if (data is! List) return const [];
-    return data
-        .whereType<Map>()
-        .map((m) => OpenRouterModelInfo.fromJson(Map<String, dynamic>.from(m)))
-        .toList();
   }
 }
 
@@ -99,7 +107,10 @@ final openRouterModelsRepositoryProvider =
 
 /// Список моделей OpenRouter, отдаваемый Edge Function (с 24h-кешем сервера).
 final availableModelsProvider = FutureProvider<List<OpenRouterModelInfo>>(
-  (ref) => ref.watch(openRouterModelsRepositoryProvider).list(),
+  (ref) async {
+    final res = await ref.watch(openRouterModelsRepositoryProvider).list().run();
+    return res.getOrElse((_) => const []);
+  },
 );
 
 /// Контроллер сохранения выбранной модели в `users.ai_model`.

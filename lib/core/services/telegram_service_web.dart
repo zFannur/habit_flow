@@ -47,3 +47,5 @@ String getInitDataWeb() {
     return '';
   }
 }
+
+Future<void> openBotDeepLinkPlatform(String token) async {}

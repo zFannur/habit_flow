@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -84,11 +85,7 @@ class _NotificationsSettingsScreenState
                                   padding: const EdgeInsets.only(bottom: 14),
                                   child: Text(
                                     l.notificationsReflectionHint,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: c.textTertiary,
-                                      height: 1.5,
-                                    ),
+                                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.5, fontSize: 12.0),
                                   ),
                                 ),
                               ],
@@ -128,11 +125,7 @@ class _NotificationsSettingsScreenState
                                             ),
                                             child: Text(
                                               l.notificationsQuietFrom,
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: c.textTertiary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              style: context.tt.labelSmall!.copyWith(color: c.textTertiary),
                                             ),
                                           ),
                                           _TimePicker(
@@ -156,10 +149,7 @@ class _NotificationsSettingsScreenState
                                       ),
                                       child: Text(
                                         '—',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: c.textTertiary,
-                                        ),
+                                        style: context.tt.headlineSmall!.copyWith(color: c.textTertiary),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
@@ -174,11 +164,7 @@ class _NotificationsSettingsScreenState
                                             ),
                                             child: Text(
                                               l.notificationsQuietTo,
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: c.textTertiary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              style: context.tt.labelSmall!.copyWith(color: c.textTertiary),
                                             ),
                                           ),
                                           _TimePicker(
@@ -199,11 +185,7 @@ class _NotificationsSettingsScreenState
                                   padding: const EdgeInsets.only(bottom: 14),
                                   child: Text(
                                     l.notificationsQuietHint,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: c.textTertiary,
-                                      height: 1.5,
-                                    ),
+                                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.5, fontSize: 12.0),
                                   ),
                                 ),
                               ],
@@ -328,13 +310,7 @@ class _Header extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 l.notificationsTitle,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  letterSpacing: -0.02 * 20,
-                  height: 1.2,
-                ),
+                style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 20, fontSize: 20.0),
               ),
             ],
           ),
@@ -388,21 +364,12 @@ class _TelegramBanner extends StatelessWidget {
               children: [
                 Text(
                   l.notificationsTelegramBanner,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.3),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   l.notificationsTelegramDesc,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: c.textSecondary,
-                    height: 1.55,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.55, fontSize: 12.0),
                 ),
               ],
             ),
@@ -477,12 +444,7 @@ class _Section extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
           child: Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.08 * 11,
-              color: c.textTertiary,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.08 * 11),
           ),
         ),
         child,
@@ -549,12 +511,7 @@ class _ToggleRow extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: c.textPrimary,
-                height: 1.3,
-              ),
+              style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3),
             ),
           ),
           const SizedBox(width: 12),
@@ -616,11 +573,7 @@ class _TimePicker extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Text(
                             ':',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: c.textTertiary,
-                            ),
+                            style: context.tt.headlineMedium!.copyWith(color: c.textTertiary),
                           ),
                         ),
                         Expanded(
@@ -659,10 +612,7 @@ class _TimePicker extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               foregroundColor: c.textSecondary,
-                              textStyle: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              textStyle: context.tt.titleSmall,
                             ),
                             child: Text(l.commonCancel),
                           ),
@@ -680,10 +630,7 @@ class _TimePicker extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              textStyle: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              textStyle: context.tt.titleSmall,
                             ),
                             child: Text(l.commonDone),
                           ),
@@ -727,13 +674,7 @@ class _TimePicker extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               '${_fmt(hour)}:${_fmt(minute)}',
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.w700,
-                color: c.textPrimary,
-                letterSpacing: -0.02 * fontSize,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
+              style: context.tt.labelLarge!.copyWith(color: c.textPrimary, letterSpacing: -0.02 * fontSize),
             ),
           ],
         ),
@@ -766,12 +707,7 @@ class _PickerColumn extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 6),
           child: Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: c.textTertiary,
-              letterSpacing: 0.06 * 10,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, letterSpacing: 0.06 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
           ),
         ),
         SizedBox(
@@ -799,14 +735,7 @@ class _PickerColumn extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         _fmt(v),
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: selected == v
-                              ? FontWeight.w700
-                              : FontWeight.w400,
-                          color: selected == v ? c.accent : c.textPrimary,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        style: context.tt.titleMedium!.copyWith(color: selected == v ? c.accent : c.textPrimary),
                       ),
                     ),
                   ),
@@ -873,23 +802,12 @@ class _SoundRow extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: selected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
-                      color: c.textPrimary,
-                      height: 1.3,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3),
                   ),
                   const SizedBox(height: 1),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: c.textTertiary,
-                      height: 1.3,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.3, fontSize: 12.0),
                   ),
                 ],
               ),
@@ -975,7 +893,7 @@ class _NotificationPreview extends StatelessWidget {
                   ),
                 ),
                 alignment: Alignment.center,
-                child: const Text('🤖', style: TextStyle(fontSize: 16)),
+                child: Text('🤖', style: context.tt.bodyLarge),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -986,11 +904,7 @@ class _NotificationPreview extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Text(
                         'HabitFlow Bot',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: _NotificationsSettingsScreenState._tgBlue,
-                        ),
+                        style: context.tt.titleSmall!.copyWith(color: _NotificationsSettingsScreenState._tgBlue),
                       ),
                     ),
                     _TgBubble(),
@@ -1009,11 +923,7 @@ class _NotificationPreview extends StatelessWidget {
             child: Text(
               l.notificationsPreviewHint,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: c.textTertiary,
-                height: 1.4,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 12.0),
             ),
           ),
         ],
@@ -1055,19 +965,12 @@ class _TgBubble extends StatelessWidget {
         children: [
           RichText(
             text: TextSpan(
-              style: TextStyle(
-                fontSize: 14,
-                color: c.textPrimary,
-                height: 1.55,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.55),
               children: [
                 TextSpan(text: '$mainLine\n'),
                 TextSpan(
                   text: streakLine,
-                  style: TextStyle(
-                    color: c.warning,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: context.tt.labelLarge!.copyWith(color: c.warning),
                 ),
               ],
             ),
@@ -1088,11 +991,7 @@ class _TgBubble extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 '07:30 ✓',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: c.textTertiary,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
+                style: context.tt.labelSmall!.copyWith(color: c.textTertiary),
               ),
             ),
           ),
@@ -1123,11 +1022,7 @@ class _TgBtn extends StatelessWidget {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: _NotificationsSettingsScreenState._tgBlue,
-        ),
+        style: context.tt.titleSmall!.copyWith(color: _NotificationsSettingsScreenState._tgBlue),
       ),
     );
   }
@@ -1151,11 +1046,7 @@ class _TgBtnSm extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: c.textSecondary,
-        ),
+        style: context.tt.labelMedium!.copyWith(color: c.textSecondary),
       ),
     );
   }
@@ -1200,7 +1091,7 @@ class _RareNotifRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Text(emoji, style: const TextStyle(fontSize: 17)),
+            child: Text(emoji, style: context.tt.titleLarge),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1209,21 +1100,12 @@ class _RareNotifRow extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: c.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: c.textTertiary,
-                    height: 1.3,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.3, fontSize: 12.0),
                 ),
               ],
             ),

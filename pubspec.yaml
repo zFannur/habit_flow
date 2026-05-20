@@ -18,6 +18,7 @@ dependencies:
   # State management
   flutter_riverpod: ^2.5.0
   riverpod_annotation: ^2.3.0
+  fpdart: ^1.1.0
 
   # Routing
   go_router: ^14.0.0
@@ -54,6 +55,7 @@ dependencies:
   freezed_annotation: ^2.4.0
   json_annotation: ^4.8.0
   uuid: ^4.4.0
+  url_launcher: ^6.3.1
 
   # Logging / debug
   logger: ^2.0.0
@@ -64,6 +66,9 @@ dependencies:
   # Secure storage (OpenRouter API key — на Web реализован поверх WebCrypto)
   flutter_secure_storage: ^9.2.2
   lucide_icons_flutter: ^3.1.14+1
+  http: ^1.6.0
+  change_app_package_name: ^1.5.0
+  flutter_dotenv: ^6.0.1
 
   # Icons (Lucide — используется в дизайн-системе HabitFlow)
 
@@ -83,8 +88,9 @@ dev_dependencies:
   mocktail: ^1.0.4
 
   # http.MockClient — для тестов repository без реального Supabase
-  http: ^1.0.0
 
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - .env

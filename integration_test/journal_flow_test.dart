@@ -19,6 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:habit_flow/core/errors/result.dart';
 import 'package:habit_flow/core/config/theme.dart';
 import 'package:habit_flow/core/localization/generated/app_localizations.dart';
 import 'package:habit_flow/features/journal/data/journal_entry_model.dart';
@@ -119,7 +121,7 @@ class _FakeRepoWithQueue extends JournalRepository {
   }
 
   @override
-  Future<JournalEntryModel> upsert(JournalEntryModel entry) async {
+  AppTask<JournalEntryModel> upsert(JournalEntryModel entry) {
     final idx = _entries.indexWhere((e) => e.id == entry.id);
     final isInsert = idx < 0;
     if (isInsert) {
@@ -142,11 +144,13 @@ class _FakeRepoWithQueue extends JournalRepository {
     }
 
     _controller.add(_snapshot());
-    return entry;
+    return TaskEither.of(entry);
   }
 
   @override
-  Future<int> totalCount() async => _entries.length;
+  AppTask<int> totalCount() {
+    return TaskEither.of(_entries.length);
+  }
 
   void dispose() {
     _controller.close();
@@ -163,7 +167,10 @@ List<Override> _overrides(_FakeRepoWithQueue repo) => [
       // The list screen watches `journalEntriesProvider`; override it to use
       // the same fake stream so list updates are observable in widget tests.
       journalEntriesProvider.overrideWith((_) => repo.watchAll()),
-      journalEntryCountProvider.overrideWith((_) => repo.totalCount()),
+      journalEntryCountProvider.overrideWith((_) async {
+        final res = await repo.totalCount().run();
+        return res.match((f) => throw f, (val) => val);
+      }),
     ];
 
 // ---------------------------------------------------------------------------
@@ -286,7 +293,7 @@ void main() {
           energy: 4,
           createdAt: DateTime.utc(2026, 5, 7, 10),
           updatedAt: DateTime.utc(2026, 5, 7, 10),
-        ));
+        )).run();
 
         await tester.pumpWidget(_buildHarness(repo));
         await tester.pumpAndSettle();
@@ -346,7 +353,7 @@ void main() {
             energy: 6,
             createdAt: date,
             updatedAt: date,
-          ));
+          )).run();
         }
 
         // Exactly one summary_ready row queued at the 30-entry boundary.

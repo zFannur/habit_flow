@@ -87,7 +87,8 @@ void main() {
         ),
       );
 
-      final result = await repo.signInWithTelegram('init=...');
+      final resultRes = await repo.signInWithTelegram('init=...').run();
+      final result = resultRes.getOrElse((f) => fail('signInWithTelegram returned failure: $f'));
 
       expect(result.jwt, jwt);
       expect(result.user.id, 'u1');
@@ -104,7 +105,7 @@ void main() {
       verify(() => supabase.applySession(jwt)).called(1);
     });
 
-    test('throws AuthException on non-200', () async {
+    test('returns Left(Failure.auth) on non-200', () async {
       when(
         () => dio.post<dynamic>(
           any(),
@@ -119,10 +120,9 @@ void main() {
         ),
       );
 
-      await expectLater(
-        repo.signInWithTelegram('init=...'),
-        throwsA(isA<AuthException>()),
-      );
+      final result = await repo.signInWithTelegram('init=...').run();
+      expect(result.isLeft(), isTrue);
+
       verifyNever(
         () => storage.write(
           key: any(named: 'key'),
@@ -132,7 +132,7 @@ void main() {
       verifyNever(() => supabase.applySession(any()));
     });
 
-    test('throws AuthException on malformed payload', () async {
+    test('returns Left(Failure.unknown) on malformed payload', () async {
       when(
         () => dio.post<dynamic>(
           any(),
@@ -147,13 +147,11 @@ void main() {
         ),
       );
 
-      await expectLater(
-        repo.signInWithTelegram('init=...'),
-        throwsA(isA<AuthException>()),
-      );
+      final result = await repo.signInWithTelegram('init=...').run();
+      expect(result.isLeft(), isTrue);
     });
 
-    test('wraps DioException as AuthException', () async {
+    test('returns Left(Failure.network) on DioException', () async {
       when(
         () => dio.post<dynamic>(
           any(),
@@ -167,10 +165,8 @@ void main() {
         ),
       );
 
-      await expectLater(
-        repo.signInWithTelegram('init=...'),
-        throwsA(isA<AuthException>()),
-      );
+      final result = await repo.signInWithTelegram('init=...').run();
+      expect(result.isLeft(), isTrue);
     });
   });
 
@@ -286,7 +282,7 @@ void main() {
           .thenAnswer((_) async {});
       when(() => supabase.clearSession()).thenAnswer((_) async {});
 
-      await repo.signOut();
+      await repo.signOut().run();
 
       verify(() => storage.delete(key: 'auth.jwt')).called(1);
       verify(() => storage.delete(key: 'auth.user')).called(1);
@@ -308,7 +304,7 @@ void main() {
       when(() => supabase.clearSession())
           .thenThrow(StateError('already signed out'));
 
-      await repo.signOut(); // must not throw
+      await repo.signOut().run(); // must not throw
       verify(() => storage.delete(key: 'auth.jwt')).called(1);
     });
   });

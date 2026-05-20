@@ -5,25 +5,29 @@ import '../domain/habit_type.dart';
 import '../domain/schedule_type.dart';
 import 'habit_model.dart';
 
-/// Mutable draft accumulated across the 4-step create wizard.
+enum RepeatTypeKey { daily, weekdays, nPerWeek, everyNDays, monthlyDates }
+
+/// Mutable draft accumulated across the 4-step form wizard.
 ///
-/// [toModel] converts the draft into a [HabitModel] ready for
-/// [HabitsRepository.create]. All DB-assigned fields (id, createdAt,
-/// updatedAt) receive placeholder values; the server overwrites them.
+/// Can be used both for creating a new habit or editing an existing one.
 class HabitDraft {
   HabitDraft({
+    this.editingId,
+    this.startedAt,
+    this.createdAt,
     this.type,
     this.name = '',
-    this.category = 'Здоровье',
+    this.category = '',
     this.emoji = '💪',
+    this.iconTelegramFileId,
     this.accentColor,
-    this.repeatType = 'Каждый день',
+    this.repeatType = RepeatTypeKey.daily,
     this.selectedWeekdays = const {},
     this.selectedMonthDays = const {},
     this.timesPerWeek = 3,
     this.everyN = 2,
     this.goalValue = 8,
-    this.goalUnit = 'раз',
+    this.goalUnit = '',
     this.reminderTimes = const [],
     this.endless = true,
     this.stackingHabit = '',
@@ -34,15 +38,19 @@ class HabitDraft {
     this.reward = '',
   });
 
+  final String? editingId;
+  final DateTime? startedAt;
+  final DateTime? createdAt;
   final HabitType? type;
   final String name;
   final String category;
   final String emoji;
+  final String? iconTelegramFileId;
   final Color? accentColor;
 
   // Step 3 — schedule
-  final String repeatType;
-  final Set<String> selectedWeekdays;
+  final RepeatTypeKey repeatType;
+  final Set<int> selectedWeekdays;
   final Set<int> selectedMonthDays;
   final int timesPerWeek;
   final int everyN;
@@ -59,14 +67,87 @@ class HabitDraft {
   final String twoMinuteVersion;
   final String reward;
 
+  bool get isEditing => editingId != null;
+
+  factory HabitDraft.fromModel(HabitModel model) {
+    return HabitDraft(
+      editingId: model.id,
+      startedAt: model.startedAt,
+      createdAt: model.createdAt,
+      type: model.type,
+      name: model.name,
+      category: model.category ?? '',
+      emoji: model.emoji ?? '💪',
+      iconTelegramFileId: model.iconTelegramFileId,
+      accentColor: model.accentColor != null ? _parseHexColor(model.accentColor!) : null,
+      repeatType: _scheduleTypeToRepeatType(model.scheduleType),
+      selectedWeekdays: _extractWeekdays(model.schedule),
+      selectedMonthDays: _extractMonthDays(model.schedule),
+      timesPerWeek: (model.schedule['n'] as num?)?.toInt() ?? 3,
+      everyN: (model.schedule['every_n'] as num?)?.toInt() ?? 2,
+      goalValue: (model.target ?? 8).toInt(),
+      goalUnit: model.unit ?? '',
+      reminderTimes: List<String>.from(model.reminderTimes),
+      endless: model.endedAt == null,
+      implementationWhen: model.implementationWhen ?? '',
+      implementationWhere: model.implementationWhere ?? '',
+      identityStatement: model.identityStatement ?? '',
+      twoMinuteVersion: model.twoMinuteVersion ?? '',
+      reward: model.reward ?? '',
+    );
+  }
+
+  static Color _parseHexColor(String hex) {
+    if (hex.startsWith('#')) {
+      final cleaned = hex.substring(1);
+      if (cleaned.length == 6) {
+        return Color(int.parse('FF$cleaned', radix: 16));
+      } else if (cleaned.length == 8) {
+        return Color(int.parse(cleaned, radix: 16));
+      }
+    }
+    return const Color(0xFF3B82F6);
+  }
+
+  static RepeatTypeKey _scheduleTypeToRepeatType(ScheduleType scheduleType) {
+    switch (scheduleType) {
+      case ScheduleType.weekdays:
+        return RepeatTypeKey.weekdays;
+      case ScheduleType.nPerWeek:
+        return RepeatTypeKey.nPerWeek;
+      case ScheduleType.everyNDays:
+        return RepeatTypeKey.everyNDays;
+      case ScheduleType.monthlyDates:
+        return RepeatTypeKey.monthlyDates;
+      default:
+        return RepeatTypeKey.daily;
+    }
+  }
+
+  static Set<int> _extractWeekdays(Map<String, dynamic> schedule) {
+    final list = schedule['weekdays'] as List?;
+    if (list == null) return const {};
+    return list.map((e) => (e as num).toInt()).where((n) => n >= 1 && n <= 7).toSet();
+  }
+
+  static Set<int> _extractMonthDays(Map<String, dynamic> schedule) {
+    final list = schedule['dates'] as List?;
+    if (list == null) return const {};
+    return list.map((e) => (e as num).toInt()).toSet();
+  }
+
   HabitDraft copyWith({
+    String? editingId,
+    DateTime? startedAt,
+    DateTime? createdAt,
     HabitType? type,
     String? name,
     String? category,
     String? emoji,
+    String? iconTelegramFileId,
     Color? accentColor,
-    String? repeatType,
-    Set<String>? selectedWeekdays,
+    RepeatTypeKey? repeatType,
+    Set<int>? selectedWeekdays,
     Set<int>? selectedMonthDays,
     int? timesPerWeek,
     int? everyN,
@@ -82,10 +163,14 @@ class HabitDraft {
     String? reward,
   }) {
     return HabitDraft(
+      editingId: editingId ?? this.editingId,
+      startedAt: startedAt ?? this.startedAt,
+      createdAt: createdAt ?? this.createdAt,
       type: type ?? this.type,
       name: name ?? this.name,
       category: category ?? this.category,
       emoji: emoji ?? this.emoji,
+      iconTelegramFileId: iconTelegramFileId ?? this.iconTelegramFileId,
       accentColor: accentColor ?? this.accentColor,
       repeatType: repeatType ?? this.repeatType,
       selectedWeekdays: selectedWeekdays ?? this.selectedWeekdays,
@@ -120,7 +205,7 @@ class HabitDraft {
 
   bool get _scheduleIsValid {
     switch (repeatType) {
-      case 'По дням недели':
+      case RepeatTypeKey.weekdays:
         return selectedWeekdays.isNotEmpty;
       default:
         return true;
@@ -132,9 +217,6 @@ class HabitDraft {
   // ---------------------------------------------------------------------------
 
   /// Converts to a [HabitModel] using [userId].
-  ///
-  /// The `id`, `createdAt`, `updatedAt` placeholders are overwritten by the
-  /// server on insert.
   HabitModel toModel(String userId) {
     final now = DateTime.now();
 
@@ -148,13 +230,13 @@ class HabitDraft {
         (type == HabitType.anti && emoji.isEmpty) ? '🛡' : emoji;
 
     return HabitModel(
-      // Empty marker — habits_repository.create strips it so DB generates uuid.
-      id: '',
+      id: editingId ?? '',
       userId: userId,
       name: name.trim(),
       category: category,
       type: type!,
       emoji: resolvedEmoji.isEmpty ? null : resolvedEmoji,
+      iconTelegramFileId: iconTelegramFileId,
       accentColor: colorHex,
       target: (type == HabitType.countable || type == HabitType.timed)
           ? goalValue.toDouble()
@@ -165,7 +247,7 @@ class HabitDraft {
       scheduleType: _toScheduleType(),
       schedule: _buildScheduleConfig(),
       reminderTimes: List<String>.from(reminderTimes),
-      startedAt: DateTime(now.year, now.month, now.day),
+      startedAt: startedAt ?? DateTime(now.year, now.month, now.day),
       endedAt: null,
       stackAfterHabitId: null,
       implementationWhen:
@@ -177,20 +259,20 @@ class HabitDraft {
       twoMinuteVersion:
           twoMinuteVersion.trim().isEmpty ? null : twoMinuteVersion.trim(),
       reward: reward.trim().isEmpty ? null : reward.trim(),
-      createdAt: now,
+      createdAt: createdAt ?? now,
       updatedAt: now,
     );
   }
 
   ScheduleType _toScheduleType() {
     switch (repeatType) {
-      case 'По дням недели':
+      case RepeatTypeKey.weekdays:
         return ScheduleType.weekdays;
-      case 'X раз в неделю':
+      case RepeatTypeKey.nPerWeek:
         return ScheduleType.nPerWeek;
-      case 'Каждые N дней':
+      case RepeatTypeKey.everyNDays:
         return ScheduleType.everyNDays;
-      case 'По датам месяца':
+      case RepeatTypeKey.monthlyDates:
         return ScheduleType.monthlyDates;
       default:
         return ScheduleType.daily;
@@ -199,20 +281,13 @@ class HabitDraft {
 
   Map<String, dynamic> _buildScheduleConfig() {
     switch (repeatType) {
-      case 'По дням недели':
-        // Convert weekday abbreviations to ISO weekday numbers (Пн=1..Вс=7).
-        const abbrs = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-        final isoNums = selectedWeekdays
-            .map((d) => abbrs.indexOf(d) + 1)
-            .where((n) => n > 0)
-            .toList()
-          ..sort();
-        return {'weekdays': isoNums};
-      case 'X раз в неделю':
+      case RepeatTypeKey.weekdays:
+        return {'weekdays': selectedWeekdays.toList()..sort()};
+      case RepeatTypeKey.nPerWeek:
         return {'n': timesPerWeek};
-      case 'Каждые N дней':
+      case RepeatTypeKey.everyNDays:
         return {'every_n': everyN};
-      case 'По датам месяца':
+      case RepeatTypeKey.monthlyDates:
         return {'dates': selectedMonthDays.toList()..sort()};
       default:
         return const <String, dynamic>{};
@@ -230,6 +305,10 @@ class HabitDraftNotifier extends Notifier<HabitDraft> {
 
   void reset() => state = HabitDraft();
 
+  void loadForEdit(HabitModel model) {
+    state = HabitDraft.fromModel(model);
+  }
+
   void setType(HabitType type) => state = state.copyWith(type: type);
 
   void setName(String name) => state = state.copyWith(name: name);
@@ -237,16 +316,23 @@ class HabitDraftNotifier extends Notifier<HabitDraft> {
   void setCategory(String category) =>
       state = state.copyWith(category: category);
 
-  void setEmoji(String emoji) => state = state.copyWith(emoji: emoji);
+  void setEmoji(String emoji) => state = state.copyWith(
+        emoji: emoji,
+        // Reset photo when an emoji is explicitly picked
+        iconTelegramFileId: null,
+      );
+
+  void setIconTelegramFileId(String? fileId) =>
+      state = state.copyWith(iconTelegramFileId: fileId);
 
   void setAccentColor(Color color) =>
       state = state.copyWith(accentColor: color);
 
-  void setRepeatType(String repeatType) =>
+  void setRepeatType(RepeatTypeKey repeatType) =>
       state = state.copyWith(repeatType: repeatType);
 
-  void toggleWeekday(String day) {
-    final updated = Set<String>.from(state.selectedWeekdays);
+  void toggleWeekday(int day) {
+    final updated = Set<int>.from(state.selectedWeekdays);
     if (updated.contains(day)) {
       updated.remove(day);
     } else {

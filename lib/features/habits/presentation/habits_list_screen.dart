@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,6 +76,38 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
   String _activeSortLabel(AppLocalizations l) =>
       _sortLabel(l, _filter.sortOrder);
 
+  Future<bool> _confirmDelete(BuildContext context, AppLocalizations l, HabitModel habit) async {
+    final c = HFColors.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: c.bgPrimary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l.habitDetailDeleteConfirmTitle, style: context.tt.titleLarge!.copyWith(color: c.textPrimary)),
+        content: Text(
+          l.habitDetailDeleteConfirmBody,
+          style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.commonCancel, style: TextStyle(color: c.textTertiary)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: c.danger,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text(l.commonDelete),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
@@ -107,7 +140,7 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
     final filtered = _filter.apply(
       habits,
       streakFor: (id) => ref.watch(streakProvider(id)),
-      // TODO(real-data): replace with actual per-habit completion rate from logs
+      // см. issue #5
       rateFor: (_) => 0,
     );
 
@@ -180,12 +213,7 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
                   children: [
                     Text(
                       l.habitsListCount(filtered.length),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: c.textTertiary,
-                        height: 1.4,
-                      ),
+                      style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 12.0),
                     ),
                     InkWell(
                       onTap: () => _showSortSheet(context, l),
@@ -197,12 +225,7 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
                           children: [
                             Text(
                               '${l.habitsListSortLabel}: ${_activeSortLabel(l)}',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: c.accent,
-                                height: 1.2,
-                              ),
+                              style: context.tt.titleSmall!.copyWith(color: c.accent, height: 1.2),
                             ),
                             const SizedBox(width: 4),
                             Icon(
@@ -236,10 +259,60 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
                 sliver: SliverList.separated(
                   itemCount: filtered.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) => _HabitsListCard(
-                    habit: filtered[i],
-                    onTap: () => context.push('/habits/${filtered[i].id}'),
-                  ),
+                  itemBuilder: (_, i) {
+                    final habit = filtered[i];
+                    return Dismissible(
+                      key: Key(habit.id),
+                      direction: DismissDirection.horizontal,
+                      background: Container(
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.only(left: 24),
+                        decoration: BoxDecoration(
+                          color: c.warning,
+                          borderRadius: BorderRadius.circular(HFTokens.rLg),
+                        ),
+                        child: const Icon(LucideIcons.archive, color: Colors.white),
+                      ),
+                      secondaryBackground: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 24),
+                        decoration: BoxDecoration(
+                          color: c.danger,
+                          borderRadius: BorderRadius.circular(HFTokens.rLg),
+                        ),
+                        child: const Icon(LucideIcons.trash2, color: Colors.white),
+                      ),
+                      confirmDismiss: (direction) async {
+                        if (direction == DismissDirection.startToEnd) {
+                          return true;
+                        } else {
+                          return await _confirmDelete(context, l, habit);
+                        }
+                      },
+                      onDismissed: (direction) async {
+                        final repo = ref.read(habitsRepositoryProvider);
+                        if (direction == DismissDirection.startToEnd) {
+                          await repo.archive(habit.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l.habitDetailArchivedToast)),
+                            );
+                          }
+                        } else {
+                          await repo.delete(habit.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l.habitDetailDeletedToast)),
+                            );
+                          }
+                        }
+                      },
+                      child: _HabitsListCard(
+                        habit: habit,
+                        onTap: () => context.push('/habits/${habit.id}'),
+                      ),
+                    );
+                  },
                 ),
               ),
             const SliverToBoxAdapter(child: SizedBox(height: 80)),
@@ -313,13 +386,7 @@ class _StaticHeader extends ConsumerWidget {
           Expanded(
             child: Text(
               l.habitsListTitle,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: c.textPrimary,
-                letterSpacing: -0.02 * 22,
-                height: 1.2,
-              ),
+              style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 22),
             ),
           ),
           _IconBtn(
@@ -351,10 +418,7 @@ void _showSortSheet(
           },
           title: Text(
             label,
-            style: TextStyle(
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              color: selected ? c.accent : c.textPrimary,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: selected ? c.accent : c.textPrimary),
           ),
           trailing: selected
               ? Icon(LucideIcons.check, size: 18, color: c.accent)
@@ -371,12 +435,7 @@ void _showSortSheet(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
               child: Text(
                 l.habitsListSortLabel,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: c.textTertiary,
-                  letterSpacing: 0.04 * 13,
-                ),
+                style: context.tt.titleSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.04 * 13),
               ),
             ),
             tile(HabitsSortOrder.byCreated, l.habitsListSortByCreated),
@@ -428,22 +487,14 @@ class _StaticSearch extends StatelessWidget {
               child: TextField(
                 controller: controller,
                 onChanged: onChanged,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: c.textPrimary,
-                  height: 1.4,
-                ),
+                style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.4),
                 cursorColor: c.accent,
                 decoration: InputDecoration(
                   isDense: true,
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                   hintText: l.habitsListSearchHint,
-                  hintStyle: TextStyle(
-                    color: c.textTertiary,
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
+                  hintStyle: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.4),
                 ),
               ),
             ),
@@ -612,7 +663,7 @@ class _HabitsListCard extends ConsumerWidget {
                 alignment: Alignment.center,
                 child: Text(
                   habit.emoji ?? _fallbackEmoji(habit.type),
-                  style: const TextStyle(fontSize: 22, height: 1),
+                  style: context.tt.headlineMedium!.copyWith(height: 1),
                 ),
               ),
               const SizedBox(width: 12),
@@ -624,12 +675,7 @@ class _HabitsListCard extends ConsumerWidget {
                       habit.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: isPaused ? c.textSecondary : c.textPrimary,
-                        height: 1.3,
-                      ),
+                      style: context.tt.titleMedium!.copyWith(color: isPaused ? c.textSecondary : c.textPrimary, height: 1.3),
                     ),
                     const SizedBox(height: 3),
                     Wrap(
@@ -639,12 +685,7 @@ class _HabitsListCard extends ConsumerWidget {
                       children: [
                         Text(
                           _scheduleLabel(habit, l),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: c.textTertiary,
-                            fontWeight: FontWeight.w400,
-                            height: 1.4,
-                          ),
+                          style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 12.0),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -657,13 +698,7 @@ class _HabitsListCard extends ConsumerWidget {
                           ),
                           child: Text(
                             _typeBadgeLabel(habit.type, l),
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: typeBadgeColor,
-                              letterSpacing: 0.03 * 10,
-                              height: 1.4,
-                            ),
+                            style: context.tt.bodyMedium!.copyWith(color: typeBadgeColor, height: 1.4, letterSpacing: 0.03 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
                           ),
                         ),
                       ],
@@ -694,17 +729,12 @@ class _HabitsListCard extends ConsumerWidget {
                         children: [
                           Text(
                             streakEmoji,
-                            style: const TextStyle(fontSize: 15, height: 1),
+                            style: context.tt.titleMedium!.copyWith(height: 1),
                           ),
                           const SizedBox(width: 3),
                           Text(
                             '$streak',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: streakColor,
-                              height: 1,
-                            ),
+                            style: context.tt.headlineSmall!.copyWith(color: streakColor, height: 1),
                           ),
                         ],
                       ),
@@ -732,13 +762,7 @@ class _HabitsListCard extends ConsumerWidget {
                 ),
                 child: Text(
                   l.habitCardArchiveBadge,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: c.textTertiary,
-                    letterSpacing: 0.04 * 10,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.04 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
                 ),
               ),
             ),
@@ -824,7 +848,7 @@ class _HabitsListCard extends ConsumerWidget {
   }
 
   String _scheduleLabel(HabitModel h, AppLocalizations l) {
-    // TODO(real-data): replace with proper schedule localisation
+    // см. issue #6
     final times = h.reminderTimes.isNotEmpty ? ' · ${h.reminderTimes.first}' : '';
     switch (h.scheduleType.wireName) {
       case 'daily':

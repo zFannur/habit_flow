@@ -35,7 +35,7 @@ void main() {
         ),
       ).thenAnswer((_) async {});
 
-      await repo.save('sk-or-v1-test');
+      await repo.save('sk-or-v1-test').run();
 
       verify(
         () => storage.write(key: 'openrouter_key', value: 'sk-or-v1-test'),
@@ -47,7 +47,8 @@ void main() {
         () => storage.read(key: any(named: 'key')),
       ).thenAnswer((_) async => 'sk-or-v1-stored');
 
-      final value = await repo.load();
+      final valueRes = await repo.load().run();
+      final value = valueRes.getOrElse((_) => null);
 
       expect(value, 'sk-or-v1-stored');
       verify(() => storage.read(key: 'openrouter_key')).called(1);
@@ -58,7 +59,8 @@ void main() {
         () => storage.read(key: any(named: 'key')),
       ).thenAnswer((_) async => null);
 
-      expect(await repo.load(), isNull);
+      final valueRes = await repo.load().run();
+      expect(valueRes.getOrElse((_) => 'fallback'), isNull);
     });
 
     test('clear() удаляет запись', () async {
@@ -66,7 +68,7 @@ void main() {
         () => storage.delete(key: any(named: 'key')),
       ).thenAnswer((_) async {});
 
-      await repo.clear();
+      await repo.clear().run();
 
       verify(() => storage.delete(key: 'openrouter_key')).called(1);
     });
@@ -97,7 +99,8 @@ void main() {
         ),
       );
 
-      expect(await repo.isValid(key: 'sk-or-v1-good'), isTrue);
+      final okRes = await repo.isValid(key: 'sk-or-v1-good').run();
+      expect(okRes.getOrElse((_) => false), isTrue);
     });
 
     test('401 → isValid = false', () async {
@@ -114,7 +117,8 @@ void main() {
         ),
       );
 
-      expect(await repo.isValid(key: 'sk-or-v1-bad'), isFalse);
+      final okRes = await repo.isValid(key: 'sk-or-v1-bad').run();
+      expect(okRes.getOrElse((_) => false), isFalse);
     });
 
     test('DioException → isValid = false', () async {
@@ -130,7 +134,8 @@ void main() {
         ),
       );
 
-      expect(await repo.isValid(key: 'sk-or-v1-x'), isFalse);
+      final okRes = await repo.isValid(key: 'sk-or-v1-x').run();
+      expect(okRes.getOrElse((_) => false), isFalse);
     });
 
     test('пустой ключ → isValid = false без HTTP-вызова', () async {
@@ -138,7 +143,8 @@ void main() {
         () => storage.read(key: any(named: 'key')),
       ).thenAnswer((_) async => null);
 
-      expect(await repo.isValid(), isFalse);
+      final okRes = await repo.isValid().run();
+      expect(okRes.getOrElse((_) => false), isFalse);
 
       verifyNever(
         () => dio.get<dynamic>(

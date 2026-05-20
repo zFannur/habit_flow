@@ -476,6 +476,12 @@ abstract class AppLocalizations {
   /// **'Из шаблонов'**
   String get onboardingS3Templates;
 
+  /// No description provided for @onboardingS3TemplatesSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рекомендовано'**
+  String get onboardingS3TemplatesSub;
+
   /// No description provided for @onboardingS3BadgeRecommended.
   ///
   /// In ru, this message translates to:
@@ -3013,6 +3019,210 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Поменять модель'**
   String get errorChangeModel;
+
+  /// No description provided for @deviceLinkTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Привязка устройства'**
+  String get deviceLinkTitle;
+
+  /// No description provided for @deviceLinkBtn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти через Telegram'**
+  String get deviceLinkBtn;
+
+  /// No description provided for @deviceLinkInstructions.
+  ///
+  /// In ru, this message translates to:
+  /// **'1. Нажмите кнопку ниже, чтобы открыть нашего Telegram-бота.\n2. Нажмите кнопку \'Запустить\' (Start) для подтверждения привязки.\n3. Не закрывайте этот экран, привязка произойдет автоматически.'**
+  String get deviceLinkInstructions;
+
+  /// No description provided for @deviceLinkOpenBotBtn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть Telegram-бота'**
+  String get deviceLinkOpenBotBtn;
+
+  /// No description provided for @deviceLinkWaiting.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидание подтверждения...'**
+  String get deviceLinkWaiting;
+
+  /// No description provided for @deviceLinkSuccess.
+  ///
+  /// In ru, this message translates to:
+  /// **'Устройство успешно привязано! Перенаправление...'**
+  String get deviceLinkSuccess;
+
+  /// No description provided for @deviceLinkFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось привязать устройство: {reason}'**
+  String deviceLinkFailed(String reason);
+
+  /// No description provided for @deviceLinkReasonExpired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Срок действия ссылки истек. Пожалуйста, попробуйте снова.'**
+  String get deviceLinkReasonExpired;
+
+  /// No description provided for @deviceLinkReasonConsumed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эта ссылка уже была использована. Пожалуйста, попробуйте снова.'**
+  String get deviceLinkReasonConsumed;
+
+  /// No description provided for @deviceLinkReasonNetwork.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка сети. Проверьте подключение к интернету.'**
+  String get deviceLinkReasonNetwork;
+
+  /// No description provided for @deviceLinkReasonUnknown.
+  ///
+  /// In ru, this message translates to:
+  /// **'Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.'**
+  String get deviceLinkReasonUnknown;
+
+  /// No description provided for @habitCatHealth.
+  ///
+  /// In ru, this message translates to:
+  /// **'Здоровье'**
+  String get habitCatHealth;
+
+  /// No description provided for @habitCatSport.
+  ///
+  /// In ru, this message translates to:
+  /// **'Спорт'**
+  String get habitCatSport;
+
+  /// No description provided for @habitCatStudy.
+  ///
+  /// In ru, this message translates to:
+  /// **'Учёба'**
+  String get habitCatStudy;
+
+  /// No description provided for @habitCatWork.
+  ///
+  /// In ru, this message translates to:
+  /// **'Работа'**
+  String get habitCatWork;
+
+  /// No description provided for @habitCatRelationships.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отношения'**
+  String get habitCatRelationships;
+
+  /// No description provided for @habitCatFinance.
+  ///
+  /// In ru, this message translates to:
+  /// **'Финансы'**
+  String get habitCatFinance;
+
+  /// No description provided for @habitCatHobby.
+  ///
+  /// In ru, this message translates to:
+  /// **'Хобби'**
+  String get habitCatHobby;
+
+  /// No description provided for @habitCatMental.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ментальное'**
+  String get habitCatMental;
+
+  /// No description provided for @habitCatNew.
+  ///
+  /// In ru, this message translates to:
+  /// **'+ Новая'**
+  String get habitCatNew;
+
+  /// No description provided for @habitRepeatDaily.
+  ///
+  /// In ru, this message translates to:
+  /// **'Каждый день'**
+  String get habitRepeatDaily;
+
+  /// No description provided for @habitRepeatWeekdays.
+  ///
+  /// In ru, this message translates to:
+  /// **'По дням недели'**
+  String get habitRepeatWeekdays;
+
+  /// No description provided for @habitRepeatNPerWeek.
+  ///
+  /// In ru, this message translates to:
+  /// **'X раз в неделю'**
+  String get habitRepeatNPerWeek;
+
+  /// No description provided for @habitRepeatEveryN.
+  ///
+  /// In ru, this message translates to:
+  /// **'Каждые N дней'**
+  String get habitRepeatEveryN;
+
+  /// No description provided for @habitRepeatMonthly.
+  ///
+  /// In ru, this message translates to:
+  /// **'По датам месяца'**
+  String get habitRepeatMonthly;
+
+  /// No description provided for @habitWeekMon.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пн'**
+  String get habitWeekMon;
+
+  /// No description provided for @habitWeekTue.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вт'**
+  String get habitWeekTue;
+
+  /// No description provided for @habitWeekWed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ср'**
+  String get habitWeekWed;
+
+  /// No description provided for @habitWeekThu.
+  ///
+  /// In ru, this message translates to:
+  /// **'Чт'**
+  String get habitWeekThu;
+
+  /// No description provided for @habitWeekFri.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пт'**
+  String get habitWeekFri;
+
+  /// No description provided for @habitWeekSat.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сб'**
+  String get habitWeekSat;
+
+  /// No description provided for @habitWeekSun.
+  ///
+  /// In ru, this message translates to:
+  /// **'Вс'**
+  String get habitWeekSun;
+
+  /// No description provided for @habitGoalUnitTimes.
+  ///
+  /// In ru, this message translates to:
+  /// **'раз'**
+  String get habitGoalUnitTimes;
+
+  /// No description provided for @habitStackingNoHabits.
+  ///
+  /// In ru, this message translates to:
+  /// **'— Сначала создай другую привычку —'**
+  String get habitStackingNoHabits;
 }
 
 class _AppLocalizationsDelegate

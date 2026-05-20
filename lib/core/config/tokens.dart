@@ -39,6 +39,22 @@ class HFTokens {
   static const anti = Color(0xFF10B981); // emerald — анти-привычки
   static const premium = Color(0xFFA855F7); // purple — premium badge
 
+  static const chartPink = Color(0xFFEC4899);
+  static const chartTeal = Color(0xFF06B6D4);
+
+  /// Каноничный порядок цветов для линий/баров. Не пересоздавай вручную —
+  /// добавляй новый цвет в конец и проверь, что Analytics не «дёрнулась».
+  static const chartPalette = <Color>[
+    success,   // 0 — основной (зелёный)
+    lAccent,   // 1 — синий (одинаков в light/dark, поэтому берём light)
+    warning,   // 2 — оранжевый
+    premium,   // 3 — фиолетовый
+    chartPink, // 4 — розовый
+    chartTeal, // 5 — бирюзовый (Teal)
+    danger,    // 6 — красный
+    anti,      // 7 — эмеральд (анти-привычки)
+  ];
+
   // ───────────────────────── RADIUS ──────────────────────────
   static const rSm = 8.0;
   static const rMd = 12.0;

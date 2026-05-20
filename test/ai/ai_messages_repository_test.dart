@@ -120,7 +120,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final chats = await repo.listChats();
+      final chatsRes = await repo.listChats().run();
+      final chats = chatsRes.match((f) => throw f, (ok) => ok);
       expect(chats, hasLength(2));
 
       final req = recorder.requests.single;
@@ -142,7 +143,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final created = await repo.createChat(title: 'First message…');
+      final createdRes = await repo.createChat(title: 'First message…').run();
+      final created = createdRes.match((f) => throw f, (ok) => ok);
       expect(created.title, 'First message…');
 
       final req = recorder.requests.single;
@@ -164,7 +166,7 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      await repo.createChat(title: '');
+      await repo.createChat(title: '').run();
       final body = jsonDecode(recorder.bodies.single) as Map<String, dynamic>;
       expect(body.containsKey('title'), isFalse);
     });
@@ -185,7 +187,8 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final list = await repo.listMessages('11111111-1111-1111-1111-111111111111');
+      final listRes = await repo.listMessages('11111111-1111-1111-1111-111111111111').run();
+      final list = listRes.match((f) => throw f, (ok) => ok);
       expect(list, hasLength(2));
       expect(list.first.role, 'user');
       expect(list.last.role, 'assistant');
@@ -212,11 +215,12 @@ void main() {
       });
       final repo = _makeRepo(httpClient);
 
-      final m = await repo.insertMessage(
+      final mRes = await repo.insertMessage(
         chatId: '11111111-1111-1111-1111-111111111111',
         role: 'assistant',
         content: 'hi',
-      );
+      ).run();
+      final m = mRes.match((f) => throw f, (ok) => ok);
       expect(m.role, 'assistant');
 
       final req = recorder.requests.single;
