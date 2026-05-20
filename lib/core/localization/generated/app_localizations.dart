@@ -3625,6 +3625,18 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'— Сначала создай другую привычку —'**
   String get habitStackingNoHabits;
+
+  /// No description provided for @todayAllDoneTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все привычки на сегодня!'**
+  String get todayAllDoneTitle;
+
+  /// No description provided for @todayAllDoneSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Отличный день! 🎉'**
+  String get todayAllDoneSubtitle;
 }
 
 class _AppLocalizationsDelegate

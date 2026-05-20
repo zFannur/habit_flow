@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
@@ -35,6 +36,34 @@ class TodayScreen extends ConsumerStatefulWidget {
 class _TodayScreenState extends ConsumerState<TodayScreen> {
   bool _wasAllDone = false;
   bool _showCelebration = false;
+  static const _prefKey = 'celebration_shown_date';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCelebrationState();
+  }
+
+  Future<void> _loadCelebrationState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString(_prefKey);
+    final today = _todayIso();
+    if (stored == today) {
+      if (mounted) setState(() => _wasAllDone = true);
+    }
+  }
+
+  Future<void> _markCelebrationShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefKey, _todayIso());
+  }
+
+  String _todayIso() {
+    final now = DateTime.now();
+    return '${now.year.toString().padLeft(4, '0')}-'
+        '${now.month.toString().padLeft(2, '0')}-'
+        '${now.day.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +78,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         final allDone = habits.every((h) => h.isDone);
         if (allDone && !_wasAllDone) {
           setState(() => _showCelebration = true);
+          _markCelebrationShown();
         }
         _wasAllDone = allDone;
       });

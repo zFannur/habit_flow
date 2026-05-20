@@ -26,6 +26,7 @@ class _PromptsGridScreenState extends ConsumerState<PromptsGridScreen> {
   ];
 
   _Cat? _activeFilter;
+  final Set<String> _hiddenIds = {};
 
   void _runPrompt(AiPrompt p) {
     final question = '${p.title}. ${p.description}';
@@ -302,7 +303,9 @@ class _PromptsGridScreenState extends ConsumerState<PromptsGridScreen> {
     final l = AppLocalizations.of(context);
 
     final customPromptsAsync = ref.watch(customPromptsStreamProvider);
-    final customPrompts = customPromptsAsync.valueOrNull ?? [];
+    final customPrompts = (customPromptsAsync.valueOrNull ?? [])
+        .where((p) => !_hiddenIds.contains(p.id))
+        .toList();
     final systemPrompts = _getLocalizedSystemPrompts(l);
 
     final allPrompts = [...customPrompts, ...systemPrompts];
@@ -363,6 +366,7 @@ class _PromptsGridScreenState extends ConsumerState<PromptsGridScreen> {
                     key: ValueKey(filtered[i].id),
                     prompt: filtered[i],
                     onTap: () => _runPrompt(filtered[i]),
+                    onDeleted: () => setState(() => _hiddenIds.add(filtered[i].id)),
                   ),
                   childCount: filtered.length,
                 ),
@@ -399,10 +403,12 @@ class _PromptCard extends ConsumerStatefulWidget {
     super.key,
     required this.prompt,
     required this.onTap,
+    required this.onDeleted,
   });
 
   final AiPrompt prompt;
   final VoidCallback onTap;
+  final VoidCallback onDeleted;
 
   @override
   ConsumerState<_PromptCard> createState() => _PromptCardState();
@@ -447,9 +453,8 @@ class _PromptCardState extends ConsumerState<_PromptCard> {
 
     if (confirm != true) return;
 
-    setState(() {
-      _isDeleting = true;
-    });
+    widget.onDeleted();
+    setState(() => _isDeleting = true);
 
     try {
       await ref.read(aiPromptsRepositoryProvider).deletePrompt(widget.prompt.id);

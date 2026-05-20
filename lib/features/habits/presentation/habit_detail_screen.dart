@@ -102,7 +102,7 @@ class _DetailBody extends ConsumerWidget {
     final ratePercent = scheduled30Count > 0 ? (done30Count / scheduled30Count * 100).round() : 0;
 
     final locale = Localizations.localeOf(context).languageCode;
-    final heatmapGrid = _buildGrid(heatmap, today);
+    final heatmapGrid = _buildGrid(heatmap, today, habit.startedAt);
     final chartData = _buildChartData(habit, logs, today);
     final historyEntries = _buildHistory(logs, today, locale);
 
@@ -313,17 +313,24 @@ class _DetailBody extends ConsumerWidget {
 List<List<_HeatCell>> _buildGrid(
   Map<DateTime, HabitLogStatus> heatmap,
   DateTime today,
+  DateTime habitStartedAt,
 ) {
   final todayDate = dateOnly(today);
-  var start = todayDate.subtract(const Duration(days: 89));
-  // Align to Monday of that week.
-  final dow = (start.weekday - 1) % 7; // Mon=0..Sun=6
-  start = start.subtract(Duration(days: dow));
-  final rangeStart = todayDate.subtract(const Duration(days: 89));
+  // Show at most 90 days, but start no earlier than habit creation.
+  final maxStart = todayDate.subtract(const Duration(days: 89));
+  final habitStart = dateOnly(habitStartedAt);
+  final rangeStart = habitStart.isAfter(maxStart) ? habitStart : maxStart;
+
+  // Align grid start to Monday of the rangeStart week.
+  final dow = (rangeStart.weekday - 1) % 7; // Mon=0..Sun=6
+  var start = rangeStart.subtract(Duration(days: dow));
+
+  // Calculate number of weeks needed to cover rangeStart..today.
+  final daysInRange = todayDate.difference(start).inDays + 1;
+  final weeks = ((daysInRange + 6) ~/ 7).clamp(1, 13);
 
   final grid = <List<_HeatCell>>[];
-  // 13 weeks covers 91 days which is enough for 90-day window.
-  for (int w = 0; w < 13; w++) {
+  for (int w = 0; w < weeks; w++) {
     final col = <_HeatCell>[];
     for (int d = 0; d < 7; d++) {
       final date = start.add(Duration(days: w * 7 + d));
@@ -354,24 +361,26 @@ List<double> _buildChartData(
   List<HabitLogModel> logs,
   DateTime today,
 ) {
-  // 26 weekly buckets (most recent = last element).
-  const weeks = 26;
   final todayDate = dateOnly(today);
-  final result = List<double>.filled(weeks, 0.0);
   final startLimit = dateOnly(habit.startedAt);
 
-  // Group logs by date for O(1) lookup
+  // Calculate actual weeks since habit started, capped at 26.
+  final daysSinceStart = todayDate.difference(startLimit).inDays;
+  final weeks = ((daysSinceStart ~/ 7) + 1).clamp(1, 26);
+
+  final result = List<double>.filled(weeks, 0.0);
   final logsMap = {for (final l in logs) dateOnly(l.date): l};
 
   for (int w = 0; w < weeks; w++) {
-    final weekEnd = todayDate.subtract(Duration(days: (weeks - 1 - w) * 7));
-    final weekStart = weekEnd.subtract(const Duration(days: 6));
+    // Week 0 = first week from startLimit; last element = most recent week.
+    final weekStart = startLimit.add(Duration(days: w * 7));
+    final weekEnd = weekStart.add(const Duration(days: 6));
     int done = 0;
     int total = 0;
     for (int d = 0; d < 7; d++) {
       final day = weekStart.add(Duration(days: d));
       if (day.isAfter(todayDate) || day.isBefore(startLimit)) continue;
-      if (habit.isToday(day)) {
+      if (!weekEnd.isBefore(day) && habit.isToday(day)) {
         total++;
         final log = logsMap[day];
         if (log != null &&
@@ -978,44 +987,50 @@ class _BehaviorGrid extends StatelessWidget {
 
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _BehaviorCard(
-                emoji: '🧱',
-                label: l.habitDetailBehaviorAfter,
-                value: stackWhen ?? '—',
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _BehaviorCard(
+                  emoji: '🧱',
+                  label: l.habitDetailBehaviorAfter,
+                  value: stackWhen ?? '—',
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _BehaviorCard(
-                emoji: '📍',
-                label: l.habitDetailBehaviorWhere,
-                value: stackWhere ?? '—',
+              const SizedBox(width: 8),
+              Expanded(
+                child: _BehaviorCard(
+                  emoji: '📍',
+                  label: l.habitDetailBehaviorWhere,
+                  value: stackWhere ?? '—',
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: _BehaviorCard(
-                emoji: '🎭',
-                label: l.habitDetailBehaviorIdentity,
-                value: identity ?? '—',
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _BehaviorCard(
+                  emoji: '🎭',
+                  label: l.habitDetailBehaviorIdentity,
+                  value: identity ?? '—',
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _BehaviorCard(
-                emoji: '⚡',
-                label: l.habitDetailBehaviorMin,
-                value: twoMin ?? '—',
+              const SizedBox(width: 8),
+              Expanded(
+                child: _BehaviorCard(
+                  emoji: '⚡',
+                  label: l.habitDetailBehaviorMin,
+                  value: twoMin ?? '—',
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

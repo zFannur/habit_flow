@@ -1942,4 +1942,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get habitStackingNoHabits => '— Сначала создай другую привычку —';
+
+  @override
+  String get todayAllDoneTitle => 'Все привычки на сегодня!';
+
+  @override
+  String get todayAllDoneSubtitle => 'Отличный день! 🎉';
 }

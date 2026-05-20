@@ -43,6 +43,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _disclaimerVisible = true;
   String? _menuOpenChatId;
   String _inputText = '';
+  final Set<String> _hiddenChatIds = {};
 
   @override
   void initState() {
@@ -155,6 +156,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     if (ok != true) return;
+    setState(() => _hiddenChatIds.add(chatId));
     await ref.read(aiMessagesRepositoryProvider).deleteChat(chatId).run();
     if (ref.read(currentChatIdProvider) == chatId) {
       ref.read(currentChatIdProvider.notifier).state = null;
@@ -347,7 +349,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           left: _drawerOpen ? 0 : -290,
           width: 290,
           child: _Drawer(
-            chats: chatsAsync.valueOrNull ?? const <AiChat>[],
+            chats: (chatsAsync.valueOrNull ?? const <AiChat>[])
+                .where((ch) => !_hiddenChatIds.contains(ch.id))
+                .toList(),
             activeChatId: activeChatId,
             menuOpenChatId: _menuOpenChatId,
             onMenuToggle: (id) => setState(

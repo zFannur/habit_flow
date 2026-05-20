@@ -2,6 +2,7 @@ import 'package:habit_flow/core/config/text_theme.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../../../../core/localization/generated/app_localizations.dart';
 
 class AllDoneCelebration extends StatefulWidget {
   const AllDoneCelebration({super.key, required this.onDismiss});
@@ -93,7 +94,7 @@ class _AllDoneCelebrationState extends State<AllDoneCelebration>
                     Text('🎉', style: context.tt.displayLarge!.copyWith(fontSize: 56.0)),
                     SizedBox(height: 12),
                     Text(
-                      'Все привычки на сегодня!',
+                      AppLocalizations.of(context).todayAllDoneTitle,
                       style: context.tt.headlineSmall!.copyWith(color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),

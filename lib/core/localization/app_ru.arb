@@ -660,5 +660,7 @@
   "habitWeekSat": "Сб",
   "habitWeekSun": "Вс",
   "habitGoalUnitTimes": "раз",
-  "habitStackingNoHabits": "— Сначала создай другую привычку —"
+  "habitStackingNoHabits": "— Сначала создай другую привычку —",
+  "todayAllDoneTitle": "Все привычки на сегодня!",
+  "todayAllDoneSubtitle": "Отличный день! 🎉"
 }

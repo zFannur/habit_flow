@@ -660,5 +660,7 @@
   "habitWeekSat": "Sat",
   "habitWeekSun": "Sun",
   "habitGoalUnitTimes": "times",
-  "habitStackingNoHabits": "— Create another habit first —"
+  "habitStackingNoHabits": "— Create another habit first —",
+  "todayAllDoneTitle": "All habits done!",
+  "todayAllDoneSubtitle": "Great job today! 🎉"
 }

@@ -1933,4 +1933,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get habitStackingNoHabits => '— Create another habit first —';
+
+  @override
+  String get todayAllDoneTitle => 'All habits done!';
+
+  @override
+  String get todayAllDoneSubtitle => 'Great job today! 🎉';
 }

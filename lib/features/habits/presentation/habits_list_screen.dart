@@ -28,6 +28,7 @@ class HabitsListScreen extends ConsumerStatefulWidget {
 class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
   final _searchCtrl = TextEditingController();
   HabitsFilter _filter = const HabitsFilter();
+  final Set<String> _hiddenIds = {};
 
   @override
   void dispose() {
@@ -137,8 +138,10 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
   ) {
     final categories = HabitsFilter.categoriesFrom(habits);
 
+    final visible = habits.where((h) => !_hiddenIds.contains(h.id)).toList();
+
     final filtered = _filter.apply(
-      habits,
+      visible,
       streakFor: (id) => ref.watch(streakProvider(id)),
       // см. issue #5
       rateFor: (_) => 0,
@@ -290,6 +293,7 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
                         }
                       },
                       onDismissed: (direction) async {
+                        setState(() => _hiddenIds.add(habit.id));
                         final repo = ref.read(habitsRepositoryProvider);
                         if (direction == DismissDirection.startToEnd) {
                           await repo.archive(habit.id);
@@ -602,8 +606,11 @@ class _HabitsListCard extends ConsumerWidget {
     final heatmap = heatmapAsync.value ?? const {};
 
     final today = ref.watch(todayProvider);
+    // Align to Monday of the current week so cells always show Mon-Sun.
+    final monday = today.subtract(Duration(days: today.weekday - 1));
     final cells = List.generate(7, (i) {
-      final day = today.subtract(Duration(days: 6 - i));
+      final day = monday.add(Duration(days: i));
+      if (day.isAfter(today)) return null;
       return heatmap[day];
     });
 
@@ -704,7 +711,7 @@ class _HabitsListCard extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    _Heatmap(cells: cells),
+                    _Heatmap(cells: cells, todayWeekday: today.weekday),
                   ],
                 ),
               ),
@@ -874,24 +881,50 @@ class _HabitsListCard extends ConsumerWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _Heatmap extends StatelessWidget {
-  const _Heatmap({required this.cells});
+  const _Heatmap({required this.cells, required this.todayWeekday});
 
   final List<HabitLogStatus?> cells;
+  // 1=Mon … 7=Sun — used to highlight today's column
+  final int todayWeekday;
 
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
+    final dayLabels = [
+      l.habitWeekMon,
+      l.habitWeekTue,
+      l.habitWeekWed,
+      l.habitWeekThu,
+      l.habitWeekFri,
+      l.habitWeekSat,
+      l.habitWeekSun,
+    ];
     return Row(
       children: [
         for (int i = 0; i < cells.length; i++) ...[
           if (i > 0) const SizedBox(width: 3),
-          _heatCell(cells[i], c),
+          Column(
+            children: [
+              _heatCell(cells[i], c, isToday: i + 1 == todayWeekday),
+              const SizedBox(height: 2),
+              Text(
+                dayLabels[i],
+                style: context.tt.bodyMedium!.copyWith(
+                  fontSize: 8,
+                  height: 1,
+                  color: i + 1 == todayWeekday ? c.accent : c.textTertiary,
+                  fontWeight: i + 1 == todayWeekday ? FontWeight.w700 : FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
         ],
       ],
     );
   }
 
-  Widget _heatCell(HabitLogStatus? status, HFColors c) {
+  Widget _heatCell(HabitLogStatus? status, HFColors c, {required bool isToday}) {
     final Color color;
     final double opacity;
     switch (status) {
@@ -915,6 +948,9 @@ class _Heatmap extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: opacity),
         borderRadius: BorderRadius.circular(5),
+        border: isToday
+            ? Border.all(color: c.accent.withValues(alpha: 0.6), width: 1.5)
+            : null,
       ),
     );
   }
