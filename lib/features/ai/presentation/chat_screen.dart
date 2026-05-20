@@ -1416,7 +1416,7 @@ class _ContextMenu extends StatelessWidget {
       borderRadius: BorderRadius.circular(HFTokens.rMd),
       elevation: 0,
       child: Container(
-        constraints: const BoxConstraints(minWidth: 148),
+        width: 160,
         decoration: BoxDecoration(
           color: c.card,
           borderRadius: BorderRadius.circular(HFTokens.rMd),
