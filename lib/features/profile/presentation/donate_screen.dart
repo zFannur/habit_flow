@@ -33,9 +33,9 @@ class DonateScreen extends ConsumerStatefulWidget {
 class _DonateScreenState extends ConsumerState<DonateScreen> {
   // см. issue #10
   static const _presets = <_Preset>[
-    _Preset(stars: 50, usd: r'$0.65', label: 'Кофе автору'),
-    _Preset(stars: 150, usd: r'$1.95', label: 'Хороший обед', popular: true),
-    _Preset(stars: 500, usd: r'$6.50', label: 'День разработки'),
+    _Preset(stars: 250, usd: r'$5.00', label: 'Кофе автору'),
+    _Preset(stars: 500, usd: r'$10.00', label: 'Хороший обед', popular: true),
+    _Preset(stars: 5000, usd: r'$100.00', label: 'День разработки'),
     _Preset(custom: true),
   ];
 
@@ -395,27 +395,24 @@ class _PresetsSection extends StatelessWidget {
         // clipped by the previous section on narrow viewports.
         Padding(
           padding: const EdgeInsets.only(top: 12),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              const gap = 10.0;
-              final cellW = (constraints.maxWidth - gap) / 2;
-              return Wrap(
-                spacing: gap,
-                runSpacing: 16,
-                children: [
-                  for (var i = 0; i < presets.length; i++)
-                    SizedBox(
-                      width: cellW,
-                      child: _PresetCard(
-                        preset: presets[i],
-                        selected: selected == i,
-                        onTap: () => onSelect(i),
-                        customCtl: customCtl,
-                      ),
-                    ),
-                ],
-              );
-            },
+          child: GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.6,
+            padding: EdgeInsets.zero,
+            clipBehavior: Clip.none,
+            children: [
+              for (var i = 0; i < presets.length; i++)
+                _PresetCard(
+                  preset: presets[i],
+                  selected: selected == i,
+                  onTap: () => onSelect(i),
+                  customCtl: customCtl,
+                ),
+            ],
           ),
         ),
       ],
