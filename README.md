@@ -2,6 +2,8 @@
 
 HabitFlow - Telegram Mini App для отслеживания привычек, дневника и ИИ-анализа
 
+flutter pub run change_app_package_name:main com.habitflow.app
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

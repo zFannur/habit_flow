@@ -56,3 +56,4 @@ key.properties
 *.keystore
 *.p12
 *.mobileprovision
+.env
