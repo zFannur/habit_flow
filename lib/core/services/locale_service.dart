@@ -28,9 +28,15 @@ class LocaleNotifier extends StateNotifier<Locale> {
 }
 
 final sharedPreferencesProvider = Provider<SharedPreferences>(
-  (ref) => throw UnimplementedError('Override in main()'),
+  (ref) => throw StateError(
+    'sharedPreferencesProvider must be overridden in main() '
+    'with ProviderScope(overrides: [...]).',
+  ),
 );
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
-  throw UnimplementedError('Override in main() with LocaleNotifier.create');
+  throw StateError(
+    'localeProvider must be overridden in main() '
+    'after `await LocaleNotifier.create(prefs)`.',
+  );
 });

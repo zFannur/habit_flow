@@ -45,7 +45,10 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
 }
 
 final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
-  throw UnimplementedError('Override in main() with ThemeNotifier.create');
+  throw StateError(
+    'themeProvider must be overridden in main() '
+    'after `await ThemeNotifier.create(prefs)`.',
+  );
 });
 
 extension ThemeModeKey on ThemeMode {
@@ -85,7 +88,8 @@ class AccentColorNotifier extends StateNotifier<Color?> {
 
 final accentColorProvider =
     StateNotifierProvider<AccentColorNotifier, Color?>((ref) {
-  throw UnimplementedError(
-    'Override in main() with AccentColorNotifier.create',
+  throw StateError(
+    'accentColorProvider must be overridden in main() '
+    'after `await AccentColorNotifier.create(prefs)`.',
   );
 });
