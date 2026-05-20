@@ -1,11 +1,9 @@
 import 'package:habit_flow/core/config/text_theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
-import '../../../core/services/error_reporter.dart';
 import '../../../shared/widgets/hf_header_bar.dart';
 
 /// О приложении (SPEC §1 — концепция и принципы продукта).
@@ -77,41 +75,10 @@ class AboutScreen extends StatelessWidget {
                   label: l.aboutPrinciplesLabel,
                   body: l.aboutPrinciplesText,
                 ),
-                const SizedBox(height: 16),
-                _LinkRow(
-                  emoji: '💬',
-                  label: l.aboutChannelLink,
-                  hint: '@habitflow_dev',
-                ),
-                if (kDebugMode) ...[
-                  const SizedBox(height: 24),
-                  _DebugLogsButton(),
-                ],
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DebugLogsButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final c = HFColors.of(context);
-    return OutlinedButton.icon(
-      onPressed: () async {
-        await ErrorReporter.instance.copyToClipboard();
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Logs copied to clipboard')),
-        );
-      },
-      icon: Icon(Icons.bug_report_outlined, color: c.textSecondary),
-      label: Text(
-        'Copy debug logs',
-        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
       ),
     );
   }
@@ -147,54 +114,6 @@ class _Section extends StatelessWidget {
             style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LinkRow extends StatelessWidget {
-  const _LinkRow({required this.emoji, required this.label, required this.hint});
-
-  final String emoji;
-  final String label;
-  final String hint;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = HFColors.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: c.card,
-          borderRadius: BorderRadius.circular(HFTokens.rLg),
-          border: Border.all(color: c.border, width: 1),
-          boxShadow: HFTokens.cardShadow(c.shadow),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Text(emoji, style: context.tt.headlineMedium!.copyWith(height: 1)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label,
-                    style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    hint,
-                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
