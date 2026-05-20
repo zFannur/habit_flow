@@ -922,6 +922,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiChatTab => 'Chat';
 
   @override
+  String get aiChatTitle => 'AI';
+
+  @override
+  String get aiChatSuggestion1 => 'Analyze my week';
+
+  @override
+  String get aiChatSuggestion2 => 'Where are my weakest spots?';
+
+  @override
+  String get aiChatSuggestion3 => 'Suggest a new habit';
+
+  @override
+  String get aiChatSuggestion4 => 'Why do I relapse?';
+
+  @override
+  String get aiChatSuggestion5 => 'How to improve my morning ritual?';
+
+  @override
   String get aiSummariesTab => 'Summaries';
 
   @override
@@ -989,6 +1007,56 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong. Check your connection and try again.';
 
   @override
+  String get aiStyleCoachName => 'Coach';
+
+  @override
+  String get aiStyleCoachDesc => 'Professional, neutral. Default.';
+
+  @override
+  String get aiStyleCoachPreview =>
+      'Three skips in a row is a pattern. What exactly is getting in the way: time, motivation, or circumstances? Let\'s analyze and adjust the plan.';
+
+  @override
+  String get aiStyleSergeantName => 'Sergeant';
+
+  @override
+  String get aiStyleSergeantDesc => 'Direct, no excuses. Tough but honest.';
+
+  @override
+  String get aiStyleSergeantPreview =>
+      'Three times. No exceptions. This isn\'t circumstances — it\'s a choice. Either you do it today, or you admit it\'s not a priority.';
+
+  @override
+  String get aiStyleBuddyName => 'Buddy';
+
+  @override
+  String get aiStyleBuddyDesc => 'Warm, informal, with humor. Supportive.';
+
+  @override
+  String get aiStyleBuddyPreview =>
+      'Hey, it\'s fine! Life happens 😅 Three skips is not a disaster. You\'re already here and thinking about it, which is a win. Tomorrow?';
+
+  @override
+  String get aiStyleSageName => 'Sage';
+
+  @override
+  String get aiStyleSageDesc => 'Stoic wisdom, quotes, metaphors.';
+
+  @override
+  String get aiStyleSagePreview =>
+      '“It\'s not the fall that defines us, but how we rise.” Three skips is just a ripple on the water. A habit is not a streak, but an intention. What does this silence tell you?';
+
+  @override
+  String get aiStylePoetName => 'Poet';
+
+  @override
+  String get aiStylePoetDesc => 'Metaphors and images. Supporter-only.';
+
+  @override
+  String get aiStylePoetPreview =>
+      'Three empty evenings, like blank stanzas. The body remembers the rhythm, even when the mind forgets. What stopped the movement?';
+
+  @override
   String aiSummariesInfoBanner(int interval, int count, int remaining) {
     return 'A summary is generated automatically every $interval journal entries. You currently have $count — next one in $remaining.';
   }
@@ -1006,6 +1074,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiSummaryRegenerate => 'Regenerate';
+
+  @override
+  String get aiSummaryChatPrompt => 'Analyze this summary in more detail';
+
+  @override
+  String get aiSummaryRegenerateConfirmTitle => 'Regenerate summary?';
+
+  @override
+  String get aiSummaryRegenerateConfirmText =>
+      'The current summary will be replaced with a new one.';
+
+  @override
+  String get aiPromptDeleteConfirmTitle => 'Delete prompt?';
+
+  @override
+  String get aiPromptDeleteConfirmText =>
+      'This custom prompt will be permanently removed. This cannot be undone.';
+
+  @override
+  String get aiPromptCreateTitle => 'New prompt';
+
+  @override
+  String get aiPromptCreateEmoji => 'Emoji';
+
+  @override
+  String get aiPromptCreateTitleLabel => 'Title';
+
+  @override
+  String get aiPromptCreateDescLabel => 'Description / Question';
+
+  @override
+  String get aiPromptCreateCategoryLabel => 'Category';
+
+  @override
+  String get aiPromptSystem1Title => 'Pattern Analysis';
+
+  @override
+  String get aiPromptSystem1Desc => 'What repeats in my behavior';
+
+  @override
+  String get aiPromptSystem2Title => 'Blind Spots';
+
+  @override
+  String get aiPromptSystem2Desc => 'What I might have missed';
+
+  @override
+  String get aiPromptSystem3Title => 'Relapse Risks';
+
+  @override
+  String get aiPromptSystem3Desc => 'Which habits are in danger';
+
+  @override
+  String get aiPromptSystem4Title => 'Next Goal';
+
+  @override
+  String get aiPromptSystem4Desc => 'Which habit to add';
+
+  @override
+  String get aiPromptSystem5Title => 'Emotional Weather';
+
+  @override
+  String get aiPromptSystem5Desc => 'Mood dynamics';
+
+  @override
+  String get aiPromptSystem6Title => 'Correlations';
+
+  @override
+  String get aiPromptSystem6Desc => 'Connections between habits and emotions';
+
+  @override
+  String get aiPromptSystem7Title => 'Growth';
+
+  @override
+  String get aiPromptSystem7Desc => 'Me today vs a month ago';
+
+  @override
+  String get aiPromptSystem8Title => 'What to Remove';
+
+  @override
+  String get aiPromptSystem8Desc => 'Which habits aren\'t working';
+
+  @override
+  String get aiPromptSystem9Title => 'Day Optimization';
+
+  @override
+  String get aiPromptSystem9Desc => 'How to restructure the day';
+
+  @override
+  String get aiPromptSystem10Title => 'Identity Check';
+
+  @override
+  String get aiPromptSystem10Desc => 'Am I aligned with my values';
+
+  @override
+  String get aiPromptSystem11Title => 'Streaks';
+
+  @override
+  String get aiPromptSystem11Desc => 'Which streak is real progress';
+
+  @override
+  String get aiPromptSystem12Title => 'Relapse Triggers';
+
+  @override
+  String get aiPromptSystem12Desc => 'What triggers skips';
+
+  @override
+  String get aiPromptSystem13Title => 'Weekly Ritual';
+
+  @override
+  String get aiPromptSystem13Desc => 'Anchor of strong habits';
+
+  @override
+  String get aiPromptSystem14Title => 'Letter to Self';
+
+  @override
+  String get aiPromptSystem14Desc => 'A letter as a close friend';
 
   @override
   String get aiPromptsFilterAll => 'All';

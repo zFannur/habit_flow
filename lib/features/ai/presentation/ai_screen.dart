@@ -7,12 +7,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../data/chat_providers.dart';
-import '../data/disclaimer_service.dart';
-import '../data/openrouter_key_repository.dart';
 import 'chat_screen.dart';
 import 'prompts_grid_screen.dart';
 import 'summaries_screen.dart';
-import 'widgets/privacy_disclaimer_dialog.dart';
 
 /// Tab 4: ИИ. Хост 3 саб-вкладок Чат / Сводки / Промпты + кнопка настроек.
 /// Саб-вкладки — самодостаточные виджеты, переключаются через IndexedStack
@@ -25,32 +22,6 @@ class AiScreen extends ConsumerStatefulWidget {
 }
 
 class _AiScreenState extends ConsumerState<AiScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Проверяем флаг после первого frame, чтобы context был ready.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowDisclaimer());
-  }
-
-  Future<void> _maybeShowDisclaimer() async {
-    if (!mounted) return;
-
-    // Читаем ключ через FutureProvider — гарантированно дожидается загрузки.
-    final key = await ref.read(openRouterKeyProvider.future);
-    if (key == null || key.isEmpty) return;
-
-    final disclaimerService = ref.read(disclaimerServiceProvider);
-    final seen = await disclaimerService.hasSeen();
-    if (seen) return;
-
-    if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const PrivacyDisclaimerDialog(),
-    );
-    await disclaimerService.markSeen();
-  }
 
   @override
   Widget build(BuildContext context) {

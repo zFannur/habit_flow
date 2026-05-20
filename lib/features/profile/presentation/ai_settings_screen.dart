@@ -9,6 +9,7 @@ import '../../../core/config/env.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../../ai/data/ai_style_repository.dart';
+import '../../ai/data/chat_providers.dart';
 import '../../ai/data/openrouter_key_repository.dart';
 import '../../ai/data/openrouter_models_repository.dart';
 import '../../ai/domain/style_prompts.dart';
@@ -1189,50 +1190,6 @@ class _Style {
   final bool locked;
 }
 
-const _kStyles = <_Style>[
-  _Style(
-    id: 'coach',
-    emoji: '🎓',
-    name: 'Coach',
-    desc: 'Профессиональный, без сюсюканья. По умолчанию.',
-    preview:
-        'Три пропуска подряд — это уже паттерн. Что именно мешает: время, мотивация или обстоятельства? Давай разберём и скорректируем план.',
-  ),
-  _Style(
-    id: 'sergeant',
-    emoji: '💪',
-    name: 'Sergeant',
-    desc: 'Прямой, без оправданий. Жёсткий, но честный.',
-    preview:
-        'Три раза. Без исключений. Это не обстоятельства — это выбор. Либо ты делаешь это сегодня, либо признаёшь, что это не приоритет.',
-  ),
-  _Style(
-    id: 'buddy',
-    emoji: '🤗',
-    name: 'Buddy',
-    desc: 'Тёплый, неформальный, с юмором. Поддерживает.',
-    preview:
-        'Эй, всё норм! Жизнь случается 😅 Три пропуска — не катастрофа. Ты уже здесь и думаешь об этом, а это уже победа. Завтра?',
-  ),
-  _Style(
-    id: 'sage',
-    emoji: '🧘',
-    name: 'Sage',
-    desc: 'Стоическая мудрость, цитаты, метафоры.',
-    preview:
-        '«Не падение определяет нас, а то, как мы встаём». Три пропуска — лишь рябь на воде. Привычка — это не серия, а намерение. Что говорит тебе это молчание?',
-  ),
-  _Style(
-    id: 'poet',
-    emoji: '✍️',
-    name: 'Poet',
-    desc: 'Метафоры и образы. Только для поддержавших.',
-    preview:
-        'Три пустых вечера, как незаполненные строфы. Тело помнит ритм, даже когда разум забыл. Что остановило движение?',
-    locked: true,
-  ),
-];
-
 class _StyleSection extends StatelessWidget {
   const _StyleSection({
     required this.selectedStyle,
@@ -1249,18 +1206,44 @@ class _StyleSection extends StatelessWidget {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
     // Poet's lock flag is data-driven: locked iff the user hasn't donated.
-    final styles = _kStyles
-        .map((s) => s.id == AiStyle.poet.wireName
-            ? _Style(
-                id: s.id,
-                emoji: s.emoji,
-                name: s.name,
-                desc: s.desc,
-                preview: s.preview,
-                locked: !isSupporter,
-              )
-            : s)
-        .toList();
+    final styles = [
+      _Style(
+        id: 'coach',
+        emoji: '🎓',
+        name: l.aiStyleCoachName,
+        desc: l.aiStyleCoachDesc,
+        preview: l.aiStyleCoachPreview,
+      ),
+      _Style(
+        id: 'sergeant',
+        emoji: '💪',
+        name: l.aiStyleSergeantName,
+        desc: l.aiStyleSergeantDesc,
+        preview: l.aiStyleSergeantPreview,
+      ),
+      _Style(
+        id: 'buddy',
+        emoji: '🤗',
+        name: l.aiStyleBuddyName,
+        desc: l.aiStyleBuddyDesc,
+        preview: l.aiStyleBuddyPreview,
+      ),
+      _Style(
+        id: 'sage',
+        emoji: '🧘',
+        name: l.aiStyleSageName,
+        desc: l.aiStyleSageDesc,
+        preview: l.aiStyleSagePreview,
+      ),
+      _Style(
+        id: 'poet',
+        emoji: '✍️',
+        name: l.aiStylePoetName,
+        desc: l.aiStylePoetDesc,
+        preview: l.aiStylePoetPreview,
+        locked: !isSupporter,
+      ),
+    ];
     final current = styles.firstWhere(
       (s) => s.id == selectedStyle,
       orElse: () => styles.first,
@@ -1464,16 +1447,16 @@ class _PreviewBubble extends StatelessWidget {
 
 // ───────────────────────── USAGE ─────────────────────────
 
-class _UsageSection extends StatelessWidget {
+class _UsageSection extends ConsumerWidget {
   const _UsageSection();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
-    const today = 23;
+    final today = ref.watch(dailyMessageCountProvider).valueOrNull ?? 0;
     const limit = 200;
-    const pct = today / limit;
+    final pct = (today / limit).clamp(0.0, 1.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1509,12 +1492,12 @@ class _UsageSection extends StatelessWidget {
               const _CardDivider(horizontalMargin: 0),
               _StatRow(
                 label: l.aiSettingsUsageMonth,
-                value: '412 запросов',
+                value: '—',
               ),
               const _CardDivider(horizontalMargin: 0),
               _StatRow(
                 label: l.aiSettingsUsageSpent,
-                value: r'$0.00',
+                value: '—',
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),

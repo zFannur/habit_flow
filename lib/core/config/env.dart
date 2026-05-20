@@ -1,70 +1,98 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Конфигурация окружения. Значения подставляются через --dart-define
-/// или --dart-define-from-file при сборке.
+/// Конфигурация окружения. Значения берутся из двух источников:
+///   1. На мобильных платформах — из `.env` (bundled asset), загруженного
+///      через `flutter_dotenv` до `runApp`.
+///   2. На Web (CI билдит через `--dart-define`) — из compile-time констант
+///      `String.fromEnvironment`.
+/// Dotenv приоритетнее: если значение задано в `.env`, оно перебивает дефайн.
+/// Это позволяет одному и тому же бинарю работать в обоих сценариях без
+/// смены команды сборки.
 class Env {
-  static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-  static const openRouterBaseUrl = String.fromEnvironment(
+  static const _defSupabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const _defSupabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  static const _defOpenRouterBaseUrl = String.fromEnvironment(
     'OPENROUTER_BASE_URL',
     defaultValue: 'https://openrouter.ai/api/v1',
   );
-  static const defaultModel = String.fromEnvironment(
+  static const _defDefaultModel = String.fromEnvironment(
     'OPENROUTER_DEFAULT_MODEL',
     defaultValue: 'openai/gpt-oss-120b:free',
   );
-
-  /// Окружение: `development` (по умолчанию) или `production`.
-  /// Влияет на строгость валидации и поведение error reporting.
-  static const environment = String.fromEnvironment(
+  static const _defEnvironment = String.fromEnvironment(
     'ENV',
     defaultValue: 'development',
   );
-
-  /// Канонический URL Mini App (используется как HTTP-Referer для
-  /// OpenRouter rankings, чтобы статистика по приложению агрегировалась).
-  static const String appBaseUrl = String.fromEnvironment(
+  static const _defAppBaseUrl = String.fromEnvironment(
     'APP_BASE_URL',
     defaultValue: 'https://habitflow.app',
   );
-
-  /// Публичный канал/чат проекта в Telegram — кнопка «Поделиться».
-  static const String botPublicChannel = String.fromEnvironment(
+  static const _defBotPublicChannel = String.fromEnvironment(
     'BOT_PUBLIC_CHANNEL',
     defaultValue: 'https://t.me/habitflow_dev',
   );
-
-  /// Дашборд ключей OpenRouter — куда отправляем пользователя за BYO-key.
-  static const String openRouterKeysUrl = String.fromEnvironment(
+  static const _defOpenRouterKeysUrl = String.fromEnvironment(
     'OPENROUTER_KEYS_URL',
     defaultValue: 'https://openrouter.ai/keys',
   );
+  static const _defBotUsername = String.fromEnvironment('BOT_USERNAME');
 
-  /// Username Telegram-бота для авторизации по ссылке на мобильных платформах.
-  static const String botUsername = String.fromEnvironment('BOT_USERNAME');
+  static String _read(String key, String fallback) {
+    if (dotenv.isInitialized) {
+      final v = dotenv.maybeGet(key);
+      if (v != null && v.isNotEmpty) return v;
+    }
+    return fallback;
+  }
+
+  static String get supabaseUrl => _read('SUPABASE_URL', _defSupabaseUrl);
+  static String get supabaseAnonKey =>
+      _read('SUPABASE_ANON_KEY', _defSupabaseAnonKey);
+  static String get openRouterBaseUrl =>
+      _read('OPENROUTER_BASE_URL', _defOpenRouterBaseUrl);
+  static String get defaultModel =>
+      _read('OPENROUTER_DEFAULT_MODEL', _defDefaultModel);
+  static String get environment => _read('ENV', _defEnvironment);
+  static String get appBaseUrl => _read('APP_BASE_URL', _defAppBaseUrl);
+  static String get botPublicChannel =>
+      _read('BOT_PUBLIC_CHANNEL', _defBotPublicChannel);
+  static String get openRouterKeysUrl =>
+      _read('OPENROUTER_KEYS_URL', _defOpenRouterKeysUrl);
+  static String get botUsername => _read('BOT_USERNAME', _defBotUsername);
 
   static bool get isProduction => environment == 'production';
 
+  /// Загружает `.env` как asset. На Web `.env` обычно пустой/отсутствует —
+  /// тогда тихо игнорируем ошибку и работаем на compile-time дефайнах.
+  /// На Android/iOS `.env` бандлится локально и заполняет значения.
+  static Future<void> load() async {
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (_) {
+      // .env может отсутствовать (Web в CI) — это норма.
+    }
+  }
+
   /// Проверяет, что обязательные env-переменные заданы.
-  /// Бросает [StateError] с понятным сообщением, если что-то не передано
-  /// через `--dart-define`. Вызывать до `runApp` в `main.dart`.
+  /// Бросает [StateError] с понятным сообщением. Вызывать после [load] до `runApp`.
   static void assertValid() {
     if (supabaseUrl.isEmpty) {
       throw StateError(
         'SUPABASE_URL is required. '
-        'Pass --dart-define-from-file=.env at build/run time.',
+        'Для Android/iOS заполни app/.env, для Web — передай --dart-define=SUPABASE_URL=... при сборке.',
       );
     }
     if (supabaseAnonKey.isEmpty) {
       throw StateError(
         'SUPABASE_ANON_KEY is required. '
-        'Pass --dart-define-from-file=.env at build/run time.',
+        'Для Android/iOS заполни app/.env, для Web — передай --dart-define=SUPABASE_ANON_KEY=... при сборке.',
       );
     }
     if (!kIsWeb && botUsername.isEmpty) {
       throw StateError(
         'BOT_USERNAME is required on mobile platforms. '
-        'Pass --dart-define-from-file=.env at build/run time.',
+        'Заполни BOT_USERNAME в app/.env.',
       );
     }
   }

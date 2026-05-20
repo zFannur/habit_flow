@@ -44,6 +44,12 @@ jobs:
       - name: Generate code (freezed / json / riverpod)
         run: dart run build_runner build --delete-conflicting-outputs
 
+      # .env объявлен как asset для мобильных сборок (flutter_dotenv).
+      # На Web значения приходят через --dart-define, поэтому файл оставляем
+      # пустым — он нужен только чтобы пройти валидацию assets во время сборки.
+      - name: Create empty .env stub for assets bundle
+        run: touch .env
+
       - name: Build web (production)
         run: |
           flutter build web --release \

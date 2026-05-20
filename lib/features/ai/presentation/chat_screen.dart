@@ -5,8 +5,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
 import '../../../core/localization/generated/app_localizations.dart';
+import '../../../shared/widgets/hf_markdown.dart';
 import '../data/ai_messages_repository.dart';
 import '../data/chat_providers.dart';
+import '../data/ai_style_repository.dart';
+import '../data/disclaimer_service.dart';
+import '../data/openrouter_models_repository.dart';
+import '../domain/style_prompts.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -16,13 +21,15 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
-  static const _prompts = <String>[
-    'Проанализируй мою неделю',
-    'Где у меня самые слабые места?',
-    'Предложи новую привычку',
-    'Почему я срываюсь?',
-    'Как улучшить утренний ритуал?',
-  ];
+  List<String> _getSuggestions(AppLocalizations l) {
+    return [
+      l.aiChatSuggestion1,
+      l.aiChatSuggestion2,
+      l.aiChatSuggestion3,
+      l.aiChatSuggestion4,
+      l.aiChatSuggestion5,
+    ];
+  }
 
   // Free-tier daily limit (SPEC §6 / §13). Used as a soft visual progress bar
   // until we wire usage stats from the server.
@@ -46,6 +53,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
+    _loadDisclaimerState();
+  }
+
+  Future<void> _loadDisclaimerState() async {
+    final seen = await ref.read(disclaimerServiceProvider).hasSeen();
+    if (seen && mounted) {
+      setState(() => _disclaimerVisible = false);
+    }
   }
 
   @override
@@ -196,11 +211,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
 
     final chatState = ref.watch(chatControllerProvider);
     final messagesAsync = ref.watch(currentChatMessagesProvider);
     final chatsAsync = ref.watch(aiChatsStreamProvider);
     final activeChatId = ref.watch(currentChatIdProvider);
+    
+    final preferred = ref.watch(preferredModelControllerProvider);
+    final selectedModel = preferred.maybeWhen(
+      data: (v) => v ?? 'openai/gpt-oss-120b:free',
+      orElse: () => 'openai/gpt-oss-120b:free',
+    );
 
     // Auto-send the prompt that the prompts grid pushed in.
     ref.listen<String?>(pendingPromptProvider, (prev, next) {
@@ -259,8 +281,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   children: [
                     if (_disclaimerVisible) ...[
                       _Disclaimer(
-                        onDismiss: () =>
-                            setState(() => _disclaimerVisible = false),
+                        onDismiss: () async {
+                          setState(() => _disclaimerVisible = false);
+                          await ref.read(disclaimerServiceProvider).markSeen();
+                        },
                       ),
                       const SizedBox(height: 20),
                     ],
@@ -278,6 +302,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 inputController: _inputController,
                 focusNode: _inputFocus,
                 inputText: _inputText,
+                selectedModelName: _shortModelName(selectedModel),
                 requestsUsed:
                     ref.watch(dailyMessageCountProvider).valueOrNull ?? 0,
                 requestsLimit: _requestsLimit,
@@ -285,7 +310,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     (ref.watch(dailyMessageCountProvider).valueOrNull ?? 0) >
                         160,
                 promptsOpen: _promptsOpen,
-                prompts: _prompts,
+                prompts: _getSuggestions(l),
                 isStreaming: chatState.isStreaming,
                 onPromptsToggle: () =>
                     setState(() => _promptsOpen = !_promptsOpen),
@@ -365,7 +390,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 }
 
-class _Header extends StatelessWidget {
+class _Header extends ConsumerWidget {
   const _Header({
     required this.onMenuTap,
     required this.onNewChat,
@@ -377,8 +402,51 @@ class _Header extends StatelessWidget {
   final VoidCallback onOverflow;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
+
+    final styleAsync = ref.watch(aiStyleControllerProvider);
+    final style = styleAsync.valueOrNull ?? AiStyle.coach;
+
+    final String styleLabel;
+    final String emoji;
+    final Color badgeColor;
+    final Color textColor;
+
+    switch (style) {
+      case AiStyle.coach:
+        emoji = '🎓';
+        styleLabel = l.localeName == 'ru' ? 'Коуч' : 'Coach';
+        badgeColor = const Color(0x1FA855F7);
+        textColor = HFTokens.premium;
+        break;
+      case AiStyle.sergeant:
+        emoji = '💪';
+        styleLabel = l.localeName == 'ru' ? 'Сержант' : 'Sergeant';
+        badgeColor = const Color(0x1FEF4444);
+        textColor = c.danger;
+        break;
+      case AiStyle.buddy:
+        emoji = '🤗';
+        styleLabel = l.localeName == 'ru' ? 'Друг' : 'Buddy';
+        badgeColor = const Color(0x1F3B82F6);
+        textColor = c.accent;
+        break;
+      case AiStyle.sage:
+        emoji = '🧘';
+        styleLabel = l.localeName == 'ru' ? 'Мудрец' : 'Sage';
+        badgeColor = const Color(0x1F10B981);
+        textColor = c.success;
+        break;
+      case AiStyle.poet:
+        emoji = '✍️';
+        styleLabel = l.localeName == 'ru' ? 'Поэт' : 'Poet';
+        badgeColor = const Color(0x1FEE82EE);
+        textColor = HFTokens.premium;
+        break;
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
       decoration: BoxDecoration(
@@ -397,7 +465,7 @@ class _Header extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'ИИ',
+                  l.aiChatTitle,
                   style: context.tt.titleLarge!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.17),
                 ),
                 const SizedBox(height: 3),
@@ -407,13 +475,13 @@ class _Header extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0x1FA855F7),
+                    color: badgeColor,
                     borderRadius: BorderRadius.circular(HFTokens.rFull),
                   ),
                   child: Text(
-                    '🎓 Coach',
+                    '$emoji $styleLabel',
                     style: context.tt.bodyMedium!.copyWith(
-                      color: HFTokens.premium,
+                      color: textColor,
                       height: 1.2,
                       letterSpacing: 0.3,
                       fontWeight: FontWeight.w700,
@@ -573,7 +641,10 @@ class _StreamingMessageRow extends StatelessWidget {
       ),
       child: text.isEmpty
           ? _TypingDots(color: c.textTertiary)
-          : _Markdown(text: '$text▋'),
+          : HfMarkdown(
+              content: '$text▋',
+              textColor: c.textPrimary,
+            ),
     );
 
     final avatar = Container(
@@ -809,7 +880,10 @@ class _MessageRow extends StatelessWidget {
               message.content,
               style: context.tt.bodyMedium!.copyWith(color: Colors.white, height: 1.6),
             )
-          : _Markdown(text: message.content),
+          : HfMarkdown(
+              content: message.content,
+              textColor: c.textPrimary,
+            ),
     );
 
     final avatar = Container(
@@ -865,107 +939,18 @@ class _MessageRow extends StatelessWidget {
   }
 }
 
-class _Markdown extends StatelessWidget {
-  const _Markdown({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = HFColors.of(context);
-    final lines = text.split('\n');
-    final children = <Widget>[];
-
-    for (var i = 0; i < lines.length; i++) {
-      final line = lines[i];
-      if (line.isEmpty) {
-        children.add(const SizedBox(height: 8));
-        continue;
-      }
-      final isBullet = line.startsWith('- ') || line.startsWith('• ');
-      final content = isBullet ? line.substring(2) : line;
-      final spans = _renderInline(content, c, context.tt);
-
-      if (isBullet) {
-        children.add(
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Text(
-                    '•',
-                    style: context.tt.labelLarge!.copyWith(color: c.accent, height: 1.6),
-                  ),
-                ),
-                const SizedBox(width: HFTokens.s8),
-                Expanded(
-                  child: Text.rich(
-                    TextSpan(
-                      style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
-                      children: spans,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      } else {
-        children.add(
-          Text.rich(
-            TextSpan(
-              style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
-              children: spans,
-            ),
-          ),
-        );
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
-    );
-  }
-
-  List<InlineSpan> _renderInline(String text, HFColors c, TextTheme tt) {
-    final spans = <InlineSpan>[];
-    final pattern = RegExp(r'\*\*(.+?)\*\*|`(.+?)`');
-    var last = 0;
-    for (final m in pattern.allMatches(text)) {
-      if (m.start > last) {
-        spans.add(TextSpan(text: text.substring(last, m.start)));
-      }
-      if (m.group(1) != null) {
-        spans.add(
-          TextSpan(
-            text: m.group(1),
-            style: tt.labelLarge,
-          ),
-        );
-      } else if (m.group(2) != null) {
-        spans.add(
-          TextSpan(
-            text: m.group(2),
-            style: tt.bodyMedium!.copyWith(color: c.accent, fontSize: 12.6),
-          ),
-        );
-      }
-      last = m.end;
-    }
-    if (last < text.length) spans.add(TextSpan(text: text.substring(last)));
-    return spans;
-  }
+String _shortModelName(String full) {
+  final afterSlash = full.contains('/') ? full.split('/').last : full;
+  return afterSlash.split(':').first;
 }
+
 
 class _InputBar extends StatelessWidget {
   const _InputBar({
     required this.inputController,
     required this.focusNode,
     required this.inputText,
+    required this.selectedModelName,
     required this.requestsUsed,
     required this.requestsLimit,
     required this.isNearLimit,
@@ -980,6 +965,7 @@ class _InputBar extends StatelessWidget {
   final TextEditingController inputController;
   final FocusNode focusNode;
   final String inputText;
+  final String selectedModelName;
   final int requestsUsed;
   final int requestsLimit;
   final bool isNearLimit;
@@ -1027,7 +1013,7 @@ class _InputBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '${isNearLimit ? '⚠ ' : ''}${AppLocalizations.of(context).aiChatTokenCounter('gpt-oss-120b:free', requestsUsed, requestsLimit)}',
+                  '${isNearLimit ? '⚠ ' : ''}${AppLocalizations.of(context).aiChatTokenCounter(selectedModelName, requestsUsed, requestsLimit)}',
                   style: context.tt.labelSmall!.copyWith(color: progressTextColor, height: 1.2, fontWeight: FontWeight.w500),
                 ),
               ],

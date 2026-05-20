@@ -1784,6 +1784,42 @@ abstract class AppLocalizations {
   /// **'Чат'**
   String get aiChatTab;
 
+  /// No description provided for @aiChatTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'ИИ'**
+  String get aiChatTitle;
+
+  /// No description provided for @aiChatSuggestion1.
+  ///
+  /// In ru, this message translates to:
+  /// **'Проанализируй мою неделю'**
+  String get aiChatSuggestion1;
+
+  /// No description provided for @aiChatSuggestion2.
+  ///
+  /// In ru, this message translates to:
+  /// **'Где у меня самые слабые места?'**
+  String get aiChatSuggestion2;
+
+  /// No description provided for @aiChatSuggestion3.
+  ///
+  /// In ru, this message translates to:
+  /// **'Предложи новую привычку'**
+  String get aiChatSuggestion3;
+
+  /// No description provided for @aiChatSuggestion4.
+  ///
+  /// In ru, this message translates to:
+  /// **'Почему я срываюсь?'**
+  String get aiChatSuggestion4;
+
+  /// No description provided for @aiChatSuggestion5.
+  ///
+  /// In ru, this message translates to:
+  /// **'Как улучшить утренний ритуал?'**
+  String get aiChatSuggestion5;
+
   /// No description provided for @aiSummariesTab.
   ///
   /// In ru, this message translates to:
@@ -1904,6 +1940,96 @@ abstract class AppLocalizations {
   /// **'Что-то пошло не так. Проверь соединение и попробуй ещё раз.'**
   String get aiChatErrorGeneric;
 
+  /// No description provided for @aiStyleCoachName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Коуч'**
+  String get aiStyleCoachName;
+
+  /// No description provided for @aiStyleCoachDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Профессиональный, без сюсюканья. По умолчанию.'**
+  String get aiStyleCoachDesc;
+
+  /// No description provided for @aiStyleCoachPreview.
+  ///
+  /// In ru, this message translates to:
+  /// **'Три пропуска подряд — это уже паттерн. Что именно мешает: время, мотивация или обстоятельства? Давай разберём и скорректируем план.'**
+  String get aiStyleCoachPreview;
+
+  /// No description provided for @aiStyleSergeantName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сержант'**
+  String get aiStyleSergeantName;
+
+  /// No description provided for @aiStyleSergeantDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Прямой, без оправданий. Жёсткий, но честный.'**
+  String get aiStyleSergeantDesc;
+
+  /// No description provided for @aiStyleSergeantPreview.
+  ///
+  /// In ru, this message translates to:
+  /// **'Три раза. Без исключений. Это не обстоятельства — это выбор. Либо ты делаешь это сегодня, либо признаёшь, что это не приоритет.'**
+  String get aiStyleSergeantPreview;
+
+  /// No description provided for @aiStyleBuddyName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Друг'**
+  String get aiStyleBuddyName;
+
+  /// No description provided for @aiStyleBuddyDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Тёплый, неформальный, с юмором. Поддерживает.'**
+  String get aiStyleBuddyDesc;
+
+  /// No description provided for @aiStyleBuddyPreview.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эй, всё норм! Жизнь случается 😅 Три пропуска — не катастрофа. Ты уже здесь и думаешь об этом, а это уже победа. Завтра?'**
+  String get aiStyleBuddyPreview;
+
+  /// No description provided for @aiStyleSageName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Мудрец'**
+  String get aiStyleSageName;
+
+  /// No description provided for @aiStyleSageDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Стоическая мудрость, цитаты, метафоры.'**
+  String get aiStyleSageDesc;
+
+  /// No description provided for @aiStyleSagePreview.
+  ///
+  /// In ru, this message translates to:
+  /// **'«Не падение определяет нас, а то, как мы встаём». Три пропуска — лишь рябь на воде. Привычка — это не серия, а намерение. Что говорит тебе это молчание?'**
+  String get aiStyleSagePreview;
+
+  /// No description provided for @aiStylePoetName.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поэт'**
+  String get aiStylePoetName;
+
+  /// No description provided for @aiStylePoetDesc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Метафоры и образы. Только для поддержавших.'**
+  String get aiStylePoetDesc;
+
+  /// No description provided for @aiStylePoetPreview.
+  ///
+  /// In ru, this message translates to:
+  /// **'Три пустых вечера, как незаполненные строфы. Тело помнит ритм, даже когда разум забыл. Что остановило движение?'**
+  String get aiStylePoetPreview;
+
   /// No description provided for @aiSummariesInfoBanner.
   ///
   /// In ru, this message translates to:
@@ -1933,6 +2059,234 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Перегенерировать'**
   String get aiSummaryRegenerate;
+
+  /// No description provided for @aiSummaryChatPrompt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Разбери эту сводку подробнее'**
+  String get aiSummaryChatPrompt;
+
+  /// No description provided for @aiSummaryRegenerateConfirmTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пересобрать сводку?'**
+  String get aiSummaryRegenerateConfirmTitle;
+
+  /// No description provided for @aiSummaryRegenerateConfirmText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Текущая сводка будет заменена новой.'**
+  String get aiSummaryRegenerateConfirmText;
+
+  /// No description provided for @aiPromptDeleteConfirmTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить промпт?'**
+  String get aiPromptDeleteConfirmTitle;
+
+  /// No description provided for @aiPromptDeleteConfirmText.
+  ///
+  /// In ru, this message translates to:
+  /// **'Этот пользовательский промпт будет удален навсегда. Это действие нельзя отменить.'**
+  String get aiPromptDeleteConfirmText;
+
+  /// No description provided for @aiPromptCreateTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Новый промпт'**
+  String get aiPromptCreateTitle;
+
+  /// No description provided for @aiPromptCreateEmoji.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эмодзи'**
+  String get aiPromptCreateEmoji;
+
+  /// No description provided for @aiPromptCreateTitleLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Название'**
+  String get aiPromptCreateTitleLabel;
+
+  /// No description provided for @aiPromptCreateDescLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Описание / Вопрос'**
+  String get aiPromptCreateDescLabel;
+
+  /// No description provided for @aiPromptCreateCategoryLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Категория'**
+  String get aiPromptCreateCategoryLabel;
+
+  /// No description provided for @aiPromptSystem1Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Анализ паттернов'**
+  String get aiPromptSystem1Title;
+
+  /// No description provided for @aiPromptSystem1Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что повторяется в моём поведении'**
+  String get aiPromptSystem1Desc;
+
+  /// No description provided for @aiPromptSystem2Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Слепые пятна'**
+  String get aiPromptSystem2Title;
+
+  /// No description provided for @aiPromptSystem2Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что я мог упустить'**
+  String get aiPromptSystem2Desc;
+
+  /// No description provided for @aiPromptSystem3Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Риски срыва'**
+  String get aiPromptSystem3Title;
+
+  /// No description provided for @aiPromptSystem3Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Какие привычки в опасности'**
+  String get aiPromptSystem3Desc;
+
+  /// No description provided for @aiPromptSystem4Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Следующая цель'**
+  String get aiPromptSystem4Title;
+
+  /// No description provided for @aiPromptSystem4Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Какую привычку добавить'**
+  String get aiPromptSystem4Desc;
+
+  /// No description provided for @aiPromptSystem5Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эмоц. погода'**
+  String get aiPromptSystem5Title;
+
+  /// No description provided for @aiPromptSystem5Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Динамика настроения'**
+  String get aiPromptSystem5Desc;
+
+  /// No description provided for @aiPromptSystem6Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корреляции'**
+  String get aiPromptSystem6Title;
+
+  /// No description provided for @aiPromptSystem6Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Связи между привычками и эмоциями'**
+  String get aiPromptSystem6Desc;
+
+  /// No description provided for @aiPromptSystem7Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рост'**
+  String get aiPromptSystem7Title;
+
+  /// No description provided for @aiPromptSystem7Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Я сегодня vs месяц назад'**
+  String get aiPromptSystem7Desc;
+
+  /// No description provided for @aiPromptSystem8Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что убрать'**
+  String get aiPromptSystem8Title;
+
+  /// No description provided for @aiPromptSystem8Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Какие привычки не работают'**
+  String get aiPromptSystem8Desc;
+
+  /// No description provided for @aiPromptSystem9Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Оптимизация дня'**
+  String get aiPromptSystem9Title;
+
+  /// No description provided for @aiPromptSystem9Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Как реструктурировать день'**
+  String get aiPromptSystem9Desc;
+
+  /// No description provided for @aiPromptSystem10Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Identity check'**
+  String get aiPromptSystem10Title;
+
+  /// No description provided for @aiPromptSystem10Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Соответствую ли я своим ценностям'**
+  String get aiPromptSystem10Desc;
+
+  /// No description provided for @aiPromptSystem11Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Стрики'**
+  String get aiPromptSystem11Title;
+
+  /// No description provided for @aiPromptSystem11Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Какой streak настоящий прогресс'**
+  String get aiPromptSystem11Desc;
+
+  /// No description provided for @aiPromptSystem12Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Триггеры срыва'**
+  String get aiPromptSystem12Title;
+
+  /// No description provided for @aiPromptSystem12Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Что вызывает пропуски'**
+  String get aiPromptSystem12Desc;
+
+  /// No description provided for @aiPromptSystem13Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ритуал недели'**
+  String get aiPromptSystem13Title;
+
+  /// No description provided for @aiPromptSystem13Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Якорь из сильных привычек'**
+  String get aiPromptSystem13Desc;
+
+  /// No description provided for @aiPromptSystem14Title.
+  ///
+  /// In ru, this message translates to:
+  /// **'Письмо себе'**
+  String get aiPromptSystem14Title;
+
+  /// No description provided for @aiPromptSystem14Desc.
+  ///
+  /// In ru, this message translates to:
+  /// **'Письмо в роли близкого друга'**
+  String get aiPromptSystem14Desc;
 
   /// No description provided for @aiPromptsFilterAll.
   ///

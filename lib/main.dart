@@ -12,6 +12,7 @@ import 'core/services/theme_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   ErrorReporter.install();
+  await Env.load();
   Env.assertValid();
   await Supabase.initialize(
     url: Env.supabaseUrl,

@@ -93,6 +93,45 @@ class AiSummariesRepository {
     if (row == null) return null;
     return AiSummary.fromSupabase(row);
   }
+
+  /// Triggers Edge Function [generate_summary] to regenerate a summary
+  /// for [rangeEndN] using the provided [openRouterKey] and optionally overriding the [model].
+  /// Returns the newly created summary ID.
+  Future<String> regenerate({
+    required int rangeEndN,
+    required String? openRouterKey,
+    required String? model,
+  }) async {
+    final payload = <String, dynamic>{
+      'user_id': _userId,
+      'range_end_n': rangeEndN,
+    };
+    if (openRouterKey != null) {
+      payload['openrouter_key'] = openRouterKey;
+    }
+    if (model != null) {
+      payload['model'] = model;
+    }
+
+    final response = await _client.functions.invoke(
+      'generate_summary',
+      body: payload,
+    );
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      if (data['ok'] == false || data['status'] == 'error') {
+        throw Exception(data['reason'] ?? 'Failed to regenerate summary');
+      }
+      final newId = data['summary_id'] as String?;
+      if (newId != null) return newId;
+    }
+    throw Exception('No summary_id returned from Edge Function');
+  }
+
+  /// Deletes a summary by [id].
+  Future<void> deleteSummary(String id) async {
+    await _client.from(_table).delete().eq('id', id).eq('user_id', _userId);
+  }
 }
 
 final aiSummariesRepositoryProvider = Provider<AiSummariesRepository>((ref) {

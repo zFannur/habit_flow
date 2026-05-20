@@ -926,6 +926,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiChatTab => 'Чат';
 
   @override
+  String get aiChatTitle => 'ИИ';
+
+  @override
+  String get aiChatSuggestion1 => 'Проанализируй мою неделю';
+
+  @override
+  String get aiChatSuggestion2 => 'Где у меня самые слабые места?';
+
+  @override
+  String get aiChatSuggestion3 => 'Предложи новую привычку';
+
+  @override
+  String get aiChatSuggestion4 => 'Почему я срываюсь?';
+
+  @override
+  String get aiChatSuggestion5 => 'Как улучшить утренний ритуал?';
+
+  @override
   String get aiSummariesTab => 'Сводки';
 
   @override
@@ -993,6 +1011,59 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то пошло не так. Проверь соединение и попробуй ещё раз.';
 
   @override
+  String get aiStyleCoachName => 'Коуч';
+
+  @override
+  String get aiStyleCoachDesc =>
+      'Профессиональный, без сюсюканья. По умолчанию.';
+
+  @override
+  String get aiStyleCoachPreview =>
+      'Три пропуска подряд — это уже паттерн. Что именно мешает: время, мотивация или обстоятельства? Давай разберём и скорректируем план.';
+
+  @override
+  String get aiStyleSergeantName => 'Сержант';
+
+  @override
+  String get aiStyleSergeantDesc =>
+      'Прямой, без оправданий. Жёсткий, но честный.';
+
+  @override
+  String get aiStyleSergeantPreview =>
+      'Три раза. Без исключений. Это не обстоятельства — это выбор. Либо ты делаешь это сегодня, либо признаёшь, что это не приоритет.';
+
+  @override
+  String get aiStyleBuddyName => 'Друг';
+
+  @override
+  String get aiStyleBuddyDesc =>
+      'Тёплый, неформальный, с юмором. Поддерживает.';
+
+  @override
+  String get aiStyleBuddyPreview =>
+      'Эй, всё норм! Жизнь случается 😅 Три пропуска — не катастрофа. Ты уже здесь и думаешь об этом, а это уже победа. Завтра?';
+
+  @override
+  String get aiStyleSageName => 'Мудрец';
+
+  @override
+  String get aiStyleSageDesc => 'Стоическая мудрость, цитаты, метафоры.';
+
+  @override
+  String get aiStyleSagePreview =>
+      '«Не падение определяет нас, а то, как мы встаём». Три пропуска — лишь рябь на воде. Привычка — это не серия, а намерение. Что говорит тебе это молчание?';
+
+  @override
+  String get aiStylePoetName => 'Поэт';
+
+  @override
+  String get aiStylePoetDesc => 'Метафоры и образы. Только для поддержавших.';
+
+  @override
+  String get aiStylePoetPreview =>
+      'Три пустых вечера, как незаполненные строфы. Тело помнит ритм, даже когда разум забыл. Что остановило движение?';
+
+  @override
   String aiSummariesInfoBanner(int interval, int count, int remaining) {
     return 'Сводка генерируется автоматически каждые $interval дневника. У тебя сейчас $count — следующая через $remaining.';
   }
@@ -1010,6 +1081,122 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aiSummaryRegenerate => 'Перегенерировать';
+
+  @override
+  String get aiSummaryChatPrompt => 'Разбери эту сводку подробнее';
+
+  @override
+  String get aiSummaryRegenerateConfirmTitle => 'Пересобрать сводку?';
+
+  @override
+  String get aiSummaryRegenerateConfirmText =>
+      'Текущая сводка будет заменена новой.';
+
+  @override
+  String get aiPromptDeleteConfirmTitle => 'Удалить промпт?';
+
+  @override
+  String get aiPromptDeleteConfirmText =>
+      'Этот пользовательский промпт будет удален навсегда. Это действие нельзя отменить.';
+
+  @override
+  String get aiPromptCreateTitle => 'Новый промпт';
+
+  @override
+  String get aiPromptCreateEmoji => 'Эмодзи';
+
+  @override
+  String get aiPromptCreateTitleLabel => 'Название';
+
+  @override
+  String get aiPromptCreateDescLabel => 'Описание / Вопрос';
+
+  @override
+  String get aiPromptCreateCategoryLabel => 'Категория';
+
+  @override
+  String get aiPromptSystem1Title => 'Анализ паттернов';
+
+  @override
+  String get aiPromptSystem1Desc => 'Что повторяется в моём поведении';
+
+  @override
+  String get aiPromptSystem2Title => 'Слепые пятна';
+
+  @override
+  String get aiPromptSystem2Desc => 'Что я мог упустить';
+
+  @override
+  String get aiPromptSystem3Title => 'Риски срыва';
+
+  @override
+  String get aiPromptSystem3Desc => 'Какие привычки в опасности';
+
+  @override
+  String get aiPromptSystem4Title => 'Следующая цель';
+
+  @override
+  String get aiPromptSystem4Desc => 'Какую привычку добавить';
+
+  @override
+  String get aiPromptSystem5Title => 'Эмоц. погода';
+
+  @override
+  String get aiPromptSystem5Desc => 'Динамика настроения';
+
+  @override
+  String get aiPromptSystem6Title => 'Корреляции';
+
+  @override
+  String get aiPromptSystem6Desc => 'Связи между привычками и эмоциями';
+
+  @override
+  String get aiPromptSystem7Title => 'Рост';
+
+  @override
+  String get aiPromptSystem7Desc => 'Я сегодня vs месяц назад';
+
+  @override
+  String get aiPromptSystem8Title => 'Что убрать';
+
+  @override
+  String get aiPromptSystem8Desc => 'Какие привычки не работают';
+
+  @override
+  String get aiPromptSystem9Title => 'Оптимизация дня';
+
+  @override
+  String get aiPromptSystem9Desc => 'Как реструктурировать день';
+
+  @override
+  String get aiPromptSystem10Title => 'Identity check';
+
+  @override
+  String get aiPromptSystem10Desc => 'Соответствую ли я своим ценностям';
+
+  @override
+  String get aiPromptSystem11Title => 'Стрики';
+
+  @override
+  String get aiPromptSystem11Desc => 'Какой streak настоящий прогресс';
+
+  @override
+  String get aiPromptSystem12Title => 'Триггеры срыва';
+
+  @override
+  String get aiPromptSystem12Desc => 'Что вызывает пропуски';
+
+  @override
+  String get aiPromptSystem13Title => 'Ритуал недели';
+
+  @override
+  String get aiPromptSystem13Desc => 'Якорь из сильных привычек';
+
+  @override
+  String get aiPromptSystem14Title => 'Письмо себе';
+
+  @override
+  String get aiPromptSystem14Desc => 'Письмо в роли близкого друга';
 
   @override
   String get aiPromptsFilterAll => 'Все';
