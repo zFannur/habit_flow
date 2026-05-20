@@ -173,7 +173,11 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
         updatedAt: DateTime.now(),
       );
 
-      final saved = await repo.upsert(entry);
+      final savedRes = await repo.upsert(entry).run();
+      final saved = savedRes.match(
+        (f) => throw f,
+        (ok) => ok,
+      );
       _loadedId = saved.id;
 
       ref.invalidate(journalEntriesProvider);

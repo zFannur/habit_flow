@@ -46,8 +46,12 @@ final journalEntriesProvider = StreamProvider<List<JournalEntryModel>>((ref) {
 });
 
 /// Total entry count — used by the counter card and summary trigger UI.
-final journalEntryCountProvider = FutureProvider<int>((ref) {
-  return ref.watch(journalRepositoryProvider).totalCount();
+final journalEntryCountProvider = FutureProvider<int>((ref) async {
+  final res = await ref.watch(journalRepositoryProvider).totalCount().run();
+  return res.match(
+    (f) => throw f,
+    (count) => count,
+  );
 });
 
 /// Today's journal entry, or `null` when not yet written. Drives the Today
