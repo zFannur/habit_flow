@@ -480,6 +480,7 @@ class _PromptCardState extends ConsumerState<_PromptCard> {
     final catLabel = _labelForCat(l, cat);
 
     return Stack(
+      fit: StackFit.expand,
       children: [
         GestureDetector(
           onTapDown: (_) => setState(() => _pressed = true),
@@ -491,6 +492,8 @@ class _PromptCardState extends ConsumerState<_PromptCard> {
             duration: const Duration(milliseconds: 120),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 120),
+              width: double.infinity,
+              height: double.infinity,
               padding: const EdgeInsets.fromLTRB(13, 14, 13, 12),
               decoration: BoxDecoration(
                 color: c.card,
