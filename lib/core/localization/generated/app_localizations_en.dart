@@ -1111,85 +1111,99 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiPromptSystem1Title => 'Pattern Analysis';
 
   @override
-  String get aiPromptSystem1Desc => 'What repeats in my behavior';
+  String get aiPromptSystem1Desc =>
+      'Analyze my habits and recent journal entries. Find hidden patterns: on which days or periods am I most productive, when does productivity drop, and how is it correlated with my mood?';
 
   @override
   String get aiPromptSystem2Title => 'Blind Spots';
 
   @override
-  String get aiPromptSystem2Desc => 'What I might have missed';
+  String get aiPromptSystem2Desc =>
+      'Identify details in my data that I might be overlooking. Which habits am I silently sabotaging? What emotional states usually precede skipped habits? Point out non-obvious correlations.';
 
   @override
-  String get aiPromptSystem3Title => 'Relapse Risks';
+  String get aiPromptSystem3Title => 'Relapse Risk Forecast';
 
   @override
-  String get aiPromptSystem3Desc => 'Which habits are in danger';
+  String get aiPromptSystem3Desc =>
+      'Evaluate the stability of my habits over the last week. Identify which ones are at the highest risk of being dropped, explain why, and suggest a simple strategy to rescue them.';
 
   @override
-  String get aiPromptSystem4Title => 'Next Goal';
+  String get aiPromptSystem4Title => 'Next Growth Step';
 
   @override
-  String get aiPromptSystem4Desc => 'Which habit to add';
+  String get aiPromptSystem4Desc =>
+      'Review my current lifestyle based on my logs and habits. Suggest one new micro-habit I should adopt next that fits organically into my schedule and amplifies my current progress.';
 
   @override
-  String get aiPromptSystem5Title => 'Emotional Weather';
+  String get aiPromptSystem5Title => 'Emotional Map';
 
   @override
-  String get aiPromptSystem5Desc => 'Mood dynamics';
+  String get aiPromptSystem5Desc =>
+      'Perform a content analysis of my journal entries over the past week. What was my prevailing emotional state? What triggers caused joy, and what caused anxiety or energy drains?';
 
   @override
-  String get aiPromptSystem6Title => 'Correlations';
+  String get aiPromptSystem6Title => 'Correlation Analysis';
 
   @override
-  String get aiPromptSystem6Desc => 'Connections between habits and emotions';
+  String get aiPromptSystem6Desc =>
+      'Correlate my habit completion rates with my mood and energy levels from the journal. How do physical habits (sleep, exercise, nutrition) directly impact my emotional well-being?';
 
   @override
-  String get aiPromptSystem7Title => 'Growth';
+  String get aiPromptSystem7Title => 'Growth Dynamics';
 
   @override
-  String get aiPromptSystem7Desc => 'Me today vs a month ago';
+  String get aiPromptSystem7Desc =>
+      'Compare my current performance and reflection with past periods. Where is my most significant progress? How has my attitude towards difficulties evolved, and what positive shifts occurred?';
 
   @override
-  String get aiPromptSystem8Title => 'What to Remove';
+  String get aiPromptSystem8Title => 'Focus Optimization';
 
   @override
-  String get aiPromptSystem8Desc => 'Which habits aren\'t working';
+  String get aiPromptSystem8Desc =>
+      'Analyze the habits I perform poorly or consistently postpone. Should I simplify them, temporarily remove them, or replace them with something more relevant right now?';
 
   @override
-  String get aiPromptSystem9Title => 'Day Optimization';
+  String get aiPromptSystem9Title => 'Day Time Design';
 
   @override
-  String get aiPromptSystem9Desc => 'How to restructure the day';
+  String get aiPromptSystem9Desc =>
+      'Examine my habits and daily schedule in the journal. How can I better group my tasks and habits (morning/afternoon/evening) based on my energy peaks to conserve willpower?';
 
   @override
-  String get aiPromptSystem10Title => 'Identity Check';
+  String get aiPromptSystem10Title => 'Identity & Values Check';
 
   @override
-  String get aiPromptSystem10Desc => 'Am I aligned with my values';
+  String get aiPromptSystem10Desc =>
+      'Review my goals and reflections. Do my daily actions align with the person I aspire to be? Where is the biggest gap between my ideals and my actual daily actions, and how can I close it?';
 
   @override
-  String get aiPromptSystem11Title => 'Streaks';
+  String get aiPromptSystem11Title => 'Streak & Progress Analysis';
 
   @override
-  String get aiPromptSystem11Desc => 'Which streak is real progress';
+  String get aiPromptSystem11Desc =>
+      'Examine my current habit streaks. Are they genuinely helping me grow, or have they become a chore just to keep the counter going? How can I refocus on quality rather than numbers?';
 
   @override
-  String get aiPromptSystem12Title => 'Relapse Triggers';
+  String get aiPromptSystem12Title => 'Trigger & Relapse Analysis';
 
   @override
-  String get aiPromptSystem12Desc => 'What triggers skips';
+  String get aiPromptSystem12Desc =>
+      'Analyze all days when I failed or skipped habits. What external events, people, or internal states (fatigue, stress) served as triggers? Create a fallback plan to handle these triggers next time.';
 
   @override
-  String get aiPromptSystem13Title => 'Weekly Ritual';
+  String get aiPromptSystem13Title => 'Weekly Ritual Design';
 
   @override
-  String get aiPromptSystem13Desc => 'Anchor of strong habits';
+  String get aiPromptSystem13Desc =>
+      'Identify 2-3 habits that I perform most consistently. How can I use them as anchors to stack new, more challenging habits onto them, building a stable morning or evening ritual?';
 
   @override
-  String get aiPromptSystem14Title => 'Letter to Self';
+  String get aiPromptSystem14Title => 'Support Letter';
 
   @override
-  String get aiPromptSystem14Desc => 'A letter as a close friend';
+  String get aiPromptSystem14Desc =>
+      'Based on my reflection from the past week, write me a warm, supportive letter from the perspective of a compassionate and wise friend. Acknowledge my efforts, gently highlight my wins, and help me soften self-criticism.';
 
   @override
   String get aiPromptsFilterAll => 'All';

@@ -2129,7 +2129,7 @@ abstract class AppLocalizations {
   /// No description provided for @aiPromptSystem1Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Что повторяется в моём поведении'**
+  /// **'Проанализируй мои привычки и записи в дневнике за последнее время. Найди скрытые закономерности: в какие дни или периоды я наиболее продуктивен, а когда продуктивность падает, и как это связано с моим настроением.'**
   String get aiPromptSystem1Desc;
 
   /// No description provided for @aiPromptSystem2Title.
@@ -2141,151 +2141,151 @@ abstract class AppLocalizations {
   /// No description provided for @aiPromptSystem2Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Что я мог упустить'**
+  /// **'Найди в моих данных то, что я сам не замечаю. Какие привычки я незаметно саботирую? Какие эмоции чаще всего предшествуют пропускам? Покажи неочевидные взаимосвязи.'**
   String get aiPromptSystem2Desc;
 
   /// No description provided for @aiPromptSystem3Title.
   ///
   /// In ru, this message translates to:
-  /// **'Риски срыва'**
+  /// **'Прогноз срыва'**
   String get aiPromptSystem3Title;
 
   /// No description provided for @aiPromptSystem3Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Какие привычки в опасности'**
+  /// **'Оценить стабильность выполнения моих привычек за последнюю неделю. Выдели те из них, которые находятся под наибольшей угрозой срыва, объясни почему и предложи простую стратегию их спасения.'**
   String get aiPromptSystem3Desc;
 
   /// No description provided for @aiPromptSystem4Title.
   ///
   /// In ru, this message translates to:
-  /// **'Следующая цель'**
+  /// **'Новые привычки'**
   String get aiPromptSystem4Title;
 
   /// No description provided for @aiPromptSystem4Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Какую привычку добавить'**
+  /// **'Изучи мой текущий образ жизни по записям и привычкам. Какую одну новую микро-привычку мне стоит внедрить следующей, чтобы она органично вписалась в мой график и усилила текущие результаты?'**
   String get aiPromptSystem4Desc;
 
   /// No description provided for @aiPromptSystem5Title.
   ///
   /// In ru, this message translates to:
-  /// **'Эмоц. погода'**
+  /// **'Эмоциональная карта'**
   String get aiPromptSystem5Title;
 
   /// No description provided for @aiPromptSystem5Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Динамика настроения'**
+  /// **'Проведи контент-анализ моих дневниковых записей за неделю. Какое преобладающее эмоциональное состояние у меня было? Какие триггеры вызывали радость, а какие — тревогу или спад энергии?'**
   String get aiPromptSystem5Desc;
 
   /// No description provided for @aiPromptSystem6Title.
   ///
   /// In ru, this message translates to:
-  /// **'Корреляции'**
+  /// **'Анализ корреляций'**
   String get aiPromptSystem6Title;
 
   /// No description provided for @aiPromptSystem6Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Связи между привычками и эмоциями'**
+  /// **'Сопоставь выполнение моих ключевых привычек с моим настроением и уровнем энергии из дневника. Как физические привычки (сон, спорт, питание) напрямую влияют на мой эмоциональный фон?'**
   String get aiPromptSystem6Desc;
 
   /// No description provided for @aiPromptSystem7Title.
   ///
   /// In ru, this message translates to:
-  /// **'Рост'**
+  /// **'Динамика роста'**
   String get aiPromptSystem7Title;
 
   /// No description provided for @aiPromptSystem7Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Я сегодня vs месяц назад'**
+  /// **'Сравни мои текущие показатели и рефлексию с прошлыми периодами. В чём мой главный прогресс? Как изменилось моё отношение к трудностям и какие полезные ментальные сдвиги произошли?'**
   String get aiPromptSystem7Desc;
 
   /// No description provided for @aiPromptSystem8Title.
   ///
   /// In ru, this message translates to:
-  /// **'Что убрать'**
+  /// **'Оптимизация фокуса'**
   String get aiPromptSystem8Title;
 
   /// No description provided for @aiPromptSystem8Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Какие привычки не работают'**
+  /// **'Проанализируй привычки, которые я выполняю хуже всего или постоянно откладываю. Стоит ли мне их упростить, временно убрать или заменить на что-то более актуальное прямо сейчас?'**
   String get aiPromptSystem8Desc;
 
   /// No description provided for @aiPromptSystem9Title.
   ///
   /// In ru, this message translates to:
-  /// **'Оптимизация дня'**
+  /// **'Тайм-дизайн дня'**
   String get aiPromptSystem9Title;
 
   /// No description provided for @aiPromptSystem9Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Как реструктурировать день'**
+  /// **'Посмотри на мои привычки и хронометраж в дневнике. Как мне лучше сгруппировать дела и привычки по времени суток (утро/день/вечер) с учётом моих пиков энергии, чтобы тратить меньше силы воли?'**
   String get aiPromptSystem9Desc;
 
   /// No description provided for @aiPromptSystem10Title.
   ///
   /// In ru, this message translates to:
-  /// **'Identity check'**
+  /// **'Проверка ценностей'**
   String get aiPromptSystem10Title;
 
   /// No description provided for @aiPromptSystem10Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Соответствую ли я своим ценностям'**
+  /// **'Прочитай мои цели и рефлексию. Совпадают ли мои ежедневные действия с тем, кем я хочу быть? Где кроется самый большой разрыв между моими идеалами и реальными делами, и как его сократить?'**
   String get aiPromptSystem10Desc;
 
   /// No description provided for @aiPromptSystem11Title.
   ///
   /// In ru, this message translates to:
-  /// **'Стрики'**
+  /// **'Анализ серий'**
   String get aiPromptSystem11Title;
 
   /// No description provided for @aiPromptSystem11Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Какой streak настоящий прогресс'**
+  /// **'Посмотри на серии выполненных привычек (стрики). Помогают ли они мне расти или превратились в рутину «ради галочки»? Как мне перестроить систему мотивации, чтобы фокус был на качестве, а не на цифрах?'**
   String get aiPromptSystem11Desc;
 
   /// No description provided for @aiPromptSystem12Title.
   ///
   /// In ru, this message translates to:
-  /// **'Триггеры срыва'**
+  /// **'Карта триггеров'**
   String get aiPromptSystem12Title;
 
   /// No description provided for @aiPromptSystem12Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Что вызывает пропуски'**
+  /// **'Проанализируй все дни, когда я срывался или пропускал привычки. Какие внешние события, люди или внутренние состояния (усталость, стресс) послужили триггерами? Создай план защиты от этих триггеров.'**
   String get aiPromptSystem12Desc;
 
   /// No description provided for @aiPromptSystem13Title.
   ///
   /// In ru, this message translates to:
-  /// **'Ритуал недели'**
+  /// **'Проектирование ритуалов'**
   String get aiPromptSystem13Title;
 
   /// No description provided for @aiPromptSystem13Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Якорь из сильных привычек'**
+  /// **'Выдели 2-3 привычки, которые я делаю стабильнее всего. Как я могу использовать их в качестве «якорей», чтобы прикрепить к ним новые, более сложные привычки и создать устойчивый утренний или вечерний ритуал?'**
   String get aiPromptSystem13Desc;
 
   /// No description provided for @aiPromptSystem14Title.
   ///
   /// In ru, this message translates to:
-  /// **'Письмо себе'**
+  /// **'Письмо поддержки'**
   String get aiPromptSystem14Title;
 
   /// No description provided for @aiPromptSystem14Desc.
   ///
   /// In ru, this message translates to:
-  /// **'Письмо в роли близкого друга'**
+  /// **'На основе моей рефлексии за неделю напиши мне тёплое, поддерживающее письмо от лица заботливого и мудрого друга. Отметь мои старания, мягко подсвети успехи и помоги справиться с самокритикой.'**
   String get aiPromptSystem14Desc;
 
   /// No description provided for @aiPromptsFilterAll.

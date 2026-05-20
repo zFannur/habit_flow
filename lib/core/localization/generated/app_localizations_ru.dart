@@ -1118,85 +1118,99 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aiPromptSystem1Title => 'Анализ паттернов';
 
   @override
-  String get aiPromptSystem1Desc => 'Что повторяется в моём поведении';
+  String get aiPromptSystem1Desc =>
+      'Проанализируй мои привычки и записи в дневнике за последнее время. Найди скрытые закономерности: в какие дни или периоды я наиболее продуктивен, а когда продуктивность падает, и как это связано с моим настроением.';
 
   @override
   String get aiPromptSystem2Title => 'Слепые пятна';
 
   @override
-  String get aiPromptSystem2Desc => 'Что я мог упустить';
+  String get aiPromptSystem2Desc =>
+      'Найди в моих данных то, что я сам не замечаю. Какие привычки я незаметно саботирую? Какие эмоции чаще всего предшествуют пропускам? Покажи неочевидные взаимосвязи.';
 
   @override
-  String get aiPromptSystem3Title => 'Риски срыва';
+  String get aiPromptSystem3Title => 'Прогноз срыва';
 
   @override
-  String get aiPromptSystem3Desc => 'Какие привычки в опасности';
+  String get aiPromptSystem3Desc =>
+      'Оценить стабильность выполнения моих привычек за последнюю неделю. Выдели те из них, которые находятся под наибольшей угрозой срыва, объясни почему и предложи простую стратегию их спасения.';
 
   @override
-  String get aiPromptSystem4Title => 'Следующая цель';
+  String get aiPromptSystem4Title => 'Новые привычки';
 
   @override
-  String get aiPromptSystem4Desc => 'Какую привычку добавить';
+  String get aiPromptSystem4Desc =>
+      'Изучи мой текущий образ жизни по записям и привычкам. Какую одну новую микро-привычку мне стоит внедрить следующей, чтобы она органично вписалась в мой график и усилила текущие результаты?';
 
   @override
-  String get aiPromptSystem5Title => 'Эмоц. погода';
+  String get aiPromptSystem5Title => 'Эмоциональная карта';
 
   @override
-  String get aiPromptSystem5Desc => 'Динамика настроения';
+  String get aiPromptSystem5Desc =>
+      'Проведи контент-анализ моих дневниковых записей за неделю. Какое преобладающее эмоциональное состояние у меня было? Какие триггеры вызывали радость, а какие — тревогу или спад энергии?';
 
   @override
-  String get aiPromptSystem6Title => 'Корреляции';
+  String get aiPromptSystem6Title => 'Анализ корреляций';
 
   @override
-  String get aiPromptSystem6Desc => 'Связи между привычками и эмоциями';
+  String get aiPromptSystem6Desc =>
+      'Сопоставь выполнение моих ключевых привычек с моим настроением и уровнем энергии из дневника. Как физические привычки (сон, спорт, питание) напрямую влияют на мой эмоциональный фон?';
 
   @override
-  String get aiPromptSystem7Title => 'Рост';
+  String get aiPromptSystem7Title => 'Динамика роста';
 
   @override
-  String get aiPromptSystem7Desc => 'Я сегодня vs месяц назад';
+  String get aiPromptSystem7Desc =>
+      'Сравни мои текущие показатели и рефлексию с прошлыми периодами. В чём мой главный прогресс? Как изменилось моё отношение к трудностям и какие полезные ментальные сдвиги произошли?';
 
   @override
-  String get aiPromptSystem8Title => 'Что убрать';
+  String get aiPromptSystem8Title => 'Оптимизация фокуса';
 
   @override
-  String get aiPromptSystem8Desc => 'Какие привычки не работают';
+  String get aiPromptSystem8Desc =>
+      'Проанализируй привычки, которые я выполняю хуже всего или постоянно откладываю. Стоит ли мне их упростить, временно убрать или заменить на что-то более актуальное прямо сейчас?';
 
   @override
-  String get aiPromptSystem9Title => 'Оптимизация дня';
+  String get aiPromptSystem9Title => 'Тайм-дизайн дня';
 
   @override
-  String get aiPromptSystem9Desc => 'Как реструктурировать день';
+  String get aiPromptSystem9Desc =>
+      'Посмотри на мои привычки и хронометраж в дневнике. Как мне лучше сгруппировать дела и привычки по времени суток (утро/день/вечер) с учётом моих пиков энергии, чтобы тратить меньше силы воли?';
 
   @override
-  String get aiPromptSystem10Title => 'Identity check';
+  String get aiPromptSystem10Title => 'Проверка ценностей';
 
   @override
-  String get aiPromptSystem10Desc => 'Соответствую ли я своим ценностям';
+  String get aiPromptSystem10Desc =>
+      'Прочитай мои цели и рефлексию. Совпадают ли мои ежедневные действия с тем, кем я хочу быть? Где кроется самый большой разрыв между моими идеалами и реальными делами, и как его сократить?';
 
   @override
-  String get aiPromptSystem11Title => 'Стрики';
+  String get aiPromptSystem11Title => 'Анализ серий';
 
   @override
-  String get aiPromptSystem11Desc => 'Какой streak настоящий прогресс';
+  String get aiPromptSystem11Desc =>
+      'Посмотри на серии выполненных привычек (стрики). Помогают ли они мне расти или превратились в рутину «ради галочки»? Как мне перестроить систему мотивации, чтобы фокус был на качестве, а не на цифрах?';
 
   @override
-  String get aiPromptSystem12Title => 'Триггеры срыва';
+  String get aiPromptSystem12Title => 'Карта триггеров';
 
   @override
-  String get aiPromptSystem12Desc => 'Что вызывает пропуски';
+  String get aiPromptSystem12Desc =>
+      'Проанализируй все дни, когда я срывался или пропускал привычки. Какие внешние события, люди или внутренние состояния (усталость, стресс) послужили триггерами? Создай план защиты от этих триггеров.';
 
   @override
-  String get aiPromptSystem13Title => 'Ритуал недели';
+  String get aiPromptSystem13Title => 'Проектирование ритуалов';
 
   @override
-  String get aiPromptSystem13Desc => 'Якорь из сильных привычек';
+  String get aiPromptSystem13Desc =>
+      'Выдели 2-3 привычки, которые я делаю стабильнее всего. Как я могу использовать их в качестве «якорей», чтобы прикрепить к ним новые, более сложные привычки и создать устойчивый утренний или вечерний ритуал?';
 
   @override
-  String get aiPromptSystem14Title => 'Письмо себе';
+  String get aiPromptSystem14Title => 'Письмо поддержки';
 
   @override
-  String get aiPromptSystem14Desc => 'Письмо в роли близкого друга';
+  String get aiPromptSystem14Desc =>
+      'На основе моей рефлексии за неделю напиши мне тёплое, поддерживающее письмо от лица заботливого и мудрого друга. Отметь мои старания, мягко подсвети успехи и помоги справиться с самокритикой.';
 
   @override
   String get aiPromptsFilterAll => 'Все';
