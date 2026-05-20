@@ -148,10 +148,9 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
       final finalDraft = ref.read(habitDraftProvider);
       await repo.create(finalDraft.toModel(userId));
       ref.read(habitDraftProvider.notifier).reset();
-      // Realtime publication on `habits` is best-effort and can lag; force a
-      // refresh so today/habits screens see the new row immediately.
-      ref.invalidate(habitsStreamProvider);
-      ref.invalidate(todayHabitsProvider);
+      // Logs for today need a refresh so the new habit's empty log slot
+      // appears. The habits list itself is updated by realtime stream.
+      ref.invalidate(todayLogsProvider);
       if (mounted) {
         context.pop();
       }

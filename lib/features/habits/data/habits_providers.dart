@@ -85,7 +85,10 @@ final todayHabitsProvider = Provider<AsyncValue<List<HabitWithLog>>>((ref) {
     logsForDay: logs,
     day: today,
   );
-  return AsyncValue.data(combined);
+  // Deduplicate — insurance against overlapping realtime + invalidate events.
+  final seen = <String>{};
+  final deduped = combined.where((h) => seen.add(h.habit.id)).toList();
+  return AsyncValue.data(deduped);
 });
 
 /// Single-habit lookup used by the detail screen. Falls back to [null] when
