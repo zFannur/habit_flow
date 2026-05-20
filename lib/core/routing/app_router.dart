@@ -8,7 +8,7 @@ import '../../features/analytics/presentation/analytics_screen.dart';
 import '../../features/auth/data/auth_providers.dart';
 import '../../features/auth/domain/auth_state.dart';
 import '../../features/auth/presentation/splash_screen.dart';
-import '../../features/habits/presentation/habit_create_screen.dart';
+import '../../features/habits/presentation/habit_form_screen.dart';
 import '../../features/habits/presentation/habit_detail_screen.dart';
 import '../../features/habits/presentation/habits_list_screen.dart';
 import '../../features/habits/presentation/today_screen.dart';
@@ -62,10 +62,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
 
-      // Полноэкранные пуши вне Shell
       GoRoute(
         path: '/habits/new',
-        builder: (_, _) => const HabitCreateScreen(),
+        builder: (_, _) => const HabitFormScreen(),
+      ),
+      GoRoute(
+        path: '/habits/:id/edit',
+        builder: (_, state) =>
+            HabitFormScreen(habitId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/habits/:id',

@@ -1,7 +1,7 @@
 // End-to-end integration scenarios for the habits feature.
 //
 // These tests drive the real screens (`TodayScreen`, `HabitsListScreen`,
-// `HabitCreateScreen`, `HabitDetailScreen`) but swap the Supabase-backed
+// `HabitFormScreen`, `HabitDetailScreen`) but swap the Supabase-backed
 // repositories for in-memory fakes via Riverpod overrides. That way the full
 // UI/provider/notifier wiring is exercised without a network or emulator.
 //
@@ -32,7 +32,7 @@ import 'package:habit_flow/features/habits/data/habits_repository.dart';
 import 'package:habit_flow/features/habits/domain/habit_log_status.dart';
 import 'package:habit_flow/features/habits/domain/habit_type.dart';
 import 'package:habit_flow/features/habits/domain/schedule_type.dart';
-import 'package:habit_flow/features/habits/presentation/habit_create_screen.dart';
+import 'package:habit_flow/features/habits/presentation/habit_form_screen.dart';
 import 'package:habit_flow/features/habits/presentation/habit_detail_screen.dart';
 import 'package:habit_flow/features/habits/presentation/habits_list_screen.dart';
 import 'package:habit_flow/features/habits/presentation/today_screen.dart';
@@ -355,7 +355,7 @@ void main() {
         final today = DateTime(2026, 5, 7);
 
         await tester.pumpWidget(_harness(
-          child: const HabitCreateScreen(),
+          child: const HabitFormScreen(),
           habitsRepo: habits,
           logsRepo: logs,
           today: today,

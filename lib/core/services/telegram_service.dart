@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 // JS interop is only available on Web. On other platforms we fall back to
-// no-ops so the codebase compiles for desktop/mobile testing as well.
+// no-ops or url_launcher so the codebase compiles and runs for desktop/mobile testing.
 // ignore: avoid_web_libraries_in_flutter
 import 'telegram_service_web.dart'
-    if (dart.library.io) 'telegram_service_stub.dart';
+    if (dart.library.io) 'telegram_service_mobile.dart';
 
 /// Thin facade over the Telegram WebApp JS API.
 ///
@@ -25,10 +25,12 @@ class TelegramService {
 
   /// Opens [url] in an external browser tab. On Web routes through
   /// `Telegram.WebApp.openLink` so Telegram can decide between in-app browser
-  /// and OS handler. On non-Web platforms — no-op (used only in dev hosts).
+  /// and OS handler. On non-Web platforms — uses url_launcher.
   void openLink(String url) {
     if (kIsWeb) {
       openLinkWeb(url);
+    } else {
+      openLinkWeb(url); // delegates to launchUrl in telegram_service_mobile.dart
     }
   }
 
@@ -48,6 +50,15 @@ class TelegramService {
       openInvoiceWeb(invoiceUrl, onStatus);
     } else {
       onStatus(TgInvoiceStatus.failed);
+    }
+  }
+
+  /// Opens a deep link to the Telegram bot to pair the device.
+  /// Used only on mobile/desktop. On Web, this is a no-op since the
+  /// user is already in the Mini App.
+  Future<void> openBotDeepLink(String token) async {
+    if (!kIsWeb) {
+      await openBotDeepLinkPlatform(token);
     }
   }
 }

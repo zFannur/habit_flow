@@ -210,12 +210,7 @@ class _DetailBody extends ConsumerWidget {
                 color: c.textPrimary,
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Edit mode coming soon'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  context.push('/habits/$habitId/edit');
                 },
                 divider: true,
               ),

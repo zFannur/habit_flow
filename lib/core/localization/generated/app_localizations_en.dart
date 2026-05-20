@@ -1595,4 +1595,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorChangeModel => 'Change model';
+
+  @override
+  String get deviceLinkTitle => 'Pair Device';
+
+  @override
+  String get deviceLinkBtn => 'Log in via Telegram';
+
+  @override
+  String get deviceLinkInstructions =>
+      '1. Tap the button below to open our Telegram bot.\n2. Tap \'Start\' or \'Launch\' to confirm linking.\n3. Keep this screen open; your device will pair automatically.';
+
+  @override
+  String get deviceLinkOpenBotBtn => 'Open Telegram Bot';
+
+  @override
+  String get deviceLinkWaiting => 'Waiting for confirmation...';
+
+  @override
+  String get deviceLinkSuccess => 'Device successfully paired! Redirecting...';
+
+  @override
+  String deviceLinkFailed(String reason) {
+    return 'Failed to pair device: $reason';
+  }
+
+  @override
+  String get deviceLinkReasonExpired =>
+      'The link has expired. Please try again.';
+
+  @override
+  String get deviceLinkReasonConsumed =>
+      'This link was already used. Please try again.';
+
+  @override
+  String get deviceLinkReasonNetwork => 'Network error. Check your connection.';
+
+  @override
+  String get deviceLinkReasonUnknown =>
+      'An unknown error occurred. Please try again.';
 }

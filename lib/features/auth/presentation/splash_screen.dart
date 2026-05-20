@@ -6,6 +6,7 @@ import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/onboarding_service.dart';
 import '../data/auth_providers.dart';
 import '../domain/auth_state.dart';
+import 'device_link_dialog.dart';
 
 /// Splash screen: reads Telegram initData, signs in, then redirects.
 ///
@@ -32,7 +33,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final initData = telegramService.getInitData();
 
     if (initData.isEmpty) {
-      // Outside Telegram — show the stub, nothing to navigate.
+      // Outside Telegram — try to restore a saved session from secure storage.
+      await ref.read(authStateProvider.notifier).bootstrap();
       return;
     }
 
@@ -45,9 +47,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final telegramService = ref.watch(telegramServiceProvider);
+    final authState = ref.watch(authStateProvider);
 
-    // Outside-Telegram stub: shown when initData is unavailable.
-    if (telegramService.getInitData().isEmpty) {
+    // Outside-Telegram stub: shown when initData is unavailable and user is not authenticated.
+    if (telegramService.getInitData().isEmpty && authState is! Authenticated) {
       return Scaffold(
         body: SafeArea(
           child: Padding(
@@ -69,6 +72,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 32),
+                  FilledButton.icon(
+                    onPressed: () {
+                      showDialog<void>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const DeviceLinkDialog(),
+                      );
+                    },
+                    icon: const Icon(Icons.link),
+                    label: Text(l10n.deviceLinkBtn),
+                  ),
                 ],
               ),
             ),
@@ -76,8 +91,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         ),
       );
     }
-
-    final authState = ref.watch(authStateProvider);
 
     if (authState is Failed) {
       return Scaffold(

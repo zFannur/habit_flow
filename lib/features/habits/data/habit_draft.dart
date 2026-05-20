@@ -5,13 +5,14 @@ import '../domain/habit_type.dart';
 import '../domain/schedule_type.dart';
 import 'habit_model.dart';
 
-/// Mutable draft accumulated across the 4-step create wizard.
+/// Mutable draft accumulated across the 4-step form wizard.
 ///
-/// [toModel] converts the draft into a [HabitModel] ready for
-/// [HabitsRepository.create]. All DB-assigned fields (id, createdAt,
-/// updatedAt) receive placeholder values; the server overwrites them.
+/// Can be used both for creating a new habit or editing an existing one.
 class HabitDraft {
   HabitDraft({
+    this.editingId,
+    this.startedAt,
+    this.createdAt,
     this.type,
     this.name = '',
     this.category = 'Здоровье',
@@ -34,6 +35,9 @@ class HabitDraft {
     this.reward = '',
   });
 
+  final String? editingId;
+  final DateTime? startedAt;
+  final DateTime? createdAt;
   final HabitType? type;
   final String name;
   final String category;
@@ -59,7 +63,83 @@ class HabitDraft {
   final String twoMinuteVersion;
   final String reward;
 
+  bool get isEditing => editingId != null;
+
+  factory HabitDraft.fromModel(HabitModel model) {
+    return HabitDraft(
+      editingId: model.id,
+      startedAt: model.startedAt,
+      createdAt: model.createdAt,
+      type: model.type,
+      name: model.name,
+      category: model.category ?? 'Здоровье',
+      emoji: model.emoji ?? '💪',
+      accentColor: model.accentColor != null ? _parseHexColor(model.accentColor!) : null,
+      repeatType: _scheduleTypeToRepeatType(model.scheduleType),
+      selectedWeekdays: _extractWeekdays(model.schedule),
+      selectedMonthDays: _extractMonthDays(model.schedule),
+      timesPerWeek: (model.schedule['n'] as num?)?.toInt() ?? 3,
+      everyN: (model.schedule['every_n'] as num?)?.toInt() ?? 2,
+      goalValue: (model.target ?? 8).toInt(),
+      goalUnit: model.unit ?? 'раз',
+      reminderTimes: List<String>.from(model.reminderTimes),
+      endless: model.endedAt == null,
+      implementationWhen: model.implementationWhen ?? '',
+      implementationWhere: model.implementationWhere ?? '',
+      identityStatement: model.identityStatement ?? '',
+      twoMinuteVersion: model.twoMinuteVersion ?? '',
+      reward: model.reward ?? '',
+    );
+  }
+
+  static Color _parseHexColor(String hex) {
+    if (hex.startsWith('#')) {
+      final cleaned = hex.substring(1);
+      if (cleaned.length == 6) {
+        return Color(int.parse('FF$cleaned', radix: 16));
+      } else if (cleaned.length == 8) {
+        return Color(int.parse(cleaned, radix: 16));
+      }
+    }
+    return const Color(0xFF3B82F6);
+  }
+
+  static String _scheduleTypeToRepeatType(ScheduleType scheduleType) {
+    switch (scheduleType) {
+      case ScheduleType.weekdays:
+        return 'По дням недели';
+      case ScheduleType.nPerWeek:
+        return 'X раз в неделю';
+      case ScheduleType.everyNDays:
+        return 'Каждые N дней';
+      case ScheduleType.monthlyDates:
+        return 'По датам месяца';
+      default:
+        return 'Каждый день';
+    }
+  }
+
+  static Set<String> _extractWeekdays(Map<String, dynamic> schedule) {
+    final list = schedule['weekdays'] as List?;
+    if (list == null) return const {};
+    const abbrs = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    return list.map((e) {
+      final idx = (e as num).toInt() - 1;
+      if (idx >= 0 && idx < abbrs.length) return abbrs[idx];
+      return '';
+    }).where((e) => e.isNotEmpty).toSet();
+  }
+
+  static Set<int> _extractMonthDays(Map<String, dynamic> schedule) {
+    final list = schedule['dates'] as List?;
+    if (list == null) return const {};
+    return list.map((e) => (e as num).toInt()).toSet();
+  }
+
   HabitDraft copyWith({
+    String? editingId,
+    DateTime? startedAt,
+    DateTime? createdAt,
     HabitType? type,
     String? name,
     String? category,
@@ -82,6 +162,9 @@ class HabitDraft {
     String? reward,
   }) {
     return HabitDraft(
+      editingId: editingId ?? this.editingId,
+      startedAt: startedAt ?? this.startedAt,
+      createdAt: createdAt ?? this.createdAt,
       type: type ?? this.type,
       name: name ?? this.name,
       category: category ?? this.category,
@@ -132,9 +215,6 @@ class HabitDraft {
   // ---------------------------------------------------------------------------
 
   /// Converts to a [HabitModel] using [userId].
-  ///
-  /// The `id`, `createdAt`, `updatedAt` placeholders are overwritten by the
-  /// server on insert.
   HabitModel toModel(String userId) {
     final now = DateTime.now();
 
@@ -148,8 +228,7 @@ class HabitDraft {
         (type == HabitType.anti && emoji.isEmpty) ? '🛡' : emoji;
 
     return HabitModel(
-      // Empty marker — habits_repository.create strips it so DB generates uuid.
-      id: '',
+      id: editingId ?? '',
       userId: userId,
       name: name.trim(),
       category: category,
@@ -165,7 +244,7 @@ class HabitDraft {
       scheduleType: _toScheduleType(),
       schedule: _buildScheduleConfig(),
       reminderTimes: List<String>.from(reminderTimes),
-      startedAt: DateTime(now.year, now.month, now.day),
+      startedAt: startedAt ?? DateTime(now.year, now.month, now.day),
       endedAt: null,
       stackAfterHabitId: null,
       implementationWhen:
@@ -177,7 +256,7 @@ class HabitDraft {
       twoMinuteVersion:
           twoMinuteVersion.trim().isEmpty ? null : twoMinuteVersion.trim(),
       reward: reward.trim().isEmpty ? null : reward.trim(),
-      createdAt: now,
+      createdAt: createdAt ?? now,
       updatedAt: now,
     );
   }
@@ -229,6 +308,10 @@ class HabitDraftNotifier extends Notifier<HabitDraft> {
   HabitDraft build() => HabitDraft();
 
   void reset() => state = HabitDraft();
+
+  void loadForEdit(HabitModel model) {
+    state = HabitDraft.fromModel(model);
+  }
 
   void setType(HabitType type) => state = state.copyWith(type: type);
 

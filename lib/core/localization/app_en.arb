@@ -554,5 +554,17 @@
   "errorRetry": "Retry",
   "errorRelogin": "Re-open",
   "errorWait": "Wait",
-  "errorChangeModel": "Change model"
+  "errorChangeModel": "Change model",
+  "deviceLinkTitle": "Pair Device",
+  "deviceLinkBtn": "Log in via Telegram",
+  "deviceLinkInstructions": "1. Tap the button below to open our Telegram bot.\n2. Tap 'Start' or 'Launch' to confirm linking.\n3. Keep this screen open; your device will pair automatically.",
+  "deviceLinkOpenBotBtn": "Open Telegram Bot",
+  "deviceLinkWaiting": "Waiting for confirmation...",
+  "deviceLinkSuccess": "Device successfully paired! Redirecting...",
+  "deviceLinkFailed": "Failed to pair device: {reason}",
+  "@deviceLinkFailed": {"placeholders": {"reason": {"type": "String"}}},
+  "deviceLinkReasonExpired": "The link has expired. Please try again.",
+  "deviceLinkReasonConsumed": "This link was already used. Please try again.",
+  "deviceLinkReasonNetwork": "Network error. Check your connection.",
+  "deviceLinkReasonUnknown": "An unknown error occurred. Please try again."
 }

@@ -86,6 +86,13 @@ class AuthRepository {
     );
   }
 
+  /// Persists and activates an externally obtained authenticated session.
+  Future<void> persistSession(String jwt, AuthUser user) async {
+    await _persist(jwt: jwt, user: user);
+    await _supabase.applySession(jwt);
+    await _syncTimeZone(user.id);
+  }
+
   /// Try to restore a previously saved session. If the JWT is missing or
   /// already expired (with a small leeway), the cache is cleared and we
   /// return [Unauthenticated].

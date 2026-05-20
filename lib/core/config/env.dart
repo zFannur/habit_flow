@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Конфигурация окружения. Значения подставляются через --dart-define
 /// при сборке (см. CLAUDE.md → "Сборка и запуск").
 class Env {
@@ -38,6 +40,9 @@ class Env {
     defaultValue: 'https://openrouter.ai/keys',
   );
 
+  /// Username Telegram-бота для авторизации по ссылке на мобильных платформах.
+  static const String botUsername = String.fromEnvironment('BOT_USERNAME');
+
   static bool get isProduction => environment == 'production';
 
   /// Проверяет, что обязательные env-переменные заданы.
@@ -54,6 +59,12 @@ class Env {
       throw StateError(
         'SUPABASE_ANON_KEY is required. '
         'Pass --dart-define=SUPABASE_ANON_KEY=... at build/run time.',
+      );
+    }
+    if (!kIsWeb && botUsername.isEmpty) {
+      throw StateError(
+        'BOT_USERNAME is required on mobile platforms. '
+        'Pass --dart-define=BOT_USERNAME=... at build/run time.',
       );
     }
   }

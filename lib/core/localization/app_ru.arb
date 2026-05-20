@@ -554,5 +554,17 @@
   "errorRetry": "Повторить",
   "errorRelogin": "Перезайти",
   "errorWait": "Подождать",
-  "errorChangeModel": "Поменять модель"
+  "errorChangeModel": "Поменять модель",
+  "deviceLinkTitle": "Привязка устройства",
+  "deviceLinkBtn": "Войти через Telegram",
+  "deviceLinkInstructions": "1. Нажмите кнопку ниже, чтобы открыть нашего Telegram-бота.\n2. Нажмите кнопку 'Запустить' (Start) для подтверждения привязки.\n3. Не закрывайте этот экран, привязка произойдет автоматически.",
+  "deviceLinkOpenBotBtn": "Открыть Telegram-бота",
+  "deviceLinkWaiting": "Ожидание подтверждения...",
+  "deviceLinkSuccess": "Устройство успешно привязано! Перенаправление...",
+  "deviceLinkFailed": "Не удалось привязать устройство: {reason}",
+  "@deviceLinkFailed": {"placeholders": {"reason": {"type": "String"}}},
+  "deviceLinkReasonExpired": "Срок действия ссылки истек. Пожалуйста, попробуйте снова.",
+  "deviceLinkReasonConsumed": "Эта ссылка уже была использована. Пожалуйста, попробуйте снова.",
+  "deviceLinkReasonNetwork": "Ошибка сети. Проверьте подключение к интернету.",
+  "deviceLinkReasonUnknown": "Произошла неизвестная ошибка. Пожалуйста, попробуйте снова."
 }

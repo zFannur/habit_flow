@@ -74,14 +74,16 @@ const _repeatTypes = [
 /// still communicates that stacking needs an anchor habit.
 const _stackingNoHabitsHint = '— Сначала создай другую привычку —';
 
-class HabitCreateScreen extends ConsumerStatefulWidget {
-  const HabitCreateScreen({super.key});
+class HabitFormScreen extends ConsumerStatefulWidget {
+  const HabitFormScreen({super.key, this.habitId});
+
+  final String? habitId;
 
   @override
-  ConsumerState<HabitCreateScreen> createState() => _HabitCreateScreenState();
+  ConsumerState<HabitFormScreen> createState() => _HabitFormScreenState();
 }
 
-class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
+class _HabitFormScreenState extends ConsumerState<HabitFormScreen> {
   int _step = 1;
 
   // Local text controllers — kept in widget state because TextEditingController
@@ -95,6 +97,32 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
   final _rewardCtrl = TextEditingController();
 
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.habitId != null) {
+        final habitAsync = ref.read(habitDetailProvider(widget.habitId!));
+        final habit = habitAsync.valueOrNull;
+        if (habit != null) {
+          ref.read(habitDraftProvider.notifier).loadForEdit(habit);
+          _nameCtrl.text = habit.name;
+          _stackingCtrl.text = habit.stackAfterHabitId ?? '';
+          _whenCtrl.text = habit.implementationWhen ?? '';
+          _whereCtrl.text = habit.implementationWhere ?? '';
+          _identityCtrl.text = habit.identityStatement ?? '';
+          _twoMinCtrl.text = habit.twoMinuteVersion ?? '';
+          _rewardCtrl.text = habit.reward ?? '';
+          setState(() {
+            _step = 2; // skip type selection when editing
+          });
+        }
+      } else {
+        ref.read(habitDraftProvider.notifier).reset();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -121,7 +149,7 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
   }
 
   void _back() {
-    if (_step > 1) {
+    if (_step > (widget.habitId != null ? 2 : 1)) {
       setState(() => _step -= 1);
     } else {
       ref.read(habitDraftProvider.notifier).reset();
@@ -146,7 +174,13 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
       final userId = ref.read(currentUserIdProvider);
       final repo = ref.read(habitsRepositoryProvider);
       final finalDraft = ref.read(habitDraftProvider);
-      await repo.create(finalDraft.toModel(userId));
+      if (finalDraft.isEditing) {
+        await repo.update(finalDraft.toModel(userId));
+        // Force refresh the single habit detail cache
+        ref.invalidate(habitDetailProvider(finalDraft.editingId!));
+      } else {
+        await repo.create(finalDraft.toModel(userId));
+      }
       ref.read(habitDraftProvider.notifier).reset();
       // Logs for today need a refresh so the new habit's empty log slot
       // appears. The habits list itself is updated by realtime stream.
@@ -208,7 +242,7 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _WizardHeader(step: _step, onBack: _back),
+            _WizardHeader(step: _step, onBack: _back, isEditing: draft.isEditing),
             Expanded(
               child: SingleChildScrollView(
                 key: ValueKey(_step),
@@ -288,10 +322,11 @@ class _HabitCreateScreenState extends ConsumerState<HabitCreateScreen> {
 }
 
 class _WizardHeader extends StatelessWidget {
-  const _WizardHeader({required this.step, required this.onBack});
+  const _WizardHeader({required this.step, required this.onBack, this.isEditing = false});
 
   final int step;
   final VoidCallback onBack;
+  final bool isEditing;
 
   @override
   Widget build(BuildContext context) {
@@ -317,7 +352,7 @@ class _WizardHeader extends StatelessWidget {
                       border: Border.all(color: c.border, width: 1.5),
                     ),
                     child: Icon(
-                      step == 1 ? LucideIcons.x : LucideIcons.arrowLeft,
+                      step == (isEditing ? 2 : 1) ? LucideIcons.x : LucideIcons.arrowLeft,
                       size: 18,
                       color: c.textSecondary,
                     ),

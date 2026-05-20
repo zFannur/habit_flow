@@ -1599,4 +1599,45 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorChangeModel => 'Поменять модель';
+
+  @override
+  String get deviceLinkTitle => 'Привязка устройства';
+
+  @override
+  String get deviceLinkBtn => 'Войти через Telegram';
+
+  @override
+  String get deviceLinkInstructions =>
+      '1. Нажмите кнопку ниже, чтобы открыть нашего Telegram-бота.\n2. Нажмите кнопку \'Запустить\' (Start) для подтверждения привязки.\n3. Не закрывайте этот экран, привязка произойдет автоматически.';
+
+  @override
+  String get deviceLinkOpenBotBtn => 'Открыть Telegram-бота';
+
+  @override
+  String get deviceLinkWaiting => 'Ожидание подтверждения...';
+
+  @override
+  String get deviceLinkSuccess =>
+      'Устройство успешно привязано! Перенаправление...';
+
+  @override
+  String deviceLinkFailed(String reason) {
+    return 'Не удалось привязать устройство: $reason';
+  }
+
+  @override
+  String get deviceLinkReasonExpired =>
+      'Срок действия ссылки истек. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get deviceLinkReasonConsumed =>
+      'Эта ссылка уже была использована. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get deviceLinkReasonNetwork =>
+      'Ошибка сети. Проверьте подключение к интернету.';
+
+  @override
+  String get deviceLinkReasonUnknown =>
+      'Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.';
 }

@@ -3019,6 +3019,72 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Поменять модель'**
   String get errorChangeModel;
+
+  /// No description provided for @deviceLinkTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Привязка устройства'**
+  String get deviceLinkTitle;
+
+  /// No description provided for @deviceLinkBtn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Войти через Telegram'**
+  String get deviceLinkBtn;
+
+  /// No description provided for @deviceLinkInstructions.
+  ///
+  /// In ru, this message translates to:
+  /// **'1. Нажмите кнопку ниже, чтобы открыть нашего Telegram-бота.\n2. Нажмите кнопку \'Запустить\' (Start) для подтверждения привязки.\n3. Не закрывайте этот экран, привязка произойдет автоматически.'**
+  String get deviceLinkInstructions;
+
+  /// No description provided for @deviceLinkOpenBotBtn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть Telegram-бота'**
+  String get deviceLinkOpenBotBtn;
+
+  /// No description provided for @deviceLinkWaiting.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ожидание подтверждения...'**
+  String get deviceLinkWaiting;
+
+  /// No description provided for @deviceLinkSuccess.
+  ///
+  /// In ru, this message translates to:
+  /// **'Устройство успешно привязано! Перенаправление...'**
+  String get deviceLinkSuccess;
+
+  /// No description provided for @deviceLinkFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось привязать устройство: {reason}'**
+  String deviceLinkFailed(String reason);
+
+  /// No description provided for @deviceLinkReasonExpired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Срок действия ссылки истек. Пожалуйста, попробуйте снова.'**
+  String get deviceLinkReasonExpired;
+
+  /// No description provided for @deviceLinkReasonConsumed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Эта ссылка уже была использована. Пожалуйста, попробуйте снова.'**
+  String get deviceLinkReasonConsumed;
+
+  /// No description provided for @deviceLinkReasonNetwork.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка сети. Проверьте подключение к интернету.'**
+  String get deviceLinkReasonNetwork;
+
+  /// No description provided for @deviceLinkReasonUnknown.
+  ///
+  /// In ru, this message translates to:
+  /// **'Произошла неизвестная ошибка. Пожалуйста, попробуйте снова.'**
+  String get deviceLinkReasonUnknown;
 }
 
 class _AppLocalizationsDelegate
