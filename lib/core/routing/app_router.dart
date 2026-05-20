@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/ai/presentation/ai_screen.dart';
+import '../../features/ai/presentation/summary_detail_screen.dart';
 import '../../features/analytics/presentation/analytics_screen.dart';
 import '../../features/auth/data/auth_providers.dart';
 import '../../features/auth/domain/auth_state.dart';
@@ -79,6 +80,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/journal/:id',
         builder: (_, state) =>
             JournalEditScreen(entryId: state.pathParameters['id']),
+      ),
+      GoRoute(
+        path: '/summary/:id',
+        builder: (_, state) =>
+            SummaryDetailScreen(summaryId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/profile/donate',

@@ -2,6 +2,7 @@ import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
@@ -9,7 +10,6 @@ import '../../../core/localization/generated/app_localizations.dart';
 import '../../../shared/widgets/hf_error_state.dart';
 import '../../journal/data/journal_providers.dart';
 import '../data/ai_summaries_repository.dart';
-import 'summary_detail_screen.dart';
 
 /// Tab «Сводки»: список `ai_summaries` пользователя из Supabase + ghost-карточка
 /// «следующая через N записей». Дизайн копируется из макета 1:1.
@@ -55,14 +55,7 @@ class SummariesScreen extends ConsumerWidget {
               _SummaryCard(
                 summary: summaries[i],
                 isLatest: i == 0,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) =>
-                          SummaryDetailScreen(summaryId: summaries[i].id),
-                    ),
-                  );
-                },
+                onTap: () => context.push('/summary/${summaries[i].id}'),
               ),
             ],
             if (summaries.isEmpty || remaining > 0) ...[
