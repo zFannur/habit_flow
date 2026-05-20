@@ -492,6 +492,8 @@ class _PresetCardState extends State<_PresetCard> {
 
     final card = AnimatedContainer(
       duration: const Duration(milliseconds: 150),
+      width: double.infinity,
+      height: double.infinity,
       decoration: BoxDecoration(
         color: c.card,
         borderRadius: BorderRadius.circular(16),
@@ -516,6 +518,7 @@ class _PresetCardState extends State<_PresetCard> {
       scale: scale,
       duration: const Duration(milliseconds: 100),
       child: Stack(
+        fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: [
           Material(
