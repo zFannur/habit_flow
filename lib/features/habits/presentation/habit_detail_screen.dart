@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/config/tokens.dart';
@@ -16,7 +17,6 @@ import 'widgets/habit_more_sheet.dart';
 import '../domain/habit_calculations.dart';
 import '../domain/habit_log_status.dart';
 import '../../analytics/domain/aggregations.dart' as agg;
-import '../../analytics/domain/date_range.dart';
 
 class HabitDetailScreen extends ConsumerWidget {
   const HabitDetailScreen({super.key, required this.habitId});
@@ -83,15 +83,28 @@ class _DetailBody extends ConsumerWidget {
       final d = dateOnly(l.date);
       return !d.isBefore(last30Start) && !d.isAfter(today);
     }).toList();
-    final rate30 = agg.completionRate(
-      last30Logs,
-      DateRange(from: last30Start, to: today),
-    );
-    final ratePercent = (rate30 * 100).round();
 
+    int scheduled30Count = 0;
+    int done30Count = 0;
+    final logsMap = {for (final l in last30Logs) dateOnly(l.date): l};
+    for (int i = 0; i < 30; i++) {
+      final day = last30Start.add(Duration(days: i));
+      if (!day.isBefore(dateOnly(habit.startedAt)) && habit.isToday(day)) {
+        scheduled30Count++;
+        final log = logsMap[day];
+        if (log != null &&
+            (log.status == HabitLogStatus.done ||
+                log.status == HabitLogStatus.partial)) {
+          done30Count++;
+        }
+      }
+    }
+    final ratePercent = scheduled30Count > 0 ? (done30Count / scheduled30Count * 100).round() : 0;
+
+    final locale = Localizations.localeOf(context).languageCode;
     final heatmapGrid = _buildGrid(heatmap, today);
-    final chartData = _buildChartData(logs, today);
-    final historyEntries = _buildHistory(logs, today);
+    final chartData = _buildChartData(habit, logs, today);
+    final historyEntries = _buildHistory(logs, today, locale);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 48),
@@ -160,10 +173,6 @@ class _DetailBody extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _HistoryList(items: historyEntries),
-          ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 20, 16, 8),
-            child: _AiButton(),
           ),
         ],
       ),
@@ -340,24 +349,36 @@ List<List<_HeatCell>> _buildGrid(
   return grid;
 }
 
-List<double> _buildChartData(List<HabitLogModel> logs, DateTime today) {
+List<double> _buildChartData(
+  HabitModel habit,
+  List<HabitLogModel> logs,
+  DateTime today,
+) {
   // 26 weekly buckets (most recent = last element).
   const weeks = 26;
   final todayDate = dateOnly(today);
   final result = List<double>.filled(weeks, 0.0);
+  final startLimit = dateOnly(habit.startedAt);
+
+  // Group logs by date for O(1) lookup
+  final logsMap = {for (final l in logs) dateOnly(l.date): l};
 
   for (int w = 0; w < weeks; w++) {
     final weekEnd = todayDate.subtract(Duration(days: (weeks - 1 - w) * 7));
     final weekStart = weekEnd.subtract(const Duration(days: 6));
     int done = 0;
     int total = 0;
-    for (final log in logs) {
-      final d = dateOnly(log.date);
-      if (d.isBefore(weekStart) || d.isAfter(weekEnd)) continue;
-      total++;
-      if (log.status == HabitLogStatus.done ||
-          log.status == HabitLogStatus.partial) {
-        done++;
+    for (int d = 0; d < 7; d++) {
+      final day = weekStart.add(Duration(days: d));
+      if (day.isAfter(todayDate) || day.isBefore(startLimit)) continue;
+      if (habit.isToday(day)) {
+        total++;
+        final log = logsMap[day];
+        if (log != null &&
+            (log.status == HabitLogStatus.done ||
+                log.status == HabitLogStatus.partial)) {
+          done++;
+        }
       }
     }
     result[w] = total > 0 ? (done / total * 100).roundToDouble() : 0.0;
@@ -368,22 +389,18 @@ List<double> _buildChartData(List<HabitLogModel> logs, DateTime today) {
 List<_HistoryEntry> _buildHistory(
   List<HabitLogModel> logs,
   DateTime today,
+  String locale,
 ) {
   // Take up to 10 most recent logs, sorted newest first.
   final sorted = [...logs]
     ..sort((a, b) => b.date.compareTo(a.date));
   final recent = sorted.take(10).toList();
 
-  const months = [
-    'янв', 'фев', 'мар', 'апр', 'мая', 'июн',
-    'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
-  ];
-  const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+  final dateFormatter = DateFormat('d MMM, E', locale);
 
   return recent.map((log) {
     final d = log.date;
-    final dayOfWeek = d.weekday % 7;
-    final dateStr = '${d.day} ${months[d.month - 1]}, ${days[dayOfWeek]}';
+    final dateStr = dateFormatter.format(d);
     final status = switch (log.status) {
       HabitLogStatus.done => _HistoryStatus.done,
       HabitLogStatus.partial => _HistoryStatus.done,
@@ -702,7 +719,17 @@ class _Heatmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
-    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+    final locale = Localizations.localeOf(context).languageCode;
+    final weekdayFormatter = DateFormat('E', locale);
+    final days = [
+      weekdayFormatter.format(DateTime(2024, 1, 1)), // Monday
+      weekdayFormatter.format(DateTime(2024, 1, 2)), // Tuesday
+      weekdayFormatter.format(DateTime(2024, 1, 3)), // Wednesday
+      weekdayFormatter.format(DateTime(2024, 1, 4)), // Thursday
+      weekdayFormatter.format(DateTime(2024, 1, 5)), // Friday
+      weekdayFormatter.format(DateTime(2024, 1, 6)), // Saturday
+      weekdayFormatter.format(DateTime(2024, 1, 7)), // Sunday
+    ];
 
     Color cellColor(_HeatStatus s) {
       switch (s) {
@@ -1228,43 +1255,6 @@ class _HistoryItemState extends State<_HistoryItem> {
                   ),
                 ),
               ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AiButton extends StatelessWidget {
-  const _AiButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final c = HFColors.of(context);
-    final l = AppLocalizations.of(context);
-    return Material(
-      color: c.accent.withValues(alpha: 0.06),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: c.accent, width: 1.5),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(LucideIcons.sparkles, size: 16, color: c.accent),
-              const SizedBox(width: 8),
-              Text(
-                l.habitDetailAiChat,
-                style: context.tt.labelLarge!.copyWith(color: c.accent, height: 1.2),
-              ),
             ],
           ),
         ),

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:dio/dio.dart';
 import '../../../core/config/env.dart';
 import '../domain/auth_state.dart';
@@ -14,10 +16,11 @@ class DeviceLinkResponse {
   });
 
   factory DeviceLinkResponse.fromJson(Map<String, dynamic> json) {
+    // Server returns snake_case (see supabase/functions/auth_device_link/index.ts).
     return DeviceLinkResponse(
       token: json['token'] as String,
-      deepLink: json['deepLink'] as String,
-      expiresAt: DateTime.parse(json['expiresAt'] as String),
+      deepLink: json['deep_link'] as String,
+      expiresAt: DateTime.parse(json['expires_at'] as String),
     );
   }
 }
@@ -65,11 +68,16 @@ class DeviceLinkRepository {
   /// Request a new device link token from the backend.
   Future<DeviceLinkResponse> createToken() async {
     try {
+      dev.log('createToken → POST $_endpoint', name: 'device-link'); // DEBUG device-link
       final response = await _dio.post<dynamic>(
         _endpoint,
         data: <String, dynamic>{'action': 'create'},
         options: Options(headers: _headers),
       );
+      dev.log(
+        'createToken ← ${response.statusCode} body=${response.data}',
+        name: 'device-link',
+      ); // DEBUG device-link
 
       if (response.statusCode != 200 || response.data is! Map) {
         throw Exception('Failed to create device link token: status ${response.statusCode}');
@@ -78,6 +86,11 @@ class DeviceLinkRepository {
       final body = (response.data as Map).cast<String, dynamic>();
       return DeviceLinkResponse.fromJson(body);
     } on DioException catch (e) {
+      dev.log(
+        'createToken DioException type=${e.type} status=${e.response?.statusCode} body=${e.response?.data} msg=${e.message}',
+        name: 'device-link',
+        error: e,
+      ); // DEBUG device-link
       throw Exception('Network error during token creation: ${e.message ?? e.type.name}');
     }
   }
@@ -85,6 +98,7 @@ class DeviceLinkRepository {
   /// Poll the status of the device link token.
   Future<DeviceLinkPollResponse> pollToken(String token) async {
     try {
+      dev.log('pollToken → POST token=${token.substring(0, 6)}…', name: 'device-link'); // DEBUG device-link
       final response = await _dio.post<dynamic>(
         _endpoint,
         data: <String, dynamic>{
@@ -93,6 +107,10 @@ class DeviceLinkRepository {
         },
         options: Options(headers: _headers),
       );
+      dev.log(
+        'pollToken ← ${response.statusCode} body=${response.data}',
+        name: 'device-link',
+      ); // DEBUG device-link
 
       if (response.statusCode != 200 || response.data is! Map) {
         throw Exception('Failed to poll device link token: status ${response.statusCode}');
@@ -120,6 +138,11 @@ class DeviceLinkRepository {
           throw Exception('Unknown device link status: $status');
       }
     } on DioException catch (e) {
+      dev.log(
+        'pollToken DioException type=${e.type} status=${e.response?.statusCode} body=${e.response?.data} msg=${e.message}',
+        name: 'device-link',
+        error: e,
+      ); // DEBUG device-link
       if (e.response?.statusCode == 429) {
         return const DeviceLinkPollRateLimited();
       }
