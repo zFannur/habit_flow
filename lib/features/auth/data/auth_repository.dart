@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/services/supabase_service.dart';
+import '../../../core/utils/timezone.dart';
 import '../domain/auth_state.dart';
 
 /// Storage keys for the cached session.
@@ -73,6 +74,7 @@ class AuthRepository {
 
     await _persist(jwt: jwt, user: user);
     await _supabase.applySession(jwt);
+    await _syncTimeZone(user.id);
 
     return Authenticated(jwt: jwt, user: user);
   }
@@ -110,7 +112,31 @@ class AuthRepository {
     } catch (e) {
       return Failed(e);
     }
+    await _syncTimeZone(user.id);
     return Authenticated(jwt: jwt, user: user);
+  }
+
+  /// Best-effort: push the device's IANA timezone into `users.timezone` so
+  /// pg_cron `enqueue_due_reminders` fires reminders at the user's local
+  /// wall-clock instead of UTC. Never throws — a network blip or a browser
+  /// without `Intl` just leaves the previous value in place.
+  ///
+  /// The `.neq('timezone', tz)` filter turns the call into a no-op when the
+  /// row is already correct, so this runs every login without write churn.
+  Future<void> _syncTimeZone(String userId) async {
+    if (userId.isEmpty) return;
+    final tz = detectIanaTimeZone();
+    if (tz.isEmpty) return;
+    try {
+      await _supabase.client
+          .from('users')
+          .update(<String, dynamic>{'timezone': tz})
+          .eq('id', userId)
+          .neq('timezone', tz);
+    } catch (_) {
+      // Reminders just keep firing in the previously-stored zone until the
+      // next successful login — acceptable degradation.
+    }
   }
 
   /// Clear cache + sign out from Supabase.
