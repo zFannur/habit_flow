@@ -209,6 +209,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingS3Templates => 'From templates';
 
   @override
+  String get onboardingS3TemplatesSub => 'Recommended';
+
+  @override
   String get onboardingS3BadgeRecommended => '★ Recommended';
 
   @override

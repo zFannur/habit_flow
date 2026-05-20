@@ -11,8 +11,7 @@ import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../data/donations_repository.dart';
 
-// TODO(real-data): replace with a real userProvider once it exists so the
-// supporter badge in profile refreshes after payment.
+// см. issue #9
 final _supabaseClientProvider = Provider<SupabaseClient>(
   (_) => Supabase.instance.client,
 );
@@ -32,7 +31,7 @@ class DonateScreen extends ConsumerStatefulWidget {
 }
 
 class _DonateScreenState extends ConsumerState<DonateScreen> {
-  // TODO(l10n): localize donation presets
+  // см. issue #10
   static const _presets = <_Preset>[
     _Preset(stars: 50, usd: r'$0.65', label: 'Кофе автору'),
     _Preset(stars: 150, usd: r'$1.95', label: 'Хороший обед', popular: true),
@@ -79,7 +78,7 @@ class _DonateScreenState extends ConsumerState<DonateScreen> {
         if (!mounted) return;
         if (status == TgInvoiceStatus.paid) {
           // Invalidate supabase auth user stream so is_supporter refreshes.
-          // TODO(real-data): invalidate userProvider when it exists.
+          // см. issue #11
           ref.invalidate(_supabaseClientProvider);
           _showToast(
             title: l.donateThanksTitle,

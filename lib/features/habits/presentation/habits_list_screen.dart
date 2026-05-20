@@ -108,7 +108,7 @@ class _HabitsListScreenState extends ConsumerState<HabitsListScreen> {
     final filtered = _filter.apply(
       habits,
       streakFor: (id) => ref.watch(streakProvider(id)),
-      // TODO(real-data): replace with actual per-habit completion rate from logs
+      // см. issue #5
       rateFor: (_) => 0,
     );
 
@@ -766,7 +766,7 @@ class _HabitsListCard extends ConsumerWidget {
   }
 
   String _scheduleLabel(HabitModel h, AppLocalizations l) {
-    // TODO(real-data): replace with proper schedule localisation
+    // см. issue #6
     final times = h.reminderTimes.isNotEmpty ? ' · ${h.reminderTimes.first}' : '';
     switch (h.scheduleType.wireName) {
       case 'daily':

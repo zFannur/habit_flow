@@ -801,7 +801,7 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 // Trend row: static placeholder — real trend requires prev period data.
-                // TODO(real-data): compute delta vs previous week/month.
+                // см. issue #1
                 const SizedBox.shrink(),
                 const SizedBox(height: 3),
                 Text(

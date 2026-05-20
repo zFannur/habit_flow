@@ -157,7 +157,7 @@ void _confirmDeleteAccount(BuildContext context) {
         TextButton(
           onPressed: () {
             Navigator.of(dialogCtx).pop();
-            // TODO: вызов Edge Function delete_account (см. SPEC §3).
+            // см. issue #8
           },
           child: Text(
             l.commonDelete,

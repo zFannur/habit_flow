@@ -210,6 +210,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onboardingS3Templates => 'Из шаблонов';
 
   @override
+  String get onboardingS3TemplatesSub => 'Рекомендовано';
+
+  @override
   String get onboardingS3BadgeRecommended => '★ Рекомендуем';
 
   @override

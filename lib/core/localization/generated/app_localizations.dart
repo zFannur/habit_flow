@@ -476,6 +476,12 @@ abstract class AppLocalizations {
   /// **'Из шаблонов'**
   String get onboardingS3Templates;
 
+  /// No description provided for @onboardingS3TemplatesSub.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рекомендовано'**
+  String get onboardingS3TemplatesSub;
+
   /// No description provided for @onboardingS3BadgeRecommended.
   ///
   /// In ru, this message translates to:

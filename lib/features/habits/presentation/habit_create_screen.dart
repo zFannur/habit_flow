@@ -15,7 +15,7 @@ import '../data/habit_draft.dart';
 import '../data/habits_providers.dart';
 import '../domain/habit_type.dart';
 
-// TODO(l10n): localize category list
+// см. issue #2
 const _categories = <String>[
   'Здоровье',
   'Спорт',
@@ -60,7 +60,7 @@ class _AccentColor {
 
 const _weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
-// TODO(l10n): localize repeat types list
+// см. issue #3
 const _repeatTypes = [
   'Каждый день',
   'По дням недели',
@@ -1070,7 +1070,7 @@ class _Step3State extends State<_Step3> {
               child: Row(
                 children: [
                   Expanded(
-                    // TODO(l10n): localize "Каждые N дней" stepper composition
+                    // см. issue #4
                     child: Text(
                       'Каждые',
                       style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),

@@ -35,8 +35,7 @@ class _AiSettingsScreenState extends ConsumerState<AiSettingsScreen> {
       data: (s) => s.wireName,
       orElse: () => AiStyle.coach.wireName,
     );
-    // TODO(07-04): replace with real `users.is_supporter` flag once the
-    // donations feature lands. Until then Poet stays locked for everyone.
+    // см. issue #7
     const isSupporter = false;
 
     return Scaffold(
