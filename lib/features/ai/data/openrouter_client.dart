@@ -76,7 +76,7 @@ class OpenRouterClient {
     'Authorization': 'Bearer $apiKey',
     'Content-Type': 'application/json',
     // OpenRouter рекомендует эти заголовки для атрибуции / лимитов.
-    'HTTP-Referer': 'https://habitflow.app',
+    'HTTP-Referer': Env.appBaseUrl,
     'X-Title': 'HabitFlow',
   };
 

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
+import '../../../core/config/env.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../../ai/data/ai_style_repository.dart';
@@ -304,7 +305,7 @@ class _ApiKeySectionState extends ConsumerState<_ApiKeySection> {
                         _LinkButton(
                           label: l.aiSettingsApiKeyLink,
                           onTap: () => const TelegramService()
-                              .openLink('https://openrouter.ai/keys'),
+                              .openLink(Env.openRouterKeysUrl),
                         ),
                         const SizedBox(width: 16),
                         _LinkButton(

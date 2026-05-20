@@ -19,6 +19,25 @@ class Env {
     defaultValue: 'development',
   );
 
+  /// Канонический URL Mini App (используется как HTTP-Referer для
+  /// OpenRouter rankings, чтобы статистика по приложению агрегировалась).
+  static const String appBaseUrl = String.fromEnvironment(
+    'APP_BASE_URL',
+    defaultValue: 'https://habitflow.app',
+  );
+
+  /// Публичный канал/чат проекта в Telegram — кнопка «Поделиться».
+  static const String botPublicChannel = String.fromEnvironment(
+    'BOT_PUBLIC_CHANNEL',
+    defaultValue: 'https://t.me/habitflow_dev',
+  );
+
+  /// Дашборд ключей OpenRouter — куда отправляем пользователя за BYO-key.
+  static const String openRouterKeysUrl = String.fromEnvironment(
+    'OPENROUTER_KEYS_URL',
+    defaultValue: 'https://openrouter.ai/keys',
+  );
+
   static bool get isProduction => environment == 'production';
 
   /// Проверяет, что обязательные env-переменные заданы.

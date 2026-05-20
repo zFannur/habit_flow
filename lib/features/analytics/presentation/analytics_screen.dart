@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
+import '../../../core/config/env.dart';
 import '../../../core/localization/generated/app_localizations.dart';
 import '../../../core/services/telegram_service.dart';
 import '../../habits/data/habit_log_model.dart';
@@ -77,7 +78,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     final text = '📊 HabitFlow · $periodLabel\n'
         '✅ $doneCount выполнено · ❌ $missedCount пропущено\n'
         '🎯 $completionPct% завершено';
-    final url = Uri.encodeComponent('https://t.me/habitflow_dev');
+    final url = Uri.encodeComponent(Env.botPublicChannel);
     final shareUrl =
         'https://t.me/share/url?url=$url&text=${Uri.encodeComponent(text)}';
     const TelegramService().openLink(shareUrl);
