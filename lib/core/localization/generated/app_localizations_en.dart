@@ -829,9 +829,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyticsSummaryLabel => 'COMPLETION';
 
   @override
-  String analyticsTrend(int percent, String period) {
-    return '↑ +$percent% vs last $period';
+  String analyticsTrendUpWeek(int percent) {
+    return '↑ +$percent% vs last week';
   }
+
+  @override
+  String analyticsTrendDownWeek(int percent) {
+    return '↓ -$percent% vs last week';
+  }
+
+  @override
+  String get analyticsTrendNeutralWeek => '• 0% vs last week';
+
+  @override
+  String analyticsTrendUpMonth(int percent) {
+    return '↑ +$percent% vs last month';
+  }
+
+  @override
+  String analyticsTrendDownMonth(int percent) {
+    return '↓ -$percent% vs last month';
+  }
+
+  @override
+  String get analyticsTrendNeutralMonth => '• 0% vs last month';
 
   @override
   String analyticsSubtextPeriod(String label) {

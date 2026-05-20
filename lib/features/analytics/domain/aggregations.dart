@@ -127,27 +127,19 @@ int bestStreak(List<HabitLogModel> logs) {
 // Completion rates
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Fraction of [period] days (inclusive) that have at least one successful
-/// log. Range: `[0.0, 1.0]`. Returns 0 for empty periods.
+/// Fraction of scheduled habits completed in [period].
+/// Range: `[0.0, 1.0]`. Returns 0 for empty periods.
 double completionRate(List<HabitLogModel> logs, DateRange period) {
-  final totalDays = period.days;
-  if (totalDays == 0) return 0;
-  final successDays = <DateTime>{};
-  for (final l in logs) {
-    if (!_isSuccess(l.status)) continue;
-    final d = _dateOnly(l.date);
-    if (!period.contains(d)) continue;
-    successDays.add(d);
-  }
-  return successDays.length / totalDays;
+  final logsInRange = logs.where((l) => period.contains(_dateOnly(l.date))).toList();
+  if (logsInRange.isEmpty) return 0.0;
+  final ok = logsInRange.where((l) => _isSuccess(l.status)).length;
+  return ok / logsInRange.length;
 }
 
 /// Completion rate per ISO weekday.
 ///
-/// For each weekday: `(successful days with that weekday) /
-/// (distinct days with that weekday in the log set)`. Days the user has no
-/// log at all are not counted in the denominator — this answers "of the days
-/// I tracked anything on Monday, what % was successful?".
+/// For each weekday: `(successful logs with that weekday) /
+/// (total logs with that weekday)`.
 ///
 /// Weekdays with zero logs are still emitted with value `0.0` so callers can
 /// render a complete 7-bar chart.
@@ -157,25 +149,17 @@ Map<DayOfWeek, double> completionByDayOfWeek(List<HabitLogModel> logs) {
   };
   if (logs.isEmpty) return result;
 
-  // Per weekday we need: distinct days with any log, distinct days with
-  // a successful log.
-  final seenByDow = <DayOfWeek, Set<DateTime>>{};
-  final successByDow = <DayOfWeek, Set<DateTime>>{};
-
+  final logsByDow = <DayOfWeek, List<HabitLogModel>>{};
   for (final l in logs) {
-    final day = _dateOnly(l.date);
-    final dow = DayOfWeek.fromDateTime(day);
-    seenByDow.putIfAbsent(dow, () => <DateTime>{}).add(day);
-    if (_isSuccess(l.status)) {
-      successByDow.putIfAbsent(dow, () => <DateTime>{}).add(day);
-    }
+    final dow = DayOfWeek.fromDateTime(_dateOnly(l.date));
+    logsByDow.putIfAbsent(dow, () => <HabitLogModel>[]).add(l);
   }
 
   for (final dow in DayOfWeek.values) {
-    final total = seenByDow[dow]?.length ?? 0;
-    if (total == 0) continue;
-    final ok = successByDow[dow]?.length ?? 0;
-    result[dow] = ok / total;
+    final list = logsByDow[dow];
+    if (list == null || list.isEmpty) continue;
+    final ok = list.where((l) => _isSuccess(l.status)).length;
+    result[dow] = ok / list.length;
   }
   return result;
 }

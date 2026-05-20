@@ -178,10 +178,11 @@ void main() {
       final logs = [
         _log(date: _d(2026, 4, 30), status: HabitLogStatus.done),
         _log(date: _d(2026, 5, 1), status: HabitLogStatus.done),
+        _log(date: _d(2026, 5, 2), status: HabitLogStatus.missed),
         _log(date: _d(2026, 5, 8), status: HabitLogStatus.done),
       ];
-      // Only May 1 counts → 1/7.
-      expect(completionRate(logs, period), closeTo(1 / 7, 1e-9));
+      // Logs inside range: May 1 (done), May 2 (missed) → 1/2.
+      expect(completionRate(logs, period), closeTo(1 / 2, 1e-9));
     });
 
     test('skipped/missed do not count as success', () {
@@ -190,7 +191,8 @@ void main() {
         _log(date: _d(2026, 5, 2), status: HabitLogStatus.missed),
         _log(date: _d(2026, 5, 3), status: HabitLogStatus.done),
       ];
-      expect(completionRate(logs, period), closeTo(1 / 7, 1e-9));
+      // 3 logs in range, only 1 success → 1/3.
+      expect(completionRate(logs, period), closeTo(1 / 3, 1e-9));
     });
   });
 

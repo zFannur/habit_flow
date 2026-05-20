@@ -352,6 +352,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         ? ref.watch(weeklyStatsProvider(_periodAnchor))
         : ref.watch(monthlyStatsProvider(_periodAnchor));
 
+    final prevStats = _isWeek
+        ? ref.watch(weeklyStatsProvider(_periodAnchor.subtract(const Duration(days: 7))))
+        : ref.watch(monthlyStatsProvider(DateTime(_periodAnchor.year, _periodAnchor.month - 1, 1)));
+
     final habits =
         ref.watch(habitsStreamProvider).valueOrNull ?? const <HabitModel>[];
     final entries =
@@ -367,6 +371,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     final pieSlices = _pieSlices(stats.byCategory);
 
     final completionPct = (stats.completionRate * 100).round().clamp(0, 100);
+    final prevCompletionPct = (prevStats.completionRate * 100).round().clamp(0, 100);
+    final trendDelta = completionPct - prevCompletionPct;
 
     // Count successful / missed logs in range.
     final allLogs = _allLogsInRange(habits, range);
@@ -409,6 +415,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 isWeek: _isWeek,
                 periodLabel: periodLabel,
                 completionPct: completionPct,
+                trendDelta: trendDelta,
               ),
               const SizedBox(height: 12),
               _MetricsGrid(
@@ -764,16 +771,37 @@ class _SummaryCard extends StatelessWidget {
     required this.isWeek,
     required this.periodLabel,
     required this.completionPct,
+    required this.trendDelta,
   });
 
   final bool isWeek;
   final String periodLabel;
   final int completionPct;
+  final int trendDelta;
 
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
+
+    final trendColor = trendDelta > 0
+        ? HFTokens.success
+        : trendDelta < 0
+            ? HFTokens.danger
+            : c.textTertiary;
+
+    final trendText = isWeek
+        ? (trendDelta > 0
+            ? l.analyticsTrendUpWeek(trendDelta)
+            : trendDelta < 0
+                ? l.analyticsTrendDownWeek(-trendDelta)
+                : l.analyticsTrendNeutralWeek)
+        : (trendDelta > 0
+            ? l.analyticsTrendUpMonth(trendDelta)
+            : trendDelta < 0
+                ? l.analyticsTrendDownMonth(-trendDelta)
+                : l.analyticsTrendNeutralMonth);
+
     return _SectionCard(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -793,9 +821,29 @@ class _SummaryCard extends StatelessWidget {
                   style: context.tt.displayLarge!.copyWith(color: c.textPrimary, height: 1, letterSpacing: -0.03 * 52, fontSize: 52.0),
                 ),
                 const SizedBox(height: 6),
-                // Trend row: static placeholder — real trend requires prev period data.
-                // см. issue #1
-                const SizedBox.shrink(),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      trendDelta > 0
+                          ? LucideIcons.trendingUp
+                          : trendDelta < 0
+                              ? LucideIcons.trendingDown
+                              : LucideIcons.minus,
+                      size: 14,
+                      color: trendColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      trendText,
+                      style: context.tt.bodySmall!.copyWith(
+                        color: trendColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 3),
                 Text(
                   l.analyticsSubtextPeriod(periodLabel),

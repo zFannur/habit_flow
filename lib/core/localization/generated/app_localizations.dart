@@ -1610,11 +1610,41 @@ abstract class AppLocalizations {
   /// **'ВЫПОЛНЕНИЕ'**
   String get analyticsSummaryLabel;
 
-  /// No description provided for @analyticsTrend.
+  /// No description provided for @analyticsTrendUpWeek.
   ///
   /// In ru, this message translates to:
-  /// **'↑ +{percent}% к прошлой {period}'**
-  String analyticsTrend(int percent, String period);
+  /// **'↑ +{percent}% к прошлой неделе'**
+  String analyticsTrendUpWeek(int percent);
+
+  /// No description provided for @analyticsTrendDownWeek.
+  ///
+  /// In ru, this message translates to:
+  /// **'↓ -{percent}% к прошлой неделе'**
+  String analyticsTrendDownWeek(int percent);
+
+  /// No description provided for @analyticsTrendNeutralWeek.
+  ///
+  /// In ru, this message translates to:
+  /// **'• 0% к прошлой неделе'**
+  String get analyticsTrendNeutralWeek;
+
+  /// No description provided for @analyticsTrendUpMonth.
+  ///
+  /// In ru, this message translates to:
+  /// **'↑ +{percent}% к прошлому месяцу'**
+  String analyticsTrendUpMonth(int percent);
+
+  /// No description provided for @analyticsTrendDownMonth.
+  ///
+  /// In ru, this message translates to:
+  /// **'↓ -{percent}% к прошлому месяцу'**
+  String analyticsTrendDownMonth(int percent);
+
+  /// No description provided for @analyticsTrendNeutralMonth.
+  ///
+  /// In ru, this message translates to:
+  /// **'• 0% к прошлому месяцу'**
+  String get analyticsTrendNeutralMonth;
 
   /// No description provided for @analyticsSubtextPeriod.
   ///
