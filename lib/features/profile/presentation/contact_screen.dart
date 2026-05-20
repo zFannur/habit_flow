@@ -35,19 +35,19 @@ class ContactScreen extends StatelessWidget {
                 _ContactRow(
                   emoji: '💬',
                   label: l.contactChannelTelegram,
-                  value: '@habitflow_dev',
+                  value: 'https://t.me/nova_th',
                   iconBg: const Color(0x1F2AABEE),
                 ),
                 _ContactRow(
                   emoji: '📧',
                   label: l.contactChannelEmail,
-                  value: 'hello@habitflow.app',
+                  value: 'coresolderwire@gmail.com',
                   iconBg: const Color(0x1F22C55E),
                 ),
                 _ContactRow(
                   emoji: '🐙',
                   label: l.contactChannelGithub,
-                  value: 'github.com/habitflow/issues',
+                  value: 'https://github.com/zFannur/habit_flow',
                   iconBg: const Color(0x1F6B7280),
                 ),
               ],
