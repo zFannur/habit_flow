@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:habit_flow/core/errors/failure.dart';
 import 'package:habit_flow/features/auth/domain/auth_state.dart';
 
 /// Convenience: switch over the sealed [AuthState] without using `as`. If the
@@ -6,7 +7,7 @@ import 'package:habit_flow/features/auth/domain/auth_state.dart';
 String _describe(AuthState s) => switch (s) {
       Unauthenticated() => 'unauthenticated',
       Authenticated(:final jwt) => 'authenticated:$jwt',
-      Failed(:final error) => 'failed:$error',
+      Failed(:final failure) => 'failed:$failure',
     };
 
 void main() {
@@ -87,13 +88,13 @@ void main() {
       expect(_describe(state), 'authenticated:token.value.sig');
     });
 
-    test('Failed wraps the error object', () {
-      final err = Exception('network down');
-      final state = AuthState.failed(err);
+    test('Failed wraps the failure object', () {
+      const failObj = Failure.unknown(message: 'network down');
+      const state = AuthState.failed(failObj);
 
       expect(state, isA<Failed>());
       final failed = state as Failed;
-      expect(failed.error, err);
+      expect(failed.failure, failObj);
       expect(_describe(state), startsWith('failed:'));
     });
 
@@ -105,7 +106,7 @@ void main() {
           jwt: 'jwt',
           user: AuthUser(id: 'u'),
         ),
-        AuthState.failed(StateError('boom')),
+        const AuthState.failed(Failure.unknown(message: 'boom')),
       ];
 
       final descriptions = variants.map(_describe).toList();
@@ -115,14 +116,12 @@ void main() {
       expect(descriptions[2], startsWith('failed:'));
     });
 
-    test('Failed preserves arbitrary error types (network failure)', () {
-      // Simulate the "network error → Failed" path without involving the
-      // repository — AuthController wraps any throw in Failed(e).
-      final socketLike = Exception('SocketException: connection refused');
-      final AuthState state = AuthState.failed(socketLike);
+    test('Failed preserves arbitrary failure types (network failure)', () {
+      const socketLike = Failure.network(message: 'SocketException: connection refused');
+      const AuthState state = AuthState.failed(socketLike);
 
       expect(state, isA<Failed>());
-      expect((state as Failed).error.toString(), contains('SocketException'));
+      expect((state as Failed).failure.toString(), contains('SocketException'));
     });
   });
 }

@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fpdart/fpdart.dart';
 
 import '../../../core/config/env.dart';
+import '../../../core/errors/failure.dart';
+import '../../../core/errors/result.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../../core/utils/timezone.dart';
 import '../domain/auth_state.dart';
@@ -35,85 +38,93 @@ class AuthRepository {
   /// Exchange Telegram `initData` for a Supabase JWT and a `users` row.
   ///
   /// On success the JWT is persisted in secure storage and applied to the
-  /// active Supabase client. Throws [AuthException] on transport/4xx/5xx —
-  /// the caller wraps into [AuthState.failed].
-  Future<Authenticated> signInWithTelegram(String initData) async {
-    final Response<dynamic> response;
-    try {
-      response = await _dio.post<dynamic>(
-        _endpoint,
-        data: <String, dynamic>{'initData': initData},
-        options: Options(
-          headers: <String, String>{
-            'apikey': Env.supabaseAnonKey,
-            'Authorization': 'Bearer ${Env.supabaseAnonKey}',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-    } on DioException catch (e) {
-      throw AuthException(
-        'auth_telegram request failed: ${e.message ?? e.type.name}',
-      );
-    }
+  /// active Supabase client.
+  AppTask<Authenticated> signInWithTelegram(String initData) {
+    return TaskEither.tryCatch(
+      () async {
+        final Response<dynamic> response;
+        try {
+          response = await _dio.post<dynamic>(
+            _endpoint,
+            data: <String, dynamic>{'initData': initData},
+            options: Options(
+              headers: <String, String>{
+                'apikey': Env.supabaseAnonKey,
+                'Authorization': 'Bearer ${Env.supabaseAnonKey}',
+                'Content-Type': 'application/json',
+              },
+            ),
+          );
+        } on DioException catch (e) {
+          throw AuthException(
+            'auth_telegram request failed: ${e.message ?? e.type.name}',
+          );
+        }
 
-    if (response.statusCode != 200 || response.data is! Map) {
-      throw AuthException(
-        'auth_telegram returned ${response.statusCode}',
-      );
-    }
+        if (response.statusCode != 200 || response.data is! Map) {
+          throw AuthException(
+            'auth_telegram returned ${response.statusCode}',
+          );
+        }
 
-    final body = (response.data as Map).cast<String, dynamic>();
-    final jwt = body['jwt'];
-    final userJson = body['user'];
-    if (jwt is! String || jwt.isEmpty || userJson is! Map) {
-      throw const AuthException('auth_telegram returned malformed payload');
-    }
+        final body = (response.data as Map).cast<String, dynamic>();
+        final jwt = body['jwt'];
+        final userJson = body['user'];
+        if (jwt is! String || jwt.isEmpty || userJson is! Map) {
+          throw const AuthException('auth_telegram returned malformed payload');
+        }
 
-    final user = AuthUser.fromJson(userJson.cast<String, dynamic>());
+        final user = AuthUser.fromJson(userJson.cast<String, dynamic>());
 
-    await _persist(jwt: jwt, user: user);
-    await _supabase.applySession(jwt);
-    await _syncTimeZone(user.id);
+        await _persist(jwt: jwt, user: user);
+        await _supabase.applySession(jwt);
+        await _syncTimeZone(user.id);
 
-    return Authenticated(jwt: jwt, user: user);
+        return Authenticated(jwt: jwt, user: user);
+      },
+      (e, st) => _mapError(e),
+    );
   }
 
   /// Try to restore a previously saved session. If the JWT is missing or
   /// already expired (with a small leeway), the cache is cleared and we
   /// return [Unauthenticated].
   Future<AuthState> restoreSession() async {
-    final jwt = await _storage.read(key: _kJwtKey);
-    final userRaw = await _storage.read(key: _kUserKey);
-    if (jwt == null || jwt.isEmpty || userRaw == null || userRaw.isEmpty) {
-      return const Unauthenticated();
-    }
-
-    if (isJwtExpired(jwt)) {
-      await _clearStorage();
-      return const Unauthenticated();
-    }
-
-    final AuthUser user;
     try {
-      final decoded = jsonDecode(userRaw);
-      if (decoded is! Map) {
+      final jwt = await _storage.read(key: _kJwtKey);
+      final userRaw = await _storage.read(key: _kUserKey);
+      if (jwt == null || jwt.isEmpty || userRaw == null || userRaw.isEmpty) {
+        return const Unauthenticated();
+      }
+
+      if (isJwtExpired(jwt)) {
         await _clearStorage();
         return const Unauthenticated();
       }
-      user = AuthUser.fromJson(decoded.cast<String, dynamic>());
-    } catch (_) {
-      await _clearStorage();
-      return const Unauthenticated();
-    }
 
-    try {
-      await _supabase.applySession(jwt);
+      final AuthUser user;
+      try {
+        final decoded = jsonDecode(userRaw);
+        if (decoded is! Map) {
+          await _clearStorage();
+          return const Unauthenticated();
+        }
+        user = AuthUser.fromJson(decoded.cast<String, dynamic>());
+      } catch (_) {
+        await _clearStorage();
+        return const Unauthenticated();
+      }
+
+      try {
+        await _supabase.applySession(jwt);
+      } catch (e) {
+        return Failed(_mapError(e));
+      }
+      await _syncTimeZone(user.id);
+      return Authenticated(jwt: jwt, user: user);
     } catch (e) {
-      return Failed(e);
+      return Failed(_mapError(e));
     }
-    await _syncTimeZone(user.id);
-    return Authenticated(jwt: jwt, user: user);
   }
 
   /// Best-effort: push the device's IANA timezone into `users.timezone` so
@@ -140,13 +151,18 @@ class AuthRepository {
   }
 
   /// Clear cache + sign out from Supabase.
-  Future<void> signOut() async {
-    await _clearStorage();
-    try {
-      await _supabase.clearSession();
-    } catch (_) {
-      // Best-effort — local storage is the source of truth for "signed out".
-    }
+  AppTask<void> signOut() {
+    return TaskEither.tryCatch(
+      () async {
+        await _clearStorage();
+        try {
+          await _supabase.clearSession();
+        } catch (_) {
+          // Best-effort — local storage is the source of truth for "signed out".
+        }
+      },
+      (e, st) => _mapError(e),
+    );
   }
 
   Future<void> _persist({required String jwt, required AuthUser user}) async {
@@ -157,6 +173,16 @@ class AuthRepository {
   Future<void> _clearStorage() async {
     await _storage.delete(key: _kJwtKey);
     await _storage.delete(key: _kUserKey);
+  }
+
+  Failure _mapError(Object e) {
+    if (e is AuthException) {
+      return Failure.auth(message: e.message);
+    }
+    if (e is DioException) {
+      return Failure.network(message: e.message);
+    }
+    return Failure.unknown(message: e.toString());
   }
 }
 

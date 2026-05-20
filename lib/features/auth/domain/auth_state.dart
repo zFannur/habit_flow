@@ -1,3 +1,5 @@
+import '../../../core/errors/failure.dart';
+
 /// Authentication state surfaced to the UI layer.
 ///
 /// Consumed by routing (splash decides where to redirect) and any feature
@@ -10,7 +12,7 @@ sealed class AuthState {
     required String jwt,
     required AuthUser user,
   }) = Authenticated;
-  const factory AuthState.failed(Object error) = Failed;
+  const factory AuthState.failed(Failure failure) = Failed;
 }
 
 final class Unauthenticated extends AuthState {
@@ -25,9 +27,9 @@ final class Authenticated extends AuthState {
 }
 
 final class Failed extends AuthState {
-  const Failed(this.error);
+  const Failed(this.failure);
 
-  final Object error;
+  final Failure failure;
 }
 
 /// Slim mirror of `public.users` row returned by the `auth_telegram` Edge
