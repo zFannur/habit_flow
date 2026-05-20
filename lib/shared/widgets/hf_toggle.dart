@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -61,12 +62,7 @@ class HFToggle extends StatelessWidget {
         const SizedBox(width: HFTokens.s12),
         Text(
           label!,
-          style: TextStyle(
-            fontSize: 14,
-            color: c.textPrimary,
-            fontWeight: FontWeight.w500,
-            height: 1.4,
-          ),
+          style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.4),
         ),
       ],
     );

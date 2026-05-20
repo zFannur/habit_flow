@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -65,21 +66,12 @@ class HFToast extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.2),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   message,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: c.textSecondary,
-                    height: 1.4,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.4),
                 ),
               ],
             ),

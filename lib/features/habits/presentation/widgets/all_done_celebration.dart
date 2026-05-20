@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -70,7 +71,7 @@ class _AllDoneCelebrationState extends State<AllDoneCelebration>
                               pi,
                           child: Text(
                             p.emoji,
-                            style: const TextStyle(fontSize: 32),
+                            style: context.tt.displayMedium!.copyWith(fontSize: 32.0),
                           ),
                         ),
                       ),
@@ -86,18 +87,14 @@ class _AllDoneCelebrationState extends State<AllDoneCelebration>
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('🎉', style: TextStyle(fontSize: 56)),
+                    Text('🎉', style: context.tt.displayLarge!.copyWith(fontSize: 56.0)),
                     SizedBox(height: 12),
                     Text(
                       'Все привычки на сегодня!',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
+                      style: context.tt.headlineSmall!.copyWith(color: Colors.black87),
                       textAlign: TextAlign.center,
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -105,11 +106,7 @@ class _ReflectionTemplateScreenState
                   padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
                   child: Text(
                     l.reflectionTemplateDesc,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: c.textSecondary,
-                      height: 1.5,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.5),
                   ),
                 ),
                 for (var i = 0; i < _ctrls.length; i++) ...[
@@ -182,12 +179,7 @@ class _QuestionRow extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               '${index + 1}',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: c.accent,
-                height: 1,
-              ),
+              style: context.tt.labelMedium!.copyWith(color: c.accent, height: 1),
             ),
           ),
           const SizedBox(width: 10),

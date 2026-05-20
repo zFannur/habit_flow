@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -28,11 +29,7 @@ class ContactScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(4, 0, 4, 14),
                   child: Text(
                     l.contactDesc,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: c.textSecondary,
-                      height: 1.5,
-                    ),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.5),
                   ),
                 ),
                 _ContactRow(
@@ -113,7 +110,7 @@ class _ContactRow extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: Text(emoji, style: const TextStyle(fontSize: 20, height: 1)),
+                  child: Text(emoji, style: context.tt.headlineSmall!.copyWith(height: 1, fontSize: 20.0)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -123,23 +120,12 @@ class _ContactRow extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: c.textTertiary,
-                          height: 1.2,
-                          letterSpacing: 0.04 * 12,
-                        ),
+                        style: context.tt.labelMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.04 * 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         value,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: c.textPrimary,
-                          height: 1.2,
-                        ),
+                        style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                       ),
                     ],
                   ),

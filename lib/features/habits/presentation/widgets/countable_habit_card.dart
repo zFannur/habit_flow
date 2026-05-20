@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -75,12 +76,7 @@ class _CountableHabitCardState extends State<CountableHabitCard> {
                     children: [
                       Text(
                         widget.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: c.textPrimary,
-                          height: 1.3,
-                        ),
+                        style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3),
                       ),
                       const SizedBox(height: 2),
                       Text.rich(
@@ -88,18 +84,11 @@ class _CountableHabitCardState extends State<CountableHabitCard> {
                           children: [
                             TextSpan(
                               text: '$_current',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: c.accent,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: context.tt.labelMedium!.copyWith(color: c.accent),
                             ),
                             TextSpan(
                               text: ' / ${widget.total} ${widget.unit}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: c.textTertiary,
-                              ),
+                              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
                             ),
                           ],
                         ),

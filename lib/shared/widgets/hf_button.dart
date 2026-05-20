@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -58,12 +59,10 @@ class HFButton extends StatelessWidget {
       ],
       Text(
         label,
-        style: TextStyle(
-          fontSize: fs,
-          fontWeight: FontWeight.w600,
-          color: fg,
-          height: 1.2,
-        ),
+        style: (size == HFButtonSize.sm
+                ? context.tt.labelMedium!
+                : context.tt.labelLarge!)
+            .copyWith(color: fg, fontSize: fs, height: 1.2),
       ),
       if (icon != null && iconAtEnd) ...[
         const SizedBox(width: HFTokens.s4),

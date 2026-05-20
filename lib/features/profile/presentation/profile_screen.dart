@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -139,26 +140,18 @@ void _confirmDeleteAccount(BuildContext context) {
       ),
       title: Text(
         l.profileDeleteAccountTitle,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: c.textPrimary,
-        ),
+        style: context.tt.headlineSmall!.copyWith(color: c.textPrimary),
       ),
       content: Text(
         l.profileDeleteAccountMessage,
-        style: TextStyle(
-          fontSize: 14,
-          color: c.textSecondary,
-          height: 1.5,
-        ),
+        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.5),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(dialogCtx).pop(),
           child: Text(
             l.commonCancel,
-            style: TextStyle(color: c.textSecondary, fontWeight: FontWeight.w600),
+            style: context.tt.labelLarge!.copyWith(color: c.textSecondary),
           ),
         ),
         TextButton(
@@ -168,7 +161,7 @@ void _confirmDeleteAccount(BuildContext context) {
           },
           child: Text(
             l.commonDelete,
-            style: TextStyle(color: c.danger, fontWeight: FontWeight.w700),
+            style: context.tt.labelLarge!.copyWith(color: c.danger),
           ),
         ),
       ],
@@ -248,36 +241,19 @@ class _UserCard extends ConsumerWidget {
             alignment: Alignment.center,
             child: Text(
               initial,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 34,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.02 * 34,
-                height: 1,
-              ),
+              style: context.tt.displayLarge!.copyWith(color: Colors.white, height: 1, letterSpacing: -0.02 * 34, fontSize: 34.0),
             ),
           ),
           const SizedBox(height: 14),
           Text(
             displayName,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: c.textPrimary,
-              letterSpacing: -0.02 * 22,
-              height: 1.15,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.15, letterSpacing: -0.02 * 22),
           ),
           if (usernameLabel.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               usernameLabel,
-              style: TextStyle(
-                fontSize: 14,
-                color: c.textTertiary,
-                fontWeight: FontWeight.w500,
-                height: 1,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1),
             ),
           ],
           const SizedBox(height: 12),
@@ -291,13 +267,7 @@ class _UserCard extends ConsumerWidget {
               ),
               child: Text(
                 l.profileBadgeSupporter,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: ProfileScreen._gold,
-                  letterSpacing: 0.01 * 12,
-                  height: 1,
-                ),
+                style: context.tt.labelMedium!.copyWith(color: ProfileScreen._gold, height: 1, letterSpacing: 0.01 * 12),
               ),
             ),
           if (isSupporter) const SizedBox(height: 4),
@@ -373,25 +343,13 @@ class _StatCol extends StatelessWidget {
           children: [
             Text(
               value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: c.textPrimary,
-                letterSpacing: -0.03 * 20,
-                height: 1,
-              ),
+              style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1, letterSpacing: -0.03 * 20, fontSize: 20.0),
             ),
             const SizedBox(height: 3),
             Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: c.textTertiary,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
-                letterSpacing: 0.01 * 11,
-              ),
+              style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.3, letterSpacing: 0.01 * 11, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -412,13 +370,7 @@ class _SectionLabel extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       child: Text(
         text.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.07 * 11,
-          color: c.textTertiary,
-          height: 1,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1, letterSpacing: 0.07 * 11),
       ),
     );
   }
@@ -435,13 +387,7 @@ class _DangerSectionLabel extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       child: Text(
         l.profileSectionDanger,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.07 * 11,
-          color: c.danger.withValues(alpha: 0.7),
-          height: 1,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.danger.withValues(alpha: 0.7), height: 1, letterSpacing: 0.07 * 11),
       ),
     );
   }
@@ -540,19 +486,14 @@ class _MenuRow extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       data.emoji,
-                      style: const TextStyle(fontSize: 18, height: 1),
+                      style: context.tt.headlineSmall!.copyWith(height: 1),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       data.label,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: data.danger ? c.danger : c.textPrimary,
-                        height: 1.35,
-                      ),
+                      style: context.tt.titleMedium!.copyWith(color: data.danger ? c.danger : c.textPrimary, height: 1.35, fontWeight: FontWeight.w500),
                     ),
                   ),
                   if (!data.danger)

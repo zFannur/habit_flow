@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -214,31 +215,19 @@ class _StaticHeader extends StatelessWidget {
                     controller: searchController,
                     autofocus: true,
                     onChanged: onSearchChanged,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: c.textPrimary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                     cursorColor: c.accent,
                     decoration: InputDecoration(
                       isDense: true,
                       border: InputBorder.none,
                       hintText: l.commonSearch,
-                      hintStyle: TextStyle(
-                        fontSize: 15,
-                        color: c.textTertiary,
-                      ),
+                      hintStyle: context.tt.titleMedium!.copyWith(color: c.textTertiary),
                     ),
                   )
                 : Center(
                     child: Text(
                       l.journalListTitle,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: c.textPrimary,
-                        height: 1.2,
-                      ),
+                      style: context.tt.bodyLarge!.copyWith(color: c.textPrimary, height: 1.2, fontWeight: FontWeight.w700),
                     ),
                   ),
           ),
@@ -289,13 +278,7 @@ class _CounterCard extends StatelessWidget {
         children: [
           Text(
             '$count',
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.w800,
-              color: c.textPrimary,
-              height: 1,
-              letterSpacing: -0.03 * 40,
-            ),
+            style: context.tt.displayLarge!.copyWith(color: c.textPrimary, height: 1, letterSpacing: -0.03 * 40, fontSize: 40.0),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -305,21 +288,12 @@ class _CounterCard extends StatelessWidget {
               children: [
                 Text(
                   l.journalListEntriesLabel,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   l.journalListStreak(streak),
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: c.textSecondary,
-                    height: 1.4,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.4),
                 ),
               ],
             ),
@@ -361,12 +335,7 @@ class _FilterChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-              color: selected ? c.accent : c.textSecondary,
-              height: 1.2,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: selected ? c.accent : c.textSecondary, height: 1.2),
           ),
         ),
       ),
@@ -432,20 +401,12 @@ class _EntryCard extends StatelessWidget {
                                   children: [
                                     Text(
                                       dateLabel,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                        color: c.textPrimary,
-                                        height: 1.2,
-                                      ),
+                                      style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
                                       emoji,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        height: 1,
-                                      ),
+                                      style: context.tt.headlineSmall!.copyWith(height: 1),
                                     ),
                                   ],
                                 ),
@@ -454,12 +415,7 @@ class _EntryCard extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 2),
                                 child: Text(
                                   timeLabel,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: c.textTertiary,
-                                    height: 1.2,
-                                  ),
+                                  style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, fontWeight: FontWeight.w500),
                                 ),
                               ),
                             ],
@@ -467,11 +423,7 @@ class _EntryCard extends StatelessWidget {
                           const SizedBox(height: 6),
                           Text(
                             preview,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: c.textSecondary,
-                              height: 1.5,
-                            ),
+                            style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.5),
                           ),
                         ],
                       ),
@@ -517,16 +469,11 @@ class _Fab extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('➕', style: TextStyle(fontSize: 16, height: 1)),
+              Text('➕', style: context.tt.bodyLarge!.copyWith(height: 1)),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context).journalFabLabel,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: Colors.white, height: 1.2),
               ),
             ],
           ),

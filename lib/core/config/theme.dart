@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'text_theme.dart';
 import 'tokens.dart';
 
 /// Material тема HabitFlow. Тонкая обёртка над дизайн-токенами:
@@ -43,15 +44,9 @@ class AppTheme {
       canvasColor: colors.bgSecondary,
       dividerColor: colors.border,
       splashFactory: InkRipple.splashFactory,
-      textTheme: TextTheme(
-        displayLarge: HFTokens.tsDisplay.copyWith(color: colors.textPrimary),
-        titleLarge: HFTokens.tsTitle.copyWith(color: colors.textPrimary),
-        titleMedium: HFTokens.tsSubheading.copyWith(color: colors.textPrimary),
-        bodyLarge: HFTokens.tsBody.copyWith(color: colors.textPrimary),
-        bodyMedium: HFTokens.tsSecondary.copyWith(color: colors.textSecondary),
-        labelMedium: HFTokens.tsLabel.copyWith(color: colors.textTertiary),
-      ),
+      textTheme: hfTextTheme,
       extensions: [colors],
     );
   }
 }
+

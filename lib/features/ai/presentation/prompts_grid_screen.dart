@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -80,11 +81,7 @@ class _PromptsGridScreenState extends ConsumerState<PromptsGridScreen> {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
               child: Text(
                 l.aiPromptsIntro,
-                style: TextStyle(
-                  fontSize: 13.5,
-                  height: 1.55,
-                  color: c.textSecondary,
-                ),
+                style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.55, fontSize: 13.5),
               ),
             ),
           ),
@@ -135,11 +132,7 @@ class _PromptsGridScreenState extends ConsumerState<PromptsGridScreen> {
               child: Center(
                 child: Text(
                   l.aiPromptsCount(filtered.length),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: c.textTertiary,
-                  ),
+                  style: context.tt.bodySmall!.copyWith(color: c.textTertiary, fontSize: 12.0),
                 ),
               ),
             ),
@@ -198,17 +191,12 @@ class _PromptCardState extends State<_PromptCard> {
             children: [
               Text(
                 widget.prompt.emoji,
-                style: const TextStyle(fontSize: 26, height: 1),
+                style: context.tt.headlineLarge!.copyWith(height: 1),
               ),
               const SizedBox(height: 8),
               Text(
                 widget.prompt.title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  height: 1.25,
-                  color: c.textPrimary,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.textPrimary, height: 1.25),
               ),
               const SizedBox(height: 6),
               Expanded(
@@ -216,22 +204,13 @@ class _PromptCardState extends State<_PromptCard> {
                   widget.prompt.desc,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    height: 1.35,
-                    color: c.textSecondary,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.35, fontSize: 11.5),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 catLabel.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.02 * 10.5,
-                  color: catColor,
-                ),
+                style: context.tt.bodyMedium!.copyWith(color: catColor, letterSpacing: 0.02 * 10.5, fontWeight: FontWeight.w700, fontSize: 10.5),
               ),
             ],
           ),
@@ -272,12 +251,7 @@ class _FilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? c.accent : c.textSecondary,
-            height: 1.2,
-          ),
+          style: context.tt.bodySmall!.copyWith(color: selected ? c.accent : c.textSecondary, height: 1.2),
         ),
       ),
     );

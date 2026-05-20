@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -109,11 +110,7 @@ class _InfoBanner extends StatelessWidget {
             child: Text(
               AppLocalizations.of(context)
                   .aiSummariesInfoBanner(30, count, remaining),
-              style: TextStyle(
-                fontSize: 12.5,
-                color: c.textSecondary,
-                height: 1.55,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: c.textSecondary, height: 1.55, fontSize: 12.5),
             ),
           ),
         ],
@@ -194,12 +191,7 @@ class _SummaryCard extends StatelessWidget {
                           summary.rangeStartN,
                           summary.rangeEndN,
                         ),
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: c.textPrimary,
-                          height: 1.3,
-                        ),
+                        style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.3),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -207,12 +199,7 @@ class _SummaryCard extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
                         period,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: c.textTertiary,
-                          height: 1.4,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 12.0),
                       ),
                     ),
                     if (preview.isNotEmpty)
@@ -220,11 +207,7 @@ class _SummaryCard extends StatelessWidget {
                         preview,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: c.textTertiary,
-                          height: 1.55,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.55),
                       ),
                   ],
                 ),
@@ -246,13 +229,7 @@ class _SummaryCard extends StatelessWidget {
                 ),
                 child: Text(
                   l.aiSummariesBadgeNew,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: c.accent,
-                    letterSpacing: 0.02 * 10,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.accent, height: 1.2, letterSpacing: 0.02 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
                 ),
               ),
             ),
@@ -327,22 +304,12 @@ class _GhostCard extends StatelessWidget {
                 children: [
                   Text(
                     l.emptyTitleNoSummaries,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: c.textTertiary,
-                      height: 1.3,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: c.textTertiary, height: 1.3),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     l.emptyDescNoSummaries(remaining),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: c.textTertiary,
-                      height: 1.4,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 12.0),
                   ),
                 ],
               ),

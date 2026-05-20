@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/config/tokens.dart';
@@ -29,7 +30,7 @@ class HabitEmojiIcon extends StatelessWidget {
         borderRadius: BorderRadius.circular(HFTokens.rMd),
       ),
       alignment: Alignment.center,
-      child: Text(emoji, style: TextStyle(fontSize: fontSize, height: 1)),
+      child: Text(emoji, style: context.tt.bodyMedium!.copyWith(height: 1)),
     );
   }
 }

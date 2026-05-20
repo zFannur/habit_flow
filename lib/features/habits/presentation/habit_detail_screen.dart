@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,7 @@ class HabitDetailScreen extends ConsumerWidget {
             error: (e, _) => Center(
               child: Text(
                 e.toString(),
-                style: TextStyle(color: c.danger),
+                style: context.tt.bodyMedium!.copyWith(color: c.danger),
               ),
             ),
             data: (habit) {
@@ -42,7 +43,7 @@ class HabitDetailScreen extends ConsumerWidget {
                 return Center(
                   child: Text(
                     '404',
-                    style: TextStyle(color: c.textTertiary),
+                    style: context.tt.bodyMedium!.copyWith(color: c.textTertiary),
                   ),
                 );
               }
@@ -279,10 +280,7 @@ class _DetailBody extends ConsumerWidget {
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(
               l.commonDelete,
-              style: TextStyle(
-                color: HFColors.of(context).danger,
-                fontWeight: FontWeight.w600,
-              ),
+              style: context.tt.labelLarge!.copyWith(color: HFColors.of(context).danger),
             ),
           ),
         ],
@@ -444,13 +442,7 @@ class _Header extends StatelessWidget {
             background: c.bgTertiary,
             child: Text(
               '···',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 2,
-                color: c.textPrimary,
-                height: 1,
-              ),
+              style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1, letterSpacing: 2, fontSize: 20.0),
             ),
           ),
         ],
@@ -536,30 +528,19 @@ class _Hero extends StatelessWidget {
               ],
             ),
             alignment: Alignment.center,
-            child: Text(emoji, style: const TextStyle(fontSize: 38, height: 1)),
+            child: Text(emoji, style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 38.0)),
           ),
           const SizedBox(height: 14),
           Text(
             name,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: c.textPrimary,
-              letterSpacing: -0.02 * 22,
-              height: 1.2,
-            ),
+            style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 22),
           ),
           if (category.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               category,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: c.textTertiary,
-                height: 1.2,
-              ),
+              style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
             ),
           ],
           if (streak > 0) ...[
@@ -576,12 +557,7 @@ class _Hero extends StatelessWidget {
               ),
               child: Text(
                 '🔥 ${l.habitDetailCurrentStreak.replaceAll('\n', ' ')}: $streak',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: HFTokens.warning,
-                  height: 1.2,
-                ),
+                style: context.tt.titleSmall!.copyWith(color: HFTokens.warning, height: 1.2),
               ),
             ),
           ],
@@ -603,13 +579,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
       child: Text(
         label.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.08 * 11,
-          color: c.textTertiary,
-          height: 1.2,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.08 * 11),
       ),
     );
   }
@@ -644,24 +614,13 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: valueColor,
-              height: 1.1,
-              letterSpacing: -0.03 * 28,
-            ),
+            style: context.tt.displayMedium!.copyWith(color: valueColor, height: 1.1, letterSpacing: -0.03 * 28),
           ),
           const SizedBox(height: 5),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: c.textTertiary,
-              height: 1.4,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.4, fontSize: 10.0),
           ),
         ],
       ),
@@ -707,12 +666,7 @@ class _HeatmapLegend extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   entry.$2,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 10.0),
                 ),
               ],
             ),
@@ -766,12 +720,7 @@ class _Heatmap extends StatelessWidget {
                       child: Center(
                         child: Text(
                           days[i],
-                          style: TextStyle(
-                            fontSize: 8.5,
-                            fontWeight: FontWeight.w600,
-                            color: c.textTertiary,
-                            height: 1,
-                          ),
+                          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontWeight: FontWeight.w600, fontSize: 8.5),
                         ),
                       ),
                     ),
@@ -875,11 +824,7 @@ class _ChartCard extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 4),
                         child: Text(
                           '${value.toInt()}%',
-                          style: TextStyle(
-                            fontSize: 8,
-                            color: c.textTertiary,
-                            height: 1,
-                          ),
+                          style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 8.0),
                         ),
                       ),
                     ),
@@ -896,11 +841,7 @@ class _ChartCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
                             l.habitDetailChartWeekShort(i + 1),
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: c.textTertiary,
-                              height: 1,
-                            ),
+                            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1, fontSize: 8.0),
                           ),
                         );
                       },
@@ -938,11 +879,7 @@ class _ChartCard extends StatelessWidget {
                       for (final s in spots)
                         LineTooltipItem(
                           '${s.y.toInt()}%',
-                          const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: HFTokens.success,
-                          ),
+                          context.tt.labelSmall!.copyWith(color: HFTokens.success),
                         ),
                     ],
                   ),
@@ -961,20 +898,11 @@ class _ChartCard extends StatelessWidget {
               children: [
                 Text(
                   l.habitDetailChartWeeks(data.length),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: c.textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 10.0),
                 ),
                 Text(
                   l.habitDetailChartAverage(avg),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: HFTokens.success,
-                    height: 1.2,
-                  ),
+                  style: context.tt.bodyMedium!.copyWith(color: HFTokens.success, height: 1.2, fontWeight: FontWeight.w700, fontSize: 10.0),
                 ),
               ],
             ),
@@ -1074,27 +1002,16 @@ class _BehaviorCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 20, height: 1)),
+          Text(emoji, style: context.tt.headlineSmall!.copyWith(height: 1, fontSize: 20.0)),
           const SizedBox(height: 6),
           Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.06 * 10,
-              color: c.textTertiary,
-              height: 1.2,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.06 * 10, fontWeight: FontWeight.w700, fontSize: 10.0),
           ),
           const SizedBox(height: 3),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: c.textPrimary,
-              height: 1.3,
-            ),
+            style: context.tt.labelMedium!.copyWith(color: c.textPrimary, height: 1.3),
           ),
         ],
       ),
@@ -1122,10 +1039,7 @@ class _HistoryList extends StatelessWidget {
         child: Center(
           child: Text(
             '—',
-            style: TextStyle(
-              fontSize: 13,
-              color: c.textTertiary,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
           ),
         ),
       );
@@ -1227,28 +1141,15 @@ class _HistoryItemState extends State<_HistoryItem> {
                           children: [
                             Text(
                               widget.item.date,
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: c.textPrimary,
-                                height: 1.2,
-                              ),
+                              style: context.tt.titleSmall!.copyWith(color: c.textPrimary, height: 1.2),
                             ),
                             Text(
                               statusEmoji,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                height: 1.2,
-                              ),
+                              style: context.tt.bodySmall!.copyWith(height: 1.2, fontSize: 12.0),
                             ),
                             Text(
                               statusLabel,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: dot,
-                                height: 1.2,
-                              ),
+                              style: context.tt.labelSmall!.copyWith(color: dot, height: 1.2),
                             ),
                           ],
                         ),
@@ -1258,12 +1159,7 @@ class _HistoryItemState extends State<_HistoryItem> {
                             widget.item.comment!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontStyle: FontStyle.italic,
-                              color: c.textSecondary,
-                              height: 1.4,
-                            ),
+                            style: context.tt.labelSmall!.copyWith(color: c.textSecondary, height: 1.4, fontStyle: FontStyle.italic),
                           ),
                         ],
                       ],
@@ -1290,12 +1186,7 @@ class _HistoryItemState extends State<_HistoryItem> {
                     children: [
                       Text(
                         widget.item.comment!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                          color: c.textSecondary,
-                          height: 1.6,
-                        ),
+                        style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.6, fontStyle: FontStyle.italic, fontSize: 12.0),
                       ),
                       const SizedBox(height: 10),
                       Container(
@@ -1312,12 +1203,7 @@ class _HistoryItemState extends State<_HistoryItem> {
                         ),
                         child: Text(
                           l.habitDetailHistoryEdit,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: c.accent,
-                            height: 1.2,
-                          ),
+                          style: context.tt.labelSmall!.copyWith(color: c.accent, height: 1.2),
                         ),
                       ),
                     ],
@@ -1359,12 +1245,7 @@ class _AiButton extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 l.habitDetailAiChat,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: c.accent,
-                  height: 1.2,
-                ),
+                style: context.tt.labelLarge!.copyWith(color: c.accent, height: 1.2),
               ),
             ],
           ),
@@ -1407,12 +1288,7 @@ class _MenuItem extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: color,
-                height: 1.2,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: color, height: 1.2),
             ),
           ],
         ),

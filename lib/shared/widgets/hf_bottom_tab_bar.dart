@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -88,11 +89,7 @@ class _Tab extends StatelessWidget {
             const SizedBox(height: 3),
             Text(
               item.label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                color: color,
-              ),
+              style: context.tt.bodyMedium!.copyWith(color: color, fontSize: 10.0),
             ),
           ],
         ),

@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -46,9 +47,9 @@ class AboutScreen extends StatelessWidget {
                       ],
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       '🌱',
-                      style: TextStyle(fontSize: 44, height: 1),
+                      style: context.tt.displayLarge!.copyWith(height: 1, fontSize: 44.0),
                     ),
                   ),
                 ),
@@ -56,24 +57,14 @@ class AboutScreen extends StatelessWidget {
                 Center(
                   child: Text(
                     'HabitFlow',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: c.textPrimary,
-                      letterSpacing: -0.02 * 26,
-                      height: 1.2,
-                    ),
+                    style: context.tt.headlineLarge!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 26),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Center(
                   child: Text(
                     l.aboutVersion(_version),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: c.textTertiary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -120,7 +111,7 @@ class _DebugLogsButton extends StatelessWidget {
       icon: Icon(Icons.bug_report_outlined, color: c.textSecondary),
       label: Text(
         'Copy debug logs',
-        style: TextStyle(color: c.textSecondary),
+        style: context.tt.bodyMedium!.copyWith(color: c.textSecondary),
       ),
     );
   }
@@ -148,21 +139,12 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: c.textTertiary,
-              letterSpacing: 0.08 * 11,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.08 * 11),
           ),
           const SizedBox(height: 8),
           Text(
             body,
-            style: TextStyle(
-              fontSize: 14,
-              color: c.textPrimary,
-              height: 1.6,
-            ),
+            style: context.tt.bodyMedium!.copyWith(color: c.textPrimary, height: 1.6),
           ),
         ],
       ),
@@ -192,7 +174,7 @@ class _LinkRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 22, height: 1)),
+            Text(emoji, style: context.tt.headlineMedium!.copyWith(height: 1)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -201,21 +183,12 @@ class _LinkRow extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: c.textPrimary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     hint,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: c.textTertiary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.bodySmall!.copyWith(color: c.textTertiary, height: 1.2, fontSize: 12.0),
                   ),
                 ],
               ),

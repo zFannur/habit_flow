@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../core/config/text_theme.dart';
 import '../../core/config/tokens.dart';
 import '../../core/error/repository_error.dart';
 import '../../core/localization/generated/app_localizations.dart';
@@ -145,23 +146,18 @@ class HFErrorState extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
-              letterSpacing: -0.01 * 18,
+            style: context.tt.headlineSmall!.copyWith(
               color: c.textPrimary,
+              letterSpacing: -0.01 * 18,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             desc,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              height: 1.6,
+            style: context.tt.bodyMedium!.copyWith(
               color: c.textSecondary,
+              height: 1.6,
             ),
           ),
           if (primaryLabel != null) ...[

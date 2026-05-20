@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -61,12 +62,7 @@ class _WeeklyReviewChecklistState extends State<WeeklyReviewChecklist> {
               Expanded(
                 child: Text(
                   l.weeklyReviewTitle,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.titleMedium!.copyWith(color: c.textPrimary, height: 1.2),
                 ),
               ),
               if (widget.onDismiss != null)
@@ -87,11 +83,7 @@ class _WeeklyReviewChecklistState extends State<WeeklyReviewChecklist> {
           const SizedBox(height: 8),
           Text(
             l.weeklyReviewSubtitle,
-            style: TextStyle(
-              fontSize: 12,
-              color: c.textSecondary,
-              height: 1.4,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: c.textSecondary, height: 1.4, fontSize: 12.0),
           ),
           const SizedBox(height: 12),
           for (var i = 0; i < items.length; i++) ...[
@@ -150,12 +142,7 @@ class _CheckItem extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: checked ? c.textTertiary : c.textPrimary,
-                  decoration: checked ? TextDecoration.lineThrough : null,
-                  height: 1.3,
-                ),
+                style: context.tt.bodySmall!.copyWith(color: checked ? c.textTertiary : c.textPrimary, height: 1.3),
               ),
             ),
           ],

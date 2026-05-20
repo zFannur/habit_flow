@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -139,13 +140,7 @@ class _Header extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 l.appearanceTitle,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: c.textPrimary,
-                  letterSpacing: -0.02 * 20,
-                  height: 1.2,
-                ),
+                style: context.tt.headlineSmall!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 20, fontSize: 20.0),
               ),
             ],
           ),
@@ -171,12 +166,7 @@ class _Section extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
           child: Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: c.textTertiary,
-              letterSpacing: 0.08 * 11,
-            ),
+            style: context.tt.labelSmall!.copyWith(color: c.textTertiary, letterSpacing: 0.08 * 11),
           ),
         ),
         Container(
@@ -240,12 +230,7 @@ class _ThemeSwitcher extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: value == key ? c.textPrimary : c.textTertiary,
-                      height: 1.2,
-                    ),
+                    style: context.tt.titleSmall!.copyWith(color: value == key ? c.textPrimary : c.textTertiary, height: 1.2),
                   ),
                 ),
               ),
@@ -310,12 +295,7 @@ class _AccentGrid extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   a.name,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: HFColors.of(context).textTertiary,
-                    height: 1.2,
-                  ),
+                  style: context.tt.labelSmall!.copyWith(color: HFColors.of(context).textTertiary, height: 1.2, fontWeight: FontWeight.w500),
                 ),
               ],
             ),

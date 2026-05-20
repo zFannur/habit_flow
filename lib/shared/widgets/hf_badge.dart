@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/config/tokens.dart';
@@ -47,13 +48,7 @@ class HFBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: fg,
-          letterSpacing: 0.02 * 11,
-          height: 1.2,
-        ),
+        style: context.tt.labelSmall!.copyWith(color: fg, height: 1.2, letterSpacing: 0.02 * 11),
       ),
     );
   }

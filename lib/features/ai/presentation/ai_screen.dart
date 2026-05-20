@@ -1,3 +1,4 @@
+import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -115,13 +116,7 @@ class _AiTabHeader extends StatelessWidget {
             children: [
               Text(
                 AppLocalizations.of(context).aiScreenTitle,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: c.textPrimary,
-                  letterSpacing: -0.02 * 22,
-                  height: 1.2,
-                ),
+                style: context.tt.headlineMedium!.copyWith(color: c.textPrimary, height: 1.2, letterSpacing: -0.02 * 22),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -178,12 +173,7 @@ class _ChipTab extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-              color: selected ? c.accent : c.textSecondary,
-              height: 1.2,
-            ),
+            style: context.tt.bodySmall!.copyWith(color: selected ? c.accent : c.textSecondary, height: 1.2),
           ),
         ),
       ),
