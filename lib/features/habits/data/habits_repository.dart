@@ -93,7 +93,8 @@ class HabitsRepository {
       final payload = habit.toJson()
         ..remove('created_at')
         ..remove('updated_at')
-        ..remove('id');
+        ..remove('id')
+        ..remove('category_id');
       final row = await _client
           .from(_table)
           .update(payload)
