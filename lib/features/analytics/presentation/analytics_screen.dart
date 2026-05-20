@@ -271,10 +271,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     }
     rated.sort((a, b) => b.$2.compareTo(a.$2));
 
-    const colors = [
-      Color(0xFF22C55E),
-      Color(0xFF3B82F6),
-      Color(0xFFA855F7),
+    final colors = [
+      HFTokens.chartPalette[0],
+      HFTokens.chartPalette[1],
+      HFTokens.chartPalette[3],
     ];
 
     return [
@@ -291,15 +291,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   /// Category pie slices from stats.byCategory — top 5 by rate, assign colors.
   List<_CategorySlice> _pieSlices(Map<String, double> byCategory) {
     if (byCategory.isEmpty) return const [];
-    const colors = [
-      Color(0xFF22C55E),
-      Color(0xFF3B82F6),
-      Color(0xFFF59E0B),
-      Color(0xFFA855F7),
-      Color(0xFFEC4899),
-      Color(0xFF06B6D4),
-      Color(0xFFEF4444),
-    ];
+    final colors = HFTokens.chartPalette.take(7).toList();
     final sorted = byCategory.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     final top = sorted.take(5).toList();
@@ -455,17 +447,17 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
 // ─────────────────────────────────────── Helpers
 
 Color _barColor(int v) {
-  if (v < 40) return const Color(0xFFEF4444);
-  if (v < 70) return const Color(0xFFF59E0B);
-  return const Color(0xFF22C55E);
+  if (v < 40) return HFTokens.danger;
+  if (v < 70) return HFTokens.warning;
+  return HFTokens.success;
 }
 
 Color _heatmapColor(int v) {
-  if (v < 30) return const Color(0xFFEF4444).withValues(alpha: 0.2);
-  if (v < 50) return const Color(0xFFEF4444).withValues(alpha: 0.5);
-  if (v < 70) return const Color(0xFFF59E0B).withValues(alpha: 0.5);
-  if (v < 85) return const Color(0xFF22C55E).withValues(alpha: 0.5);
-  return const Color(0xFF22C55E).withValues(alpha: 0.9);
+  if (v < 30) return HFTokens.danger.withValues(alpha: 0.2);
+  if (v < 50) return HFTokens.danger.withValues(alpha: 0.5);
+  if (v < 70) return HFTokens.warning.withValues(alpha: 0.5);
+  if (v < 85) return HFTokens.success.withValues(alpha: 0.5);
+  return HFTokens.success.withValues(alpha: 0.9);
 }
 
 class _DayValue {
@@ -833,7 +825,7 @@ class _MiniDonut extends StatelessWidget {
         painter: _DonutPainter(
           value: value.toDouble(),
           track: c.bgTertiary,
-          fill: const Color(0xFF22C55E),
+          fill: HFTokens.success,
         ),
         child: Center(
           child: Text(
@@ -911,27 +903,27 @@ class _MetricsGrid extends StatelessWidget {
         label: l.analyticsMetricCompleted,
         value: '$doneCount',
         icon: LucideIcons.checkCircle2,
-        color: const Color(0xFF22C55E),
+        color: HFTokens.success,
       ),
       _MetricData(
         label: l.analyticsMetricSkipped,
         value: '$missedCount',
         icon: LucideIcons.xCircle,
-        color: const Color(0xFFEF4444),
+        color: HFTokens.danger,
       ),
       _MetricData(
         label: l.analyticsMetricBestDay,
         value: bestDayLabel,
         sub: bestDayPct > 0 ? '$bestDayPct%' : null,
         icon: LucideIcons.trophy,
-        color: const Color(0xFFF59E0B),
+        color: HFTokens.warning,
       ),
       _MetricData(
         label: l.analyticsMetricStreaks,
         value: '$currentStreak',
         sub: l.analyticsMetricStreaksSubtext,
         icon: LucideIcons.trendingUp,
-        color: const Color(0xFF3B82F6),
+        color: HFTokens.lAccent,
       ),
     ];
     return Column(
@@ -1071,17 +1063,17 @@ class _BarChartCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _LegendDot(
-                color: const Color(0xFFEF4444),
+                color: HFTokens.danger,
                 label: AppLocalizations.of(context).analyticsLegendLow,
               ),
               const SizedBox(width: 12),
               _LegendDot(
-                color: const Color(0xFFF59E0B),
+                color: HFTokens.warning,
                 label: AppLocalizations.of(context).analyticsLegendMedium,
               ),
               const SizedBox(width: 12),
               _LegendDot(
-                color: const Color(0xFF22C55E),
+                color: HFTokens.success,
                 label: AppLocalizations.of(context).analyticsLegendHigh,
               ),
             ],
@@ -1415,11 +1407,11 @@ class _HeatmapLegend extends StatelessWidget {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
     final swatches = [
-      const Color(0xFFEF4444).withValues(alpha: 0.2),
-      const Color(0xFFEF4444).withValues(alpha: 0.5),
-      const Color(0xFFF59E0B).withValues(alpha: 0.5),
-      const Color(0xFF22C55E).withValues(alpha: 0.5),
-      const Color(0xFF22C55E).withValues(alpha: 0.9),
+      HFTokens.danger.withValues(alpha: 0.2),
+      HFTokens.danger.withValues(alpha: 0.5),
+      HFTokens.warning.withValues(alpha: 0.5),
+      HFTokens.success.withValues(alpha: 0.5),
+      HFTokens.success.withValues(alpha: 0.9),
     ];
     return Wrap(
       spacing: 6,
@@ -1582,12 +1574,12 @@ class _MoodLineCard extends StatelessWidget {
             Row(
               children: [
                 _LineLegend(
-                  color: const Color(0xFF3B82F6),
+                  color: HFTokens.lAccent,
                   label: AppLocalizations.of(context).analyticsMoodLine,
                 ),
                 const SizedBox(width: 16),
                 _LineLegend(
-                  color: const Color(0xFFF59E0B),
+                  color: HFTokens.warning,
                   label: AppLocalizations.of(context).analyticsEnergyLine,
                 ),
               ],
@@ -1709,9 +1701,9 @@ class _MoodLineChart extends StatelessWidget {
         ),
         lineBarsData: [
           if (moodSpots.isNotEmpty)
-            _lineBar(moodSpots, const Color(0xFF3B82F6), card),
+            _lineBar(moodSpots, HFTokens.lAccent, card),
           if (energySpots.isNotEmpty)
-            _lineBar(energySpots, const Color(0xFFF59E0B), card),
+            _lineBar(energySpots, HFTokens.warning, card),
         ],
       ),
     );
