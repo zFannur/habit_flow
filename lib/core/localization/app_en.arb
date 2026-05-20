@@ -77,6 +77,7 @@
   "onboardingS3Title": "Start with one",
   "onboardingS3Sub": "Don't try to change everything. Pick one habit for this month.",
   "onboardingS3Templates": "From templates",
+  "onboardingS3TemplatesSub": "Recommended",
   "onboardingS3BadgeRecommended": "★ Recommended",
   "onboardingS3Custom": "Custom habit",
   "onboardingS3CustomSub": "Make your own",

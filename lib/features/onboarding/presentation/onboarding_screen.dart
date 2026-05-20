@@ -647,8 +647,7 @@ class _Slide3 extends StatelessWidget {
                 _PathCard(
                   emoji: '✨',
                   title: l.onboardingS3Templates,
-                  // TODO(l10n): add key onboardingS3TemplatesSub
-                  subtitle: 'Рекомендовано',
+                  subtitle: l.onboardingS3TemplatesSub,
                   highlighted: true,
                   badgeText: l.onboardingS3BadgeRecommended,
                   onTap: onNext,

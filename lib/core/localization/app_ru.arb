@@ -77,6 +77,7 @@
   "onboardingS3Title": "Начнём с одной",
   "onboardingS3Sub": "Не пытайся изменить всё сразу. Выбери одну привычку на этот месяц.",
   "onboardingS3Templates": "Из шаблонов",
+  "onboardingS3TemplatesSub": "Рекомендовано",
   "onboardingS3BadgeRecommended": "★ Рекомендуем",
   "onboardingS3Custom": "Своя привычка",
   "onboardingS3CustomSub": "Придумай сам",
