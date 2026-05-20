@@ -14,6 +14,7 @@ import 'package:habit_flow/features/journal/data/journal_entry_model.dart';
 import 'package:habit_flow/features/journal/data/journal_providers.dart';
 import 'package:habit_flow/features/journal/data/journal_repository.dart';
 import 'package:habit_flow/features/journal/presentation/journal_edit_screen.dart';
+import 'package:habit_flow/features/habits/data/habits_providers.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -106,6 +107,7 @@ List<Override> _overrides(_FakeRepo repo) => [
         (_) => Stream.value(repo.seeded != null ? [repo.seeded!] : []),
       ),
       sharedPreferencesProvider.overrideWithValue(_prefs),
+      habitsForDayProvider.overrideWith((ref, date) => const AsyncValue.data([])),
     ];
 
 /// Simple wrap — no Navigator stack; good for render assertions.

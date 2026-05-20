@@ -74,10 +74,9 @@ class JournalEntryModel with _$JournalEntryModel {
 }
 
 String _dateOnly(DateTime d) {
-  final u = d.isUtc ? d : d.toUtc();
-  final m = u.month.toString().padLeft(2, '0');
-  final day = u.day.toString().padLeft(2, '0');
-  return '${u.year}-$m-$day';
+  final m = d.month.toString().padLeft(2, '0');
+  final day = d.day.toString().padLeft(2, '0');
+  return '${d.year}-$m-$day';
 }
 
 /// Parses a `YYYY-MM-DD` Postgres `DATE` value as a UTC midnight DateTime so

@@ -81,8 +81,25 @@ class _ReflectionTemplateScreenState
   }
 
   Future<void> _saveAndClose() async {
-    final questions = _ctrls.map((c) => c.text).toList(growable: false);
-    await ref.read(journalTemplateProvider.notifier).save(questions);
+    final l = AppLocalizations.of(context);
+    final questions = _ctrls.map((c) => c.text.trim()).where((q) => q.isNotEmpty).toList();
+    final defaults = _defaults(l).map((q) => q.trim()).toList();
+
+    bool isDefault = questions.length == defaults.length;
+    if (isDefault) {
+      for (int i = 0; i < questions.length; i++) {
+        if (questions[i] != defaults[i]) {
+          isDefault = false;
+          break;
+        }
+      }
+    }
+
+    if (isDefault || questions.isEmpty) {
+      await ref.read(journalTemplateProvider.notifier).reset();
+    } else {
+      await ref.read(journalTemplateProvider.notifier).save(questions);
+    }
     if (mounted) context.pop();
   }
 

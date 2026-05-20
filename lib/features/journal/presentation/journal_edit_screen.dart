@@ -12,6 +12,8 @@ import '../../../shared/widgets/hf_slider.dart';
 import '../data/journal_entry_model.dart';
 import '../data/journal_providers.dart';
 import '../data/journal_template_provider.dart';
+import '../../habits/data/habits_providers.dart';
+import '../../habits/domain/habit_with_log.dart';
 
 // ---------------------------------------------------------------------------
 // Default reflection questions (fallback when users.reflection_template is
@@ -51,12 +53,7 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
   final TextEditingController _textCtrl = TextEditingController();
   final FocusNode _textFocus = FocusNode();
   bool _showQuestions = false;
-  final Map<String, TextEditingController> _answers = {
-    'q1': TextEditingController(),
-    'q2': TextEditingController(),
-    'q3': TextEditingController(),
-    'q4': TextEditingController(),
-  };
+  final Map<String, TextEditingController> _answers = {};
 
   // Populated from the loaded entry's date, or today for new entries.
   DateTime _entryDate = DateTime.now();
@@ -68,13 +65,7 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
   bool _isSaving = false;
   String? _loadError;
 
-  // Habits are static placeholders — task 8-04 will wire real habit logs.
-  static const _habits = <_HabitTag>[
-    _HabitTag('🧘', true, 'Медитация'),
-    _HabitTag('💧', true, 'Вода'),
-    _HabitTag('📖', false, 'Чтение'),
-    _HabitTag('🛡', true, 'Без сладкого'),
-  ];
+
 
   @override
   void initState() {
@@ -130,9 +121,9 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
     _energy = entry.energy ?? 6;
     _textCtrl.text = entry.text;
     final answers = entry.answers ?? {};
-    for (final key in _answers.keys) {
-      _answers[key]!.text = answers[key] ?? '';
-    }
+    answers.forEach((key, val) {
+      _answers.putIfAbsent(key, () => TextEditingController()).text = val;
+    });
   }
 
   @override
@@ -203,6 +194,7 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     final l = AppLocalizations.of(context);
+    final habitsAsync = ref.watch(habitsForDayProvider(_entryDate));
 
     if (_isLoading) {
       return Scaffold(
@@ -236,6 +228,9 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
     }
 
     final questions = _activeQuestions(ref, l);
+    for (final q in questions) {
+      _answers.putIfAbsent(q.id, () => TextEditingController());
+    }
 
     return Scaffold(
       backgroundColor: c.bgSecondary,
@@ -256,7 +251,7 @@ class _JournalEditScreenState extends ConsumerState<JournalEditScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _HabitsBlock(habits: _habits),
+                  _HabitsBlock(habitsAsync: habitsAsync),
                   const SizedBox(height: 12),
                   _ScaleSlider(
                     label: l.journalEditMoodLabel,
@@ -403,13 +398,14 @@ class _Header extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _HabitsBlock extends StatelessWidget {
-  const _HabitsBlock({required this.habits});
+  const _HabitsBlock({required this.habitsAsync});
 
-  final List<_HabitTag> habits;
+  final AsyncValue<List<HabitWithLog>> habitsAsync;
 
   @override
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
+    final l = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -422,16 +418,42 @@ class _HabitsBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context).journalEditHabitsTitle,
+            l.journalEditHabitsTitle,
             style: context.tt.labelMedium!.copyWith(color: c.textTertiary, height: 1.2, letterSpacing: 0.06 * 12),
           ),
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final h in habits) _HabitPill(tag: h),
-            ],
+          habitsAsync.when(
+            loading: () => const Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+            error: (err, _) => Text(
+              err.toString(),
+              style: context.tt.bodySmall!.copyWith(color: c.danger),
+            ),
+            data: (list) {
+              if (list.isEmpty) {
+                return Text(
+                  l.emptyTitleNoHabits,
+                  style: context.tt.bodySmall!.copyWith(color: c.textTertiary),
+                );
+              }
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final h in list)
+                    _HabitPill(
+                      emoji: h.habit.emoji ?? '⭐',
+                      name: h.habit.name,
+                      done: h.isDone,
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -440,22 +462,28 @@ class _HabitsBlock extends StatelessWidget {
 }
 
 class _HabitPill extends StatelessWidget {
-  const _HabitPill({required this.tag});
+  const _HabitPill({
+    required this.emoji,
+    required this.name,
+    required this.done,
+  });
 
-  final _HabitTag tag;
+  final String emoji;
+  final String name;
+  final bool done;
 
   @override
   Widget build(BuildContext context) {
-    final bg = tag.done
+    final bg = done
         ? const Color(0x1A22C55E)
         : const Color(0x14EF4444);
-    final border = tag.done
+    final border = done
         ? const Color(0x4022C55E)
         : const Color(0x33EF4444);
-    final iconColor = tag.done
+    final iconColor = done
         ? const Color(0xFF16A34A)
         : const Color(0xFFDC2626);
-    final nameColor = tag.done
+    final nameColor = done
         ? const Color(0xFF15803D)
         : const Color(0xFFB91C1C);
 
@@ -469,15 +497,15 @@ class _HabitPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(tag.icon, style: context.tt.bodySmall!.copyWith(height: 1.2)),
+          Text(emoji, style: context.tt.bodySmall!.copyWith(height: 1.2)),
           const SizedBox(width: 6),
           Text(
-            tag.done ? '✅' : '❌',
+            done ? '✅' : '❌',
             style: context.tt.titleSmall!.copyWith(color: iconColor, height: 1.2),
           ),
           const SizedBox(width: 6),
           Text(
-            tag.name,
+            name,
             style: context.tt.bodySmall!.copyWith(color: nameColor, height: 1.2, fontSize: 12.0),
           ),
         ],
@@ -849,7 +877,7 @@ class _ChangeTemplateLink extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = HFColors.of(context);
     return InkWell(
-      onTap: () {},
+      onTap: () => context.push('/profile/reflection-template'),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
@@ -878,12 +906,7 @@ Color _moodColor(int value) {
   return const Color(0xFF22C55E);
 }
 
-class _HabitTag {
-  const _HabitTag(this.icon, this.done, this.name);
-  final String icon;
-  final bool done;
-  final String name;
-}
+
 
 class _Question {
   const _Question(this.id, this.text);

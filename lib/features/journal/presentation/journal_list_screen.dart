@@ -2,6 +2,7 @@ import 'package:habit_flow/core/config/text_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/config/tokens.dart';
@@ -358,7 +359,8 @@ class _EntryCard extends StatelessWidget {
     final mood = entry.mood;
     final gradient = _moodGradient(mood);
     final emoji = _moodEmoji(mood);
-    final dateLabel = _formatDate(entry.date);
+    final locale = Localizations.localeOf(context).languageCode;
+    final dateLabel = _formatDate(entry.date, locale);
     final timeLabel = _formatTime(entry.createdAt);
 
     return Material(
@@ -513,15 +515,8 @@ String _moodEmoji(int? mood) {
   return '🤩';
 }
 
-String _formatDate(DateTime d) {
-  const weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-  const months = [
-    'янв', 'фев', 'мар', 'апр', 'мая', 'июн',
-    'июл', 'авг', 'сен', 'окт', 'ноя', 'дек',
-  ];
-  final wd = weekdays[d.weekday - 1];
-  final mo = months[d.month - 1];
-  return '${d.day} $mo, $wd';
+String _formatDate(DateTime d, String locale) {
+  return DateFormat('d MMM, EEE', locale).format(d);
 }
 
 String _formatTime(DateTime dt) {

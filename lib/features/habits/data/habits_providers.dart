@@ -134,3 +134,34 @@ final streakProvider = Provider.family<int, String>((ref, habitId) {
   if (habit == null || logs == null) return 0;
   return currentStreak(habit: habit, logs: logs, today: today);
 });
+
+/// Logs for the current user on a specific date.
+final logsForDayProvider = FutureProvider.family<List<HabitLogModel>, DateTime>((ref, date) async {
+  final dayOnly = DateTime(date.year, date.month, date.day);
+  ref.watch(habitsStreamProvider);
+  return ref.watch(habitLogsRepositoryProvider).rangeForUser(dayOnly, dayOnly);
+});
+
+/// Habits scheduled for a specific date paired with their log rows (if any).
+final habitsForDayProvider = Provider.family<AsyncValue<List<HabitWithLog>>, DateTime>((ref, date) {
+  final dayOnly = DateTime(date.year, date.month, date.day);
+  final habitsAsync = ref.watch(habitsStreamProvider);
+  final logsAsync = ref.watch(logsForDayProvider(dayOnly));
+
+  if (habitsAsync.isLoading && logsAsync.isLoading) {
+    return const AsyncValue.loading();
+  }
+
+  final habits = habitsAsync.value ?? const <HabitModel>[];
+  final logs = logsAsync.value ?? const <HabitLogModel>[];
+
+  final combined = combineHabitsWithLogs(
+    habits: habits,
+    logsForDay: logs,
+    day: dayOnly,
+  );
+  
+  final seen = <String>{};
+  final deduped = combined.where((h) => seen.add(h.habit.id)).toList();
+  return AsyncValue.data(deduped);
+});
