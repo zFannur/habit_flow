@@ -43,9 +43,13 @@ final currentChatMessagesProvider = StreamProvider<List<AiMessage>>((ref) {
 /// User-message count for today (UTC). Drives the daily-quota progress bar
 /// in the chat composer. Auto-refreshes whenever the chat messages stream
 /// emits, so a freshly sent message bumps the bar without a manual reload.
-final dailyMessageCountProvider = FutureProvider<int>((ref) {
+final dailyMessageCountProvider = FutureProvider<int>((ref) async {
   ref.watch(currentChatMessagesProvider);
-  return ref.watch(aiMessagesRepositoryProvider).dailyUserMessageCount();
+  final res = await ref.watch(aiMessagesRepositoryProvider).dailyUserMessageCount().run();
+  return res.match(
+    (f) => throw f,
+    (count) => count,
+  );
 });
 
 /// Prompt the user picked from the prompts grid; chat screen consumes it,
@@ -183,18 +187,21 @@ class ChatController extends StateNotifier<ChatState> {
     // Lazy create the chat the first time the user sends a message.
     var chatId = _ref.read(currentChatIdProvider);
     if (chatId == null) {
-      try {
-        final firstWords = text.length > 60 ? '${text.substring(0, 57)}…' : text;
-        final created = await repo.createChat(title: firstWords);
-        chatId = created.id;
-        _ref.read(currentChatIdProvider.notifier).state = chatId;
-      } catch (_) {
-        state = state.copyWith(
-          isStreaming: false,
-          errorMessage: 'generic',
-        );
-        return;
-      }
+      final firstWords = text.length > 60 ? '${text.substring(0, 57)}…' : text;
+      final createRes = await repo.createChat(title: firstWords).run();
+      final created = createRes.match(
+        (f) {
+          state = state.copyWith(
+            isStreaming: false,
+            errorMessage: 'generic',
+          );
+          return null;
+        },
+        (ok) => ok,
+      );
+      if (created == null) return;
+      chatId = created.id;
+      _ref.read(currentChatIdProvider.notifier).state = chatId;
     }
 
     // Snapshot of prior messages — used for prompt-builder history.
@@ -203,20 +210,23 @@ class ChatController extends StateNotifier<ChatState> {
     // Persist the user message immediately so it shows up in the realtime
     // stream and survives a reload mid-streaming. Keep the returned row in
     // pendingMessages so the UI shows it without waiting for realtime.
-    try {
-      final userMsg = await repo.insertMessage(
-        chatId: chatId,
-        role: 'user',
-        content: text,
-      );
-      _appendPending(userMsg);
-    } catch (_) {
-      state = state.copyWith(
-        isStreaming: false,
-        errorMessage: 'generic',
-      );
-      return;
-    }
+    final userMsgRes = await repo.insertMessage(
+      chatId: chatId,
+      role: 'user',
+      content: text,
+    ).run();
+    final userMsg = userMsgRes.match(
+      (f) {
+        state = state.copyWith(
+          isStreaming: false,
+          errorMessage: 'generic',
+        );
+        return null;
+      },
+      (ok) => ok,
+    );
+    if (userMsg == null) return;
+    _appendPending(userMsg);
 
     // Build the prompt with full app context.
     final client = _clientFactory(apiKey);
@@ -279,23 +289,26 @@ class ChatController extends StateNotifier<ChatState> {
           onDone: () async {
             final finalText = buffer.toString().trim();
             if (finalText.isNotEmpty) {
-              try {
-                final assistantMsg = await repo.insertMessage(
-                  chatId: chatId!,
-                  role: 'assistant',
-                  content: finalText,
-                );
-                // Hold the assistant reply locally until realtime emits it,
-                // otherwise the bubble would blink off between stream end
-                // and the next stream tick.
-                _appendPending(assistantMsg);
-              } catch (_) {
-                // Persistence error — surface generic message but keep the
-                // text already shown so the user does not lose the reply.
-                state = state.copyWith(
-                  errorMessage: 'generic',
-                );
-              }
+              final assistantMsgRes = await repo.insertMessage(
+                chatId: chatId!,
+                role: 'assistant',
+                content: finalText,
+              ).run();
+              assistantMsgRes.match(
+                (f) {
+                  // Persistence error — surface generic message but keep the
+                  // text already shown so the user does not lose the reply.
+                  state = state.copyWith(
+                    errorMessage: 'generic',
+                  );
+                },
+                (assistantMsg) {
+                  // Hold the assistant reply locally until realtime emits it,
+                  // otherwise the bubble would blink off between stream end
+                  // and the next stream tick.
+                  _appendPending(assistantMsg);
+                },
+              );
             }
             state = state.copyWith(
               isStreaming: false,
@@ -312,11 +325,8 @@ class ChatController extends StateNotifier<ChatState> {
     AiMessagesRepository repo,
     String chatId,
   ) async {
-    try {
-      return await repo.listMessages(chatId);
-    } catch (_) {
-      return const <AiMessage>[];
-    }
+    final res = await repo.listMessages(chatId).run();
+    return res.getOrElse((_) => const <AiMessage>[]);
   }
 
   @override

@@ -115,7 +115,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     if (result == null || result.isEmpty || result == currentTitle) return;
-    await ref.read(aiMessagesRepositoryProvider).renameChat(chatId, result);
+    await ref.read(aiMessagesRepositoryProvider).renameChat(chatId, result).run();
     ref.invalidate(aiChatsStreamProvider);
   }
 
@@ -140,7 +140,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
     if (ok != true) return;
-    await ref.read(aiMessagesRepositoryProvider).deleteChat(chatId);
+    await ref.read(aiMessagesRepositoryProvider).deleteChat(chatId).run();
     if (ref.read(currentChatIdProvider) == chatId) {
       ref.read(currentChatIdProvider.notifier).state = null;
     }
