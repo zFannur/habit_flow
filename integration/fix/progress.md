@@ -9,4 +9,4 @@
 | 05 | W9 | Палитра графиков в `tokens.dart` | ✅ Выполнено |
 | 06 | W23 | `Navigator.push` → `context.push` (go_router) | ✅ Выполнено |
 | 07 | W7 | Вынести хардкод-URL в `Env` | ✅ Выполнено |
-| 08 | W26 | `mounted` после `await` перед `context` | ⏳ Ожидание |
+| 08 | W26 | `mounted` после `await` перед `context` | ✅ Выполнено |
