@@ -21,7 +21,7 @@ String getInitDataWeb() => '';
 Future<void> openBotDeepLinkPlatform(String token) async {
   final botUsername = Env.botUsername;
   final url = 'https://t.me/$botUsername?start=link_$token';
-  
+
   // Try launching tg:// scheme first for native client transition
   final nativeUri = Uri.parse('tg://resolve?domain=$botUsername&start=link_$token');
   if (await canLaunchUrl(nativeUri)) {
@@ -35,3 +35,18 @@ Future<void> openBotDeepLinkPlatform(String token) async {
     }
   }
 }
+
+// Telegram chrome (viewport / theme / BackButton) — Web-only. No-ops on
+// mobile/desktop so the shared TelegramService facade compiles everywhere.
+
+void tgInitChrome() {}
+
+String? tgColorScheme() => null;
+
+void tgSetChromeColors(String headerHex, String backgroundHex) {}
+
+void Function() tgOnThemeChanged(void Function() cb) => () {};
+
+void Function() tgShowBackButton(void Function() onClick) => () {};
+
+void tgHideBackButton() {}

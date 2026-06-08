@@ -61,6 +61,51 @@ class TelegramService {
       await openBotDeepLinkPlatform(token);
     }
   }
+
+  // ── Telegram chrome (viewport / theme / native BackButton) ────────────────
+  // Web-only; no-ops everywhere else. See SPEC §4 + app/CLAUDE.md
+  // («Тема … перекрывается Telegram.WebApp.themeParams через TelegramService»).
+
+  /// Signals readiness and expands the Mini App to full viewport
+  /// (`WebApp.ready()` + `WebApp.expand()`). Call once at startup.
+  void initChrome() {
+    if (kIsWeb) tgInitChrome();
+  }
+
+  /// Telegram's current color scheme as a [Brightness], or `null` outside a
+  /// real Mini App session (so the app falls back to platform brightness).
+  Brightness? telegramBrightness() {
+    if (!kIsWeb) return null;
+    return switch (tgColorScheme()) {
+      'dark' => Brightness.dark,
+      'light' => Brightness.light,
+      _ => null,
+    };
+  }
+
+  /// Paints Telegram's native header and background (hex `#rrggbb`) so the
+  /// webview edges match the app surface.
+  void setChromeColors({
+    required String headerHex,
+    required String backgroundHex,
+  }) {
+    if (kIsWeb) tgSetChromeColors(headerHex, backgroundHex);
+  }
+
+  /// Subscribes to Telegram's `themeChanged` event. Returns a disposer that
+  /// removes the listener.
+  VoidCallback onThemeChanged(VoidCallback callback) =>
+      kIsWeb ? tgOnThemeChanged(callback) : () {};
+
+  /// Shows the native Telegram BackButton wired to [onClick]. Returns a
+  /// disposer that unbinds the handler and hides the button.
+  VoidCallback showBackButton(VoidCallback onClick) =>
+      kIsWeb ? tgShowBackButton(onClick) : () {};
+
+  /// Hides the native Telegram BackButton.
+  void hideBackButton() {
+    if (kIsWeb) tgHideBackButton();
+  }
 }
 
 /// Possible outcomes from a Telegram Stars invoice.

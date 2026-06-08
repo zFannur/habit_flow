@@ -18,11 +18,18 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final locale = await LocaleNotifier.create(prefs);
     final theme = await ThemeNotifier.create(prefs);
+    final accent = await AccentColorNotifier.create(prefs);
 
     final mockSupabase = _MockSupabaseService();
     final mockTelegram = _MockTelegramService();
 
     when(() => mockTelegram.getInitData()).thenReturn('');
+    // TelegramChrome (mounted via MaterialApp.router builder) drives the
+    // native chrome through these — stub the non-void returns so the mock
+    // doesn't hand back null for a non-nullable VoidCallback.
+    when(() => mockTelegram.telegramBrightness()).thenReturn(null);
+    when(() => mockTelegram.onThemeChanged(any())).thenReturn(() {});
+    when(() => mockTelegram.showBackButton(any())).thenReturn(() {});
 
     await tester.pumpWidget(
       ProviderScope(
@@ -30,6 +37,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           localeProvider.overrideWith((_) => locale),
           themeProvider.overrideWith((_) => theme),
+          accentColorProvider.overrideWith((_) => accent),
           supabaseServiceProvider.overrideWithValue(mockSupabase),
           telegramServiceProvider.overrideWithValue(mockTelegram),
         ],

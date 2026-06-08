@@ -27,6 +27,7 @@ import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/reflection_template_screen.dart';
 import '../../features/shell/presentation/root_shell.dart';
 import '../services/onboarding_service.dart';
+import 'deep_link.dart';
 
 /// Маршрутизатор приложения.
 /// 5 вкладок: /today, /habits, /analytics, /ai, /profile.
@@ -47,7 +48,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (authState is Authenticated) {
         if (onSplash) {
-          return seenOnboarding ? '/today' : '/onboarding';
+          if (!seenOnboarding) return '/onboarding';
+          // Bot-уведомления открывают Mini App с `?screen=...&id=...`.
+          // Доводим пользователя до целевого экрана вместо дефолтного /today.
+          return deepLinkInitialRoute() ?? '/today';
         }
         return null;
       }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/generated/app_localizations.dart';
-import '../../../core/services/onboarding_service.dart';
 import '../data/auth_providers.dart';
 import '../domain/auth_state.dart';
 import 'device_link_dialog.dart';
@@ -127,16 +125,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       );
     }
 
-    // Authenticated state: router redirect takes care of navigation.
-    // Show loader while signing in or redirecting.
-    if (authState is Authenticated) {
-      final seen = ref.watch(seenOnboardingProvider);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        context.go(seen ? '/today' : '/onboarding');
-      });
-    }
-
+    // Authenticated (or still signing in): the GoRouter redirect — which also
+    // honours bot deep links (`?screen=...`) — drives navigation off /splash
+    // via refreshListenable. Here we just show the loader; doing our own
+    // context.go would race the redirect and overwrite the deep-link target.
     return const Scaffold(
       body: Center(child: CircularProgressIndicator()),
     );
